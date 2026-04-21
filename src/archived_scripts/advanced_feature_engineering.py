@@ -2,8 +2,6 @@ import os
 import glob
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -92,19 +90,6 @@ def main():
     print("-" * 50)
     print(f"New RF accuracy (aggregated features): {acc * 100:.2f}%")
     print("-" * 50)
-
-    # 3. Feature importance chart
-    print("Generating feature importance chart...")
-    importances = clf.feature_importances_
-
-    plt.figure(figsize=(10, 6))
-    sns.barplot(x=importances, y=X_df.columns, palette="viridis", orient="h")
-    plt.title("Website Fingerprinting - Feature Importance")
-    plt.xlabel("Relative importance (%)")
-    plt.ylabel("Engineered features")
-    plt.tight_layout()
-    plt.savefig("rf_feature_importance.png", dpi=300)
-    print("Chart saved: rf_feature_importance.png")
 
 
 if __name__ == "__main__":

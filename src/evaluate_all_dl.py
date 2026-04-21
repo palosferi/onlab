@@ -1,5 +1,6 @@
 import os
 import glob
+import json
 import numpy as np
 import pandas as pd
 import torch
@@ -17,6 +18,8 @@ BASE_DIR = os.path.abspath(
 )
 BASELINE_DIR = os.path.join(BASE_DIR, "baseline_features")
 OBFS4_DIR = os.path.join(BASE_DIR, "obfs4_features")
+FIGURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "figures"))
+DL_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_dl.json")
 
 
 # --- 1. FEATURE EXTRACTION (same as RF) ---
@@ -168,7 +171,11 @@ def main():
 
     # 1. BASELINE SCENARIO
     X_train_b, X_test_b, y_train_b, y_test_b = train_test_split(
-        X_base_scaled, y_base, test_size=0.2, random_state=42
+        X_base_scaled,
+        y_base,
+        test_size=0.2,
+        random_state=42,
+        stratify=y_base,
     )
     model_base, device = train_and_extract_embeddings(X_train_b, y_train_b, epochs=50)
 
@@ -179,11 +186,17 @@ def main():
     knn_base = KNeighborsClassifier(n_neighbors=5, metric="euclidean")
     knn_base.fit(train_emb_b, y_train_b)
 
-    evaluate_scenario("1. Baseline", model_base, device, knn_base, X_test_b, y_test_b)
+    acc_base = evaluate_scenario(
+        "1. Baseline", model_base, device, knn_base, X_test_b, y_test_b
+    )
 
     # 2. OBFS4 SCENARIO
     X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(
-        X_obfs_scaled, y_obfs, test_size=0.2, random_state=42
+        X_obfs_scaled,
+        y_obfs,
+        test_size=0.2,
+        random_state=42,
+        stratify=y_obfs,
     )
     model_obfs, _ = train_and_extract_embeddings(X_train_o, y_train_o, epochs=50)
 
@@ -193,13 +206,28 @@ def main():
     knn_obfs = KNeighborsClassifier(n_neighbors=5, metric="euclidean")
     knn_obfs.fit(train_emb_o, y_train_o)
 
-    evaluate_scenario("2. Obfs4", model_obfs, device, knn_obfs, X_test_o, y_test_o)
+    acc_obfs = evaluate_scenario(
+        "2. Obfs4", model_obfs, device, knn_obfs, X_test_o, y_test_o
+    )
 
     # 3. ZERO-SHOT SCENARIO (Train: Baseline -> Test: Obfs4)
-    evaluate_scenario(
+    acc_zero = evaluate_scenario(
         "3. Zero-Shot", model_base, device, knn_base, X_obfs_scaled, y_obfs
     )
     print("=" * 50)
+
+    os.makedirs(FIGURES_DIR, exist_ok=True)
+    with open(DL_METRICS_PATH, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "baseline": round(acc_base * 100, 2),
+                "obfs4": round(acc_obfs * 100, 2),
+                "zero_shot": round(acc_zero * 100, 2),
+            },
+            f,
+            indent=2,
+        )
+    print(f"Saved DL metrics to: {DL_METRICS_PATH}")
 
 
 if __name__ == "__main__":

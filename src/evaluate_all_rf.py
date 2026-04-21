@@ -1,5 +1,6 @@
 import os
 import glob
+import json
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -12,6 +13,9 @@ BASE_DIR = os.path.abspath(
 )
 BASELINE_DIR = os.path.join(BASE_DIR, "baseline_features")
 OBFS4_DIR = os.path.join(BASE_DIR, "obfs4_features")
+FIGURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "figures"))
+RF_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_rf.json")
+RF_N_ESTIMATORS = 200
 
 
 def extract_aggregated_features(directory):
@@ -75,18 +79,22 @@ def main():
 
     # 1. SCENARIO: BASELINE
     X_train_b, X_test_b, y_train_b, y_test_b = train_test_split(
-        X_base, y_base, test_size=0.2, random_state=42
+        X_base, y_base, test_size=0.2, random_state=42, stratify=y_base
     )
-    rf_base = RandomForestClassifier(n_estimators=200, random_state=42, n_jobs=-1)
+    rf_base = RandomForestClassifier(
+        n_estimators=RF_N_ESTIMATORS, random_state=42, n_jobs=-1
+    )
     rf_base.fit(X_train_b, y_train_b)
     acc_base = accuracy_score(y_test_b, rf_base.predict(X_test_b))
     print(f"[1] Baseline Accuracy:   {acc_base * 100:.2f}%")
 
     # 2. SCENARIO: OBFS4
     X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(
-        X_obfs, y_obfs, test_size=0.2, random_state=42
+        X_obfs, y_obfs, test_size=0.2, random_state=42, stratify=y_obfs
     )
-    rf_obfs = RandomForestClassifier(n_estimators=200, random_state=42, n_jobs=-1)
+    rf_obfs = RandomForestClassifier(
+        n_estimators=RF_N_ESTIMATORS, random_state=42, n_jobs=-1
+    )
     rf_obfs.fit(X_train_o, y_train_o)
     acc_obfs = accuracy_score(y_test_o, rf_obfs.predict(X_test_o))
     print(f"[2] Obfs4 Accuracy:      {acc_obfs * 100:.2f}%")
@@ -95,6 +103,20 @@ def main():
     acc_zero = accuracy_score(y_obfs, rf_base.predict(X_obfs))
     print(f"[3] Zero-Shot Accuracy:  {acc_zero * 100:.2f}%")
     print("=" * 50)
+
+    os.makedirs(FIGURES_DIR, exist_ok=True)
+    with open(RF_METRICS_PATH, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "baseline": round(acc_base * 100, 2),
+                "obfs4": round(acc_obfs * 100, 2),
+                "zero_shot": round(acc_zero * 100, 2),
+                "n_estimators": RF_N_ESTIMATORS,
+            },
+            f,
+            indent=2,
+        )
+    print(f"Saved RF metrics to: {RF_METRICS_PATH}")
 
 
 if __name__ == "__main__":
