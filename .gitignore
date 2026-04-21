@@ -1,0 +1,41 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tool caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Local editor/system files
+.DS_Store
+*.swp
+*.swo
+
+# Build/package artifacts
+build/
+dist/
+*.egg-info/
+
+# Local datasets and generated data artifacts
+tor_dataset/
+
+# Generated figures (keep curated figures manually if needed)
+figures/*.png
+figures/*.jpg
+figures/*.jpeg
+figures/*.pdf
+figures/*.svg
+figures/*.eps
+
+# Logs and local outputs
+*.log

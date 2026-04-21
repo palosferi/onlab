@@ -1,0 +1,49 @@
+Hallgató neve:        Pálos Ferenc
+Neptun kódja:         U1OTPN
+Email címe:           palosferenc@proton.me
+
+Konzulens(ek) neve:   Ladóczki Bence
+Önlab tantárgy kódja: BMEVITMAL04
+Tanév/félév:          2025/2026/2
+
+Feladat/téma címe:    Valós támadások vizsgálata Tor hálózaton (A Concept Drift hatása a Website Fingerprinting modellekre)
+
+Tervezett munkafázisok a félév során:
+
+1-3. oktatási hét: Irodalomkutatás és az infrastruktúra alapjainak megteremtése
+
+A témához kapcsolódó szakirodalom, kiemelten a Cherubin et al. (2022) cikk és a Concept Drift jelenségének feldolgozása WF kontextusban.
+A hálózati környezet felállítása: a Tor daemon konfigurálása a saját szerveren, Entry Guard node rögzítése a tiszta adatgyűjtés érdekében.
+
+4-5. oktatási hét: Automatizált adatgyűjtő rendszer implementálása és indítása
+
+Vezérlő szkriptek írása Pythonban (Selenium, Stem) a böngészéshez és a Tor hálózatban felépülő 3 csomópontos útvonalak (Tor áramkör / circuit) programozott felépítéséhez.
+A hálózati forgalom (tcpdump) automatizált rögzítése, AppArmor és jogosultsági kérdések megoldása.
+A longitudinális adatgyűjtés elindítása: Cron job beállítása, amely heteken keresztül, naponta többször rögzíti egy 36 elemű céloldal-lista forgalmát, hogy mérhető legyen a weboldalak időbeli változása.
+
+6-8. oktatási hét: Adattisztítás és jellemzőkinyerés (Feature Extraction)
+
+A rögzített folyamatos PCAP fájlok feldolgozása: a felesleges hálózati zaj kiszűrése.
+A nyers forgalomból a gépi tanuláshoz szükséges formátum előállítása.
+A valós világbeli anomáliák (pl. Cloudflare CAPTCHA blokkolások) azonosítása és kezelése az adathalmazban.
+
+9-10. oktatási hét: Gépi tanulási modellek betanítása és a Concept Drift kiértékelése
+
+Baseline Website Fingerprinting modellek (pl. k-NN, Random Forest vagy CUMUL) implementálása és betanítása az adatgyűjtés első heteiből származó adatokon (Ground Truth).
+A modellek pontosságának (Accuracy, F1-score) tesztelése a későbbi hetekben gyűjtött adatokon.
+A modell romlásának számszerűsítése és a különböző weboldal-kategóriák (magas vs. alacsony drift) összehasonlítása.
+
+11. oktatási hét: Dokumentáció készítése
+
+Az írásbeli beszámoló nulladik verziójának elkészítése: a feladat kiírásának, az irodalomkutatás eredményeinek, valamint az adatgyűjtő architektúra és a mérési eredmények részletes dokumentálása.
+A dokumentáció leadása a konzulensnek véleményezésre.
+
+12-13. oktatási hét: Véglegesítés és a prezentáció előkészítése
+
+A konzulensi visszajelzések alapján a beszámoló kijavítása, végleges verziójának beadása.
+A félév során elvégzett munka eredményeinek összefoglalása és a szóbeli prezentáció diáinak elkészítése.
+
+14. oktatási hét: Szóbeli beszámoló
+
+A szóbeli előadás elpróbálása, a prezentáció finomítása.
+Hivatalos szóbeli beszámoló megtartása a bizottság előtt.
