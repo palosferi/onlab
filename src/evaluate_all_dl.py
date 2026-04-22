@@ -1,16 +1,22 @@
-import os
-import glob
 import json
+import os
+
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
+from sklearn.metrics import accuracy_score, f1_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
+from torch.utils.data import DataLoader, Dataset
+
+from feature_pool import (
+    extract_aggregated_features,
+    load_locked_top_features,
+    select_stable_top_features,
+)
 
 # --- CONFIGURATION ---
 BASE_DIR = os.path.abspath(
@@ -18,54 +24,14 @@ BASE_DIR = os.path.abspath(
 )
 BASELINE_DIR = os.path.join(BASE_DIR, "baseline_features")
 OBFS4_DIR = os.path.join(BASE_DIR, "obfs4_features")
+OTHER_DIR = os.path.join(BASE_DIR, "other_features")
 FIGURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "figures"))
 DL_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_dl.json")
+TOP_FEATURES_PATH = os.path.join(FIGURES_DIR, "selected_top10_features.json")
+TOP_K_FEATURES = 10
 
 
-# --- 1. FEATURE EXTRACTION (same as RF) ---
-def extract_aggregated_features(directory):
-    X, y = [], []
-    csv_files = glob.glob(os.path.join(directory, "*.csv"))
-
-    for file_path in csv_files:
-        site_name = os.path.basename(file_path).split("_")[0]
-        try:
-            df = pd.read_csv(file_path)
-            if df.empty:
-                continue
-
-            dirs = df["direction_size"].values
-            times = df["time_offset"].values
-            iats = df["inter_arrival_time"].values
-
-            incoming = dirs[dirs < 0]
-            outgoing = dirs[dirs > 0]
-
-            features = [
-                len(dirs),  # total_packets
-                len(incoming),  # incoming_packets
-                len(outgoing),  # outgoing_packets
-                len(incoming) / (len(outgoing) + 1e-5),  # in_out_packet_ratio
-                np.sum(np.abs(dirs)),  # total_bytes
-                np.abs(np.sum(incoming)) if len(incoming) > 0 else 0,  # incoming_bytes
-                np.sum(outgoing) if len(outgoing) > 0 else 0,  # outgoing_bytes
-                np.abs(np.sum(incoming))
-                / (np.sum(outgoing) + 1e-5),  # in_out_byte_ratio
-                times[-1] if len(times) > 0 else 0,  # duration
-                np.mean(iats) if len(iats) > 0 else 0,  # mean_inter_arrival
-                np.std(iats) if len(iats) > 0 else 0,  # std_inter_arrival
-                np.max(np.abs(dirs)),  # max_packet_size
-                np.mean(np.abs(dirs)),  # mean_packet_size
-            ]
-            X.append(features)
-            y.append(site_name)
-        except Exception:
-            pass
-
-    return np.array(X), np.array(y)
-
-
-# --- 2. PYTORCH DATASET ---
+# --- 1. PYTORCH DATASET ---
 class TripletDataset(Dataset):
     def __init__(self, X, y):
         self.X = torch.FloatTensor(X)
@@ -94,11 +60,10 @@ class TripletDataset(Dataset):
         return anchor, positive, negative, anchor_label
 
 
-# --- 3. NEURAL NETWORK (Multi-Layer Perceptron) ---
+# --- 2. NEURAL NETWORK (Triplet MLP) ---
 class TripletMLP(nn.Module):
-    def __init__(self, input_size=13):
+    def __init__(self, input_size):
         super(TripletMLP, self).__init__()
-        # Dense network to process the 13 features
         self.fc = nn.Sequential(
             nn.Linear(input_size, 64),
             nn.BatchNorm1d(64),
@@ -108,47 +73,95 @@ class TripletMLP(nn.Module):
         )
 
     def forward(self, x):
-        x = self.fc(x)
-        return nn.functional.normalize(x, p=2, dim=1)
+        return nn.functional.normalize(self.fc(x), p=2, dim=1)
 
 
-# --- 4. TRAINING & EVALUATION ---
-def train_and_extract_embeddings(X_train, y_train, epochs=30):
+# --- 3. TRAINING & EVALUATION ---
+def evaluate_metrics(y_true, y_pred):
+    labels = np.sort(np.unique(y_true))
+    recalls = recall_score(y_true, y_pred, labels=labels, average=None, zero_division=0)
+    return {
+        "accuracy": round(accuracy_score(y_true, y_pred) * 100, 2),
+        "macro_f1": round(f1_score(y_true, y_pred, average="macro", zero_division=0) * 100, 2),
+        "per_class_recall": {
+            str(lbl): round(float(rec) * 100, 2) for lbl, rec in zip(labels, recalls)
+        },
+    }
+
+
+def print_metrics(name, metrics):
+    print(f"[{name}] Accuracy: {metrics['accuracy']:.2f}% | Macro-F1: {metrics['macro_f1']:.2f}%")
+
+
+def train_embedding_model(X_train, y_train, epochs=50):
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = TripletMLP().to(device)
+    model = TripletMLP(input_size=X_train_scaled.shape[1]).to(device)
 
-    dataset = TripletDataset(X_train, y_train)
+    dataset = TripletDataset(X_train_scaled, y_train)
     loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
     criterion = nn.TripletMarginLoss(margin=1.0, p=2)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     model.train()
-    for epoch in range(epochs):
+    for _ in range(epochs):
         for anchor, positive, negative, _ in loader:
-            anchor, positive, negative = (
-                anchor.to(device),
-                positive.to(device),
-                negative.to(device),
-            )
+            anchor = anchor.to(device)
+            positive = positive.to(device)
+            negative = negative.to(device)
+
             optimizer.zero_grad()
             loss = criterion(model(anchor), model(positive), model(negative))
             loss.backward()
             optimizer.step()
 
-    return model, device
+    with torch.no_grad():
+        train_emb = model(torch.FloatTensor(X_train_scaled).to(device)).cpu().numpy()
+
+    knn = KNeighborsClassifier(n_neighbors=5, metric="euclidean")
+    knn.fit(train_emb, y_train)
+    return scaler, model, device, knn
 
 
-def evaluate_scenario(name, model, device, knn, X_test, y_test):
+def predict_labels(scaler, model, device, knn, X_test):
     model.eval()
     with torch.no_grad():
-        X_tensor = torch.FloatTensor(X_test).to(device)
-        embeddings = model(X_tensor).cpu().numpy()
+        X_scaled = scaler.transform(X_test)
+        emb = model(torch.FloatTensor(X_scaled).to(device)).cpu().numpy()
+    return knn.predict(emb)
 
-    y_pred = knn.predict(embeddings)
-    acc = accuracy_score(y_test, y_pred)
-    print(f"[{name}] Accuracy: {acc * 100:.2f}%")
-    return acc
+
+def select_top_features(X_base, y_base, X_obfs, y_obfs, X_other):
+    locked = load_locked_top_features(TOP_FEATURES_PATH)
+    if locked:
+        print("Using locked top-10 features from previous run.")
+        return locked
+
+    feature_frames = [X_base, X_obfs]
+    labels = [y_base, y_obfs]
+
+    if not X_other.empty:
+        feature_frames.append(X_other)
+        labels.append(np.array(["other"] * len(X_other)))
+
+    X_all = pd.concat(feature_frames, ignore_index=True)
+    y_all = np.concatenate(labels)
+
+    top_features, ranking_df = select_stable_top_features(
+        X_all,
+        y_all,
+        top_k=TOP_K_FEATURES,
+        n_runs=8,
+        n_estimators=300,
+        out_path=TOP_FEATURES_PATH,
+    )
+    ranking_df.to_json(
+        os.path.join(FIGURES_DIR, "feature_stability_dl.json"), orient="records", indent=2
+    )
+    return top_features
 
 
 def main():
@@ -156,73 +169,103 @@ def main():
     X_base, y_base = extract_aggregated_features(BASELINE_DIR)
     X_obfs, y_obfs = extract_aggregated_features(OBFS4_DIR)
 
+    X_other = pd.DataFrame()
+    if os.path.isdir(OTHER_DIR):
+        X_other, _ = extract_aggregated_features(OTHER_DIR, force_label="other")
+
     if len(X_base) == 0 or len(X_obfs) == 0:
-        print("Error: Missing data.")
+        print("Error: Missing baseline/obfs4 data.")
         return
 
-    # Feature scaling
-    scaler = StandardScaler()
-    X_base_scaled = scaler.fit_transform(X_base)
-    X_obfs_scaled = scaler.transform(X_obfs)
-
-    print("\n" + "=" * 50)
-    print(" NEW HYBRID DEEP LEARNING RESULTS (Triplet MLP)")
-    print("=" * 50)
-
-    # 1. BASELINE SCENARIO
-    X_train_b, X_test_b, y_train_b, y_test_b = train_test_split(
-        X_base_scaled,
-        y_base,
-        test_size=0.2,
-        random_state=42,
-        stratify=y_base,
-    )
-    model_base, device = train_and_extract_embeddings(X_train_b, y_train_b, epochs=50)
-
-    # Train k-NN on Baseline
-    model_base.eval()
-    with torch.no_grad():
-        train_emb_b = model_base(torch.FloatTensor(X_train_b).to(device)).cpu().numpy()
-    knn_base = KNeighborsClassifier(n_neighbors=5, metric="euclidean")
-    knn_base.fit(train_emb_b, y_train_b)
-
-    acc_base = evaluate_scenario(
-        "1. Baseline", model_base, device, knn_base, X_test_b, y_test_b
-    )
-
-    # 2. OBFS4 SCENARIO
-    X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(
-        X_obfs_scaled,
-        y_obfs,
-        test_size=0.2,
-        random_state=42,
-        stratify=y_obfs,
-    )
-    model_obfs, _ = train_and_extract_embeddings(X_train_o, y_train_o, epochs=50)
-
-    model_obfs.eval()
-    with torch.no_grad():
-        train_emb_o = model_obfs(torch.FloatTensor(X_train_o).to(device)).cpu().numpy()
-    knn_obfs = KNeighborsClassifier(n_neighbors=5, metric="euclidean")
-    knn_obfs.fit(train_emb_o, y_train_o)
-
-    acc_obfs = evaluate_scenario(
-        "2. Obfs4", model_obfs, device, knn_obfs, X_test_o, y_test_o
-    )
-
-    # 3. ZERO-SHOT SCENARIO (Train: Baseline -> Test: Obfs4)
-    acc_zero = evaluate_scenario(
-        "3. Zero-Shot", model_base, device, knn_base, X_obfs_scaled, y_obfs
-    )
-    print("=" * 50)
-
     os.makedirs(FIGURES_DIR, exist_ok=True)
+    top_features = select_top_features(X_base, y_base, X_obfs, y_obfs, X_other)
+
+    X_base = X_base[top_features].values
+    X_obfs = X_obfs[top_features].values
+    if not X_other.empty:
+        X_other = X_other[top_features].values
+
+    print("\n" + "=" * 70)
+    print(" HYBRID DEEP LEARNING RESULTS (Triplet MLP, Top-10 Stable Features)")
+    print("=" * 70)
+
+    scenarios = {}
+
+    # 1. BASELINE
+    X_train_b, X_test_b, y_train_b, y_test_b = train_test_split(
+        X_base, y_base, test_size=0.2, random_state=42, stratify=y_base
+    )
+    scaler_b, model_b, device_b, knn_b = train_embedding_model(X_train_b, y_train_b)
+    pred_b = predict_labels(scaler_b, model_b, device_b, knn_b, X_test_b)
+    scenarios["baseline"] = evaluate_metrics(y_test_b, pred_b)
+    print_metrics("1. Baseline", scenarios["baseline"])
+
+    # 2. OBFS4
+    X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(
+        X_obfs, y_obfs, test_size=0.2, random_state=42, stratify=y_obfs
+    )
+    scaler_o, model_o, device_o, knn_o = train_embedding_model(X_train_o, y_train_o)
+    pred_o = predict_labels(scaler_o, model_o, device_o, knn_o, X_test_o)
+    scenarios["obfs4"] = evaluate_metrics(y_test_o, pred_o)
+    print_metrics("2. Obfs4", scenarios["obfs4"])
+
+    # 3. ZERO-SHOT (Train: Baseline -> Test: Obfs4)
+    pred_z = predict_labels(scaler_b, model_b, device_b, knn_b, X_obfs)
+    scenarios["zero_shot"] = evaluate_metrics(y_obfs, pred_z)
+    print_metrics("3. Zero-Shot", scenarios["zero_shot"])
+
+    # 4-6. OPEN-WORLD (if Other exists)
+    if isinstance(X_other, np.ndarray) and len(X_other) > 4:
+        y_other = np.array(["other"] * len(X_other))
+
+        X_open_b = np.vstack([X_base, X_other])
+        y_open_b = np.concatenate([y_base, y_other])
+        X_train_ob, X_test_ob, y_train_ob, y_test_ob = train_test_split(
+            X_open_b, y_open_b, test_size=0.2, random_state=42, stratify=y_open_b
+        )
+        scaler_ob, model_ob, device_ob, knn_ob = train_embedding_model(X_train_ob, y_train_ob)
+        pred_ob = predict_labels(scaler_ob, model_ob, device_ob, knn_ob, X_test_ob)
+        scenarios["open_world_baseline"] = evaluate_metrics(y_test_ob, pred_ob)
+        print_metrics("4. Open-World Baseline", scenarios["open_world_baseline"])
+
+        X_open_o = np.vstack([X_obfs, X_other])
+        y_open_o = np.concatenate([y_obfs, y_other])
+        X_train_oo, X_test_oo, y_train_oo, y_test_oo = train_test_split(
+            X_open_o, y_open_o, test_size=0.2, random_state=42, stratify=y_open_o
+        )
+        scaler_oo, model_oo, device_oo, knn_oo = train_embedding_model(X_train_oo, y_train_oo)
+        pred_oo = predict_labels(scaler_oo, model_oo, device_oo, knn_oo, X_test_oo)
+        scenarios["open_world_obfs4"] = evaluate_metrics(y_test_oo, pred_oo)
+        print_metrics("5. Open-World Obfs4", scenarios["open_world_obfs4"])
+
+        X_other_train, X_other_test = train_test_split(
+            X_other, test_size=0.5, random_state=42
+        )
+        y_other_train = np.array(["other"] * len(X_other_train))
+        y_other_test = np.array(["other"] * len(X_other_test))
+
+        X_train_oz = np.vstack([X_base, X_other_train])
+        y_train_oz = np.concatenate([y_base, y_other_train])
+        X_test_oz = np.vstack([X_obfs, X_other_test])
+        y_test_oz = np.concatenate([y_obfs, y_other_test])
+
+        scaler_oz, model_oz, device_oz, knn_oz = train_embedding_model(X_train_oz, y_train_oz)
+        pred_oz = predict_labels(scaler_oz, model_oz, device_oz, knn_oz, X_test_oz)
+        scenarios["open_world_zero_shot"] = evaluate_metrics(y_test_oz, pred_oz)
+        print_metrics("6. Open-World Zero-Shot", scenarios["open_world_zero_shot"])
+    else:
+        print("[Open-World] Skipped: no Other dataset found in extracted_features/other_features")
+
+    print("=" * 70)
+
     with open(DL_METRICS_PATH, "w", encoding="utf-8") as f:
         json.dump(
             {
-                "baseline": round(acc_base * 100, 2),
-                "obfs4": round(acc_obfs * 100, 2),
-                "zero_shot": round(acc_zero * 100, 2),
+                "baseline": scenarios["baseline"]["accuracy"],
+                "obfs4": scenarios["obfs4"]["accuracy"],
+                "zero_shot": scenarios["zero_shot"]["accuracy"],
+                "top_features": top_features,
+                "scenarios": scenarios,
             },
             f,
             indent=2,

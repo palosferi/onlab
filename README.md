@@ -100,3 +100,84 @@ This reduces class-imbalance.
 - The largest gain came from switching to aggregate engineered features.
 - In-distribution performance (baseline/obfs4 trained-and-tested on same domain) improved substantially.
 - Zero-shot fingerprinting remains low in accuracy due to domain shift.
+
+## Collection (Server-Friendly)
+- Collector script: `scripts/collection/collector.py`
+- Runner: `scripts/collection/run_collector.sh`
+- Legacy archive (safety fallback):
+  - `scripts/collection/archived/collector_legacy_from_fujitsu.py`
+  - `scripts/collection/archived/run_collector_legacy_from_fujitsu.sh`
+
+Features added for safer collection:
+- Guard pre-check before each site capture (hardcoded guard IP still supported)
+- Warm-up delay before timed capture window
+- Structured JSONL events log: `logs/collection_events.jsonl`
+- Output directory create/write validation at startup
+
+Environment overrides (optional):
+- `TOR_WF_PCAP_DIR`
+- `TOR_WF_LOG_JSONL`
+- `TOR_WF_INTERFACE`
+- `TOR_WF_GUARD_IP`
+- `TOR_WF_CAPTURE_DURATION`
+- `TOR_WF_WARMUP_DURATION`
+
+Example:
+```bash
+TOR_WF_PCAP_DIR=/mnt/tor_data TOR_WF_INTERFACE=enp3s0 \
+TOR_WF_GUARD_IP=109.110.170.208 scripts/collection/run_collector.sh
+```
+
+## Overleaf Sync Workflow
+1. In Overleaf: open your project -> Menu -> Git, and copy the Git URL.
+2. On your machine: clone that Overleaf Git project once.
+3. Sync results from this repo into the Overleaf clone:
+
+```bash
+OVERLEAF_REPO=/path/to/overleaf-clone ./scripts/sync_to_overleaf.sh
+```
+
+4. Then push from the Overleaf clone:
+
+```bash
+cd /path/to/overleaf-clone
+git add .
+git commit -m "Update thesis figures and metrics"
+git push
+```
+
+Supervisor invite:
+1. In Overleaf project -> Share.
+2. Add your konzulens email with edit permission.
+
+## Open-World (Other) Workflow
+1. Collect Other pcaps on server with the two files below:
+  - `scripts/collection/server_collect_other.py`
+  - `scripts/collection/run_server_collect_other.sh`
+2. Copy these files to server project (example: `/home/palos/tor_wf_project/scripts/`), then run:
+
+```bash
+cd /home/palos/tor_wf_project
+source venv/bin/activate
+bash scripts/collection/run_server_collect_other.sh
+```
+
+3. Move collected Other pcaps into this repo at `tor_dataset/other_tor/`.
+4. Extract CSV features for all groups (baseline, obfs4, other):
+
+```bash
+python src/extract_all_features.py
+```
+
+5. Re-run evaluations (now includes open-world scenarios if `other_features/` exists):
+
+```bash
+python src/evaluate_all_rf.py
+python src/evaluate_all_dl.py
+python src/generate_all_figures.py
+```
+
+Outputs include:
+- stable top-10 lock file: `figures/selected_top10_features.json`
+- RF/DL metrics with macro-F1 and per-class recall: `figures/metrics_rf.json`, `figures/metrics_dl.json`
+- side-by-side Baseline vs Obfs4 feature importance: `figures/02_feature_importance.png`

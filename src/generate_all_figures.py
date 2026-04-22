@@ -1,13 +1,19 @@
-import os
-import glob
 import json
+import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+
+from feature_pool import (
+    extract_aggregated_features,
+    load_locked_top_features,
+    select_stable_top_features,
+)
 
 # --- CONFIGURATION ---
 BASE_DIR = os.path.abspath(
@@ -15,70 +21,17 @@ BASE_DIR = os.path.abspath(
 )
 BASELINE_DIR = os.path.join(BASE_DIR, "baseline_features")
 OBFS4_DIR = os.path.join(BASE_DIR, "obfs4_features")
+OTHER_DIR = os.path.join(BASE_DIR, "other_features")
 FIGURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "figures"))
 RF_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_rf.json")
 DL_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_dl.json")
-RF_N_ESTIMATORS = 200
+TOP_FEATURES_PATH = os.path.join(FIGURES_DIR, "selected_top10_features.json")
+RF_N_ESTIMATORS = 300
+TOP_K_FEATURES = 10
 
 os.makedirs(FIGURES_DIR, exist_ok=True)
 
 
-# --- 1. FEATURE EXTRACTION ---
-def extract_aggregated_features(directory):
-    X, y = [], []
-    feature_names = [
-        "total_packets",
-        "incoming_packets",
-        "outgoing_packets",
-        "in_out_packet_ratio",
-        "total_bytes",
-        "incoming_bytes",
-        "outgoing_bytes",
-        "in_out_byte_ratio",
-        "duration",
-        "mean_inter_arrival",
-        "std_inter_arrival",
-        "max_packet_size",
-        "mean_packet_size",
-    ]
-
-    csv_files = glob.glob(os.path.join(directory, "*.csv"))
-    for file_path in csv_files:
-        site_name = os.path.basename(file_path).split("_")[0]
-        try:
-            df = pd.read_csv(file_path)
-            if df.empty:
-                continue
-
-            dirs = df["direction_size"].values
-            times = df["time_offset"].values
-            iats = df["inter_arrival_time"].values
-            incoming = dirs[dirs < 0]
-            outgoing = dirs[dirs > 0]
-
-            features = [
-                len(dirs),
-                len(incoming),
-                len(outgoing),
-                len(incoming) / (len(outgoing) + 1e-5),
-                np.sum(np.abs(dirs)),
-                np.abs(np.sum(incoming)) if len(incoming) > 0 else 0,
-                np.sum(outgoing) if len(outgoing) > 0 else 0,
-                np.abs(np.sum(incoming)) / (np.sum(outgoing) + 1e-5),
-                times[-1] if len(times) > 0 else 0,
-                np.mean(iats) if len(iats) > 0 else 0,
-                np.std(iats) if len(iats) > 0 else 0,
-                np.max(np.abs(dirs)),
-                np.mean(np.abs(dirs)),
-            ]
-            X.append(features)
-            y.append(site_name)
-        except Exception:
-            pass
-    return pd.DataFrame(X, columns=feature_names), np.array(y)
-
-
-# --- CHART 1: FINAL COMPARISON BAR CHART ---
 def load_metrics(metrics_path):
     if not os.path.exists(metrics_path):
         raise FileNotFoundError(
@@ -89,6 +42,38 @@ def load_metrics(metrics_path):
         metrics = json.load(f)
 
     return [metrics["baseline"], metrics["obfs4"], metrics["zero_shot"]]
+
+
+def select_top_features(X_base, y_base, X_obfs, y_obfs, X_other):
+    locked = load_locked_top_features(TOP_FEATURES_PATH)
+    if locked:
+        print("Using locked top-10 features from previous run.")
+        return locked
+
+    frames = [X_base, X_obfs]
+    labels = [y_base, y_obfs]
+
+    if not X_other.empty:
+        frames.append(X_other)
+        labels.append(np.array(["other"] * len(X_other)))
+
+    X_all = pd.concat(frames, ignore_index=True)
+    y_all = np.concatenate(labels)
+
+    top_features, ranking_df = select_stable_top_features(
+        X_all,
+        y_all,
+        top_k=TOP_K_FEATURES,
+        n_runs=8,
+        n_estimators=RF_N_ESTIMATORS,
+        out_path=TOP_FEATURES_PATH,
+    )
+    ranking_df.to_json(
+        os.path.join(FIGURES_DIR, "feature_stability_for_figures.json"),
+        orient="records",
+        indent=2,
+    )
+    return top_features
 
 
 def plot_final_bar_chart():
@@ -139,23 +124,52 @@ def plot_final_bar_chart():
     print("Chart 1/3 Generated: 01_final_comparison.png")
 
 
-# --- CHART 2: FEATURE IMPORTANCE ---
-def plot_feature_importance(X, y):
+def get_feature_importance(X, y):
     rf = RandomForestClassifier(
         n_estimators=RF_N_ESTIMATORS, random_state=42, n_jobs=-1
     )
     rf.fit(X, y)
-    importances = rf.feature_importances_
+    return pd.Series(rf.feature_importances_, index=X.columns)
 
-    # Sort features by importance
-    indices = np.argsort(importances)
-    sorted_features = [X.columns[i] for i in indices]
 
-    plt.figure(figsize=(10, 6))
-    sns.barplot(x=importances[indices], y=sorted_features, color="#3498db")
-    plt.title("Random Forest: Feature Importance", fontsize=14)
-    plt.xlabel("Relative Importance (%)")
-    plt.ylabel("Engineered Features")
+def plot_feature_importance(X_base, y_base, X_obfs, y_obfs, top_features):
+    imp_base = get_feature_importance(X_base, y_base)
+    imp_obfs = get_feature_importance(X_obfs, y_obfs)
+
+    plot_df = pd.DataFrame(
+        {
+            "feature": top_features,
+            "baseline": imp_base[top_features].values,
+            "obfs4": imp_obfs[top_features].values,
+        }
+    )
+    plot_df = plot_df.sort_values("baseline", ascending=True)
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)
+
+    sns.barplot(
+        data=plot_df,
+        x="baseline",
+        y="feature",
+        color="#2980b9",
+        ax=axes[0],
+    )
+    axes[0].set_title("Baseline", fontsize=13)
+    axes[0].set_xlabel("Relative Importance")
+    axes[0].set_ylabel("Engineered Features")
+
+    sns.barplot(
+        data=plot_df,
+        x="obfs4",
+        y="feature",
+        color="#e67e22",
+        ax=axes[1],
+    )
+    axes[1].set_title("Obfs4", fontsize=13)
+    axes[1].set_xlabel("Relative Importance")
+    axes[1].set_ylabel("")
+
+    fig.suptitle("Random Forest Feature Importance (Stable Top 10)", fontsize=14)
     plt.tight_layout()
     plt.savefig(
         os.path.join(FIGURES_DIR, "02_feature_importance.png"),
@@ -163,12 +177,19 @@ def plot_feature_importance(X, y):
         bbox_inches="tight",
     )
     plt.close()
-    print("Chart 2/3 Generated: 02_feature_importance.png")
+
+    top_table = plot_df.sort_values("baseline", ascending=False)
+    top_table.insert(0, "rank", np.arange(1, len(top_table) + 1))
+    top_table.to_json(
+        os.path.join(FIGURES_DIR, "02_top10_features_rf.json"),
+        orient="records",
+        indent=2,
+    )
+    print("Chart 2/3 Generated: 02_feature_importance.png (+ top10 json)")
 
 
-# --- CHART 3: CONFUSION MATRICES ---
 def plot_confusion_matrices(X_base, y_base, X_obfs, y_obfs):
-    labels = np.unique(y_base)
+    labels = np.sort(np.unique(np.concatenate([y_base, y_obfs])))
     fig, axes = plt.subplots(1, 3, figsize=(24, 7))
 
     rf_base = RandomForestClassifier(
@@ -188,7 +209,6 @@ def plot_confusion_matrices(X_base, y_base, X_obfs, y_obfs):
     rf_base.fit(X_train_b, y_train_b)
     rf_obfs.fit(X_train_o, y_train_o)
 
-    # 1. Baseline
     sns.heatmap(
         confusion_matrix(y_test_b, rf_base.predict(X_test_b), labels=labels),
         cmap="Blues",
@@ -199,7 +219,6 @@ def plot_confusion_matrices(X_base, y_base, X_obfs, y_obfs):
     )
     axes[0].set_title("1. Baseline", fontsize=14)
 
-    # 2. Obfs4
     sns.heatmap(
         confusion_matrix(y_test_o, rf_obfs.predict(X_test_o), labels=labels),
         cmap="Oranges",
@@ -210,7 +229,6 @@ def plot_confusion_matrices(X_base, y_base, X_obfs, y_obfs):
     )
     axes[1].set_title("2. Obfs4", fontsize=14)
 
-    # 3. Zero-Shot
     sns.heatmap(
         confusion_matrix(y_obfs, rf_base.predict(X_obfs), labels=labels),
         cmap="Reds",
@@ -244,9 +262,17 @@ def main():
     X_base, y_base = extract_aggregated_features(BASELINE_DIR)
     X_obfs, y_obfs = extract_aggregated_features(OBFS4_DIR)
 
-    if not X_base.empty:
-        plot_feature_importance(X_base, y_base)
-        plot_confusion_matrices(X_base, y_base, X_obfs, y_obfs)
+    X_other = pd.DataFrame()
+    if os.path.isdir(OTHER_DIR):
+        X_other, _ = extract_aggregated_features(OTHER_DIR, force_label="other")
+
+    if not X_base.empty and not X_obfs.empty:
+        top_features = select_top_features(X_base, y_base, X_obfs, y_obfs, X_other)
+        X_base_sel = X_base[top_features]
+        X_obfs_sel = X_obfs[top_features]
+
+        plot_feature_importance(X_base_sel, y_base, X_obfs_sel, y_obfs, top_features)
+        plot_confusion_matrices(X_base_sel, y_base, X_obfs_sel, y_obfs)
 
     print("\nSuccess! All charts are in 'figures/' folder.")
 
