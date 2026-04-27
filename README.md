@@ -7,26 +7,25 @@ This project investigates and compares classical Machine Learning (Random Forest
 * **Zero-shot setting:** Models trained purely on baseline traffic but tested against obfs4 traffic to measure domain generalization.
 * **Open-World Setting:** Introduces an "Other" category containing traffic from unmonitored websites to test the model's ability to handle unknown, real-world traffic.
 
-## Methodology Improvements
-The pipeline was recently overhauled, resulting in significant performance gains. 
-
-* **Feature Representation:** Transitioned from raw packet sequences (fixed 500-length with truncation/padding) to 13 engineered aggregate flow features.
-* **Feature Scope:** Features now include packet counts, byte statistics, in/out ratios, inter-arrival times, and duration.
-* **Data Splitting:** Implemented a stratified train/test split to reduce class-imbalance issues.
-* **Random Forest Tuning:** Increased estimators to 300 and stabilized the top-10 feature selection process across multiple seeds.
-* **Deep Learning Rework:** Replaced the 1D CNN with a Triplet MLP trained on aggregate features, utilizing standardization, BatchNorm, and Dropout over 30 epochs.
+## Methodology
+The pipeline utilizes the following techniques for feature extraction and model training:
+* **Feature Representation:** Extracts 21 engineered aggregate flow features per traffic sample, but statically selects and trains on only the top 10 features.
+* **Feature Scope:** The 21 extracted features include total/incoming/outgoing packet counts, byte statistics, in/out ratios, inter-arrival time statistics (mean, std, median, 90th percentile), packet size statistics, duration, and direction changes.
+* **Data Splitting:** Employs a stratified train/test split to maintain class distributions.
+* **Random Forest Setup:** Utilizes 300 estimators and a stabilized top-10 feature selection process evaluated across multiple random seeds.
+* **Deep Learning Setup:** Employs a Triplet MLP model trained on the top 10 aggregate features using Triplet Margin Loss over 30 epochs (with standardization, BatchNorm, and Dropout). The resulting embeddings are then classified using a K-Nearest Neighbors ($k=5$) classifier.
 
 ## Results Summary
-With the new aggregated features and stratified splitting, in-distribution performance improved substantially. Metrics were expanded to report macro-F1 and per-class recall alongside accuracy.
+The models are evaluated using accuracy and macro-F1 metrics based on the shared features track.
 
-**Open-World Scenarios (Random Forest):**
-* Open-World Baseline: 81.93% Accuracy | 81.02% Macro-F1
-* Open-World Obfs4: 72.65% Accuracy | 70.84% Macro-F1
-* Open-World Zero-Shot: 16.08% Accuracy | 12.13% Macro-F1
+**Open-World Scenarios (Random Forest vs. Deep Learning):**
+* Open-World Baseline: 80.93% Accuracy (RF) | 61.35% Accuracy (DL)
+* Open-World Obfs4: 74.10% Accuracy (RF) | 49.31% Accuracy (DL)
+* Open-World Zero-Shot: 22.73% Accuracy (RF) | 27.13% Accuracy (DL)
 
-**Closed-World Scenarios (Random Forest):**
-* Standard Baseline: 81.78% Accuracy
-* Standard Obfs4: 72.38% Accuracy
-* Standard Zero-Shot: 16.57% Accuracy
+**Closed-World Scenarios (Random Forest vs. Deep Learning):**
+* Standard Baseline: 80.44% Accuracy (RF) | 59.71% Accuracy (DL)
+* Standard Obfs4: 73.33% Accuracy (RF) | 50.79% Accuracy (DL)
+* Standard Zero-Shot: 15.08% Accuracy (RF) | 22.70% Accuracy (DL)
 
-*(Note: Zero-shot fingerprinting remains challenging and low in accuracy due to the heavy domain shift introduced by obfuscation).*
+*(Note: Zero-shot fingerprinting remains challenging and yields low accuracy across both models due to the heavy domain shift introduced by obfuscation. Interestingly, the Triplet MLP shows better domain generalization in both standard and open-world zero-shot scenarios compared to the Random Forest).*
