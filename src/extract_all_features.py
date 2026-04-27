@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 
 import pandas as pd
@@ -10,6 +11,23 @@ BASELINE_PCAP_DIR = os.path.join(BASE_DIR, "baseline_tor")
 OBFS4_PCAP_DIR = os.path.join(BASE_DIR, "obfs4_tor")
 OTHER_PCAP_DIR = os.path.join(BASE_DIR, "other_tor")
 OUTPUT_DIR = os.path.join(BASE_DIR, "extracted_features")
+FEATURE_SCHEMA_VERSION = "v2_direction_configurable"
+
+
+def is_local_source(ip_src):
+    # Configurable via env so extraction remains portable across labs/hosts.
+    raw_prefixes = os.environ.get("LOCAL_IP_PREFIXES", "192.168.,10.,172.16.")
+    prefixes = [p.strip() for p in raw_prefixes.split(",") if p.strip()]
+    return any(ip_src.startswith(prefix) for prefix in prefixes)
+
+
+def should_overwrite_outputs():
+    val = os.environ.get("EXTRACT_OVERWRITE", "0").strip().lower()
+    return val in {"1", "true", "yes", "y"}
+
+
+def should_skip_existing_output(out_path, overwrite=False):
+    return (not overwrite) and os.path.exists(out_path)
 
 
 def extract_features(pcap_path):
@@ -32,7 +50,7 @@ def extract_features(pcap_path):
             first_ts = timestamp
 
         pkt_len = int(len(pkt))
-        direction_size = pkt_len if pkt[IP].src.startswith("192.168.") else -pkt_len
+        direction_size = pkt_len if is_local_source(pkt[IP].src) else -pkt_len
         inter_arrival = 0.0 if last_ts is None else max(0.0, timestamp - last_ts)
         time_offset = timestamp - first_ts
         last_ts = timestamp
@@ -48,7 +66,7 @@ def extract_features(pcap_path):
     return pd.DataFrame(rows)
 
 
-def process_directory(input_dir, output_subdir):
+def process_directory(input_dir, output_subdir, overwrite=False):
     os.makedirs(os.path.join(OUTPUT_DIR, output_subdir), exist_ok=True)
     pcap_files = glob.glob(os.path.join(input_dir, "*.pcap"))
 
@@ -58,7 +76,7 @@ def process_directory(input_dir, output_subdir):
         csv_name = filename.replace(".pcap", ".csv")
         out_path = os.path.join(OUTPUT_DIR, output_subdir, csv_name)
 
-        if os.path.exists(out_path):
+        if should_skip_existing_output(out_path, overwrite=overwrite):
             continue
 
         df = extract_features(pcap_path)
@@ -71,15 +89,25 @@ def process_directory(input_dir, output_subdir):
 
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+    overwrite = should_overwrite_outputs()
 
     if os.path.isdir(BASELINE_PCAP_DIR):
-        process_directory(BASELINE_PCAP_DIR, "baseline_features")
+        process_directory(BASELINE_PCAP_DIR, "baseline_features", overwrite=overwrite)
 
     if os.path.isdir(OBFS4_PCAP_DIR):
-        process_directory(OBFS4_PCAP_DIR, "obfs4_features")
+        process_directory(OBFS4_PCAP_DIR, "obfs4_features", overwrite=overwrite)
 
     if os.path.isdir(OTHER_PCAP_DIR):
-        process_directory(OTHER_PCAP_DIR, "other_features")
+        process_directory(OTHER_PCAP_DIR, "other_features", overwrite=overwrite)
+
+    metadata_path = os.path.join(OUTPUT_DIR, "_extraction_metadata.json")
+    metadata = {
+        "feature_schema_version": FEATURE_SCHEMA_VERSION,
+        "local_ip_prefixes": os.environ.get("LOCAL_IP_PREFIXES", "192.168.,10.,172.16."),
+        "overwrite_mode": overwrite,
+    }
+    with open(metadata_path, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2)
 
     print("Done extracting all feature CSV files.")
 

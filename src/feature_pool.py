@@ -1,9 +1,11 @@
 import json
+import logging
 import os
 from glob import glob
 
 import numpy as np
 import pandas as pd
+from sklearn.feature_selection import mutual_info_classif
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
@@ -31,6 +33,8 @@ FEATURE_NAMES = [
     "direction_changes",
 ]
 
+LOGGER = logging.getLogger(__name__)
+
 
 def parse_site_name(file_path):
     base = os.path.splitext(os.path.basename(file_path))[0]
@@ -38,9 +42,15 @@ def parse_site_name(file_path):
     return parts[0] if len(parts) == 3 else base.split("_")[0]
 
 
-def extract_aggregated_features(directory, force_label=None):
+def extract_aggregated_features(
+    directory,
+    force_label=None,
+    fail_on_high_skip=True,
+    max_skip_ratio=0.05,
+):
     X, y = [], []
     csv_files = glob(os.path.join(directory, "*.csv"))
+    skipped = []
 
     for file_path in csv_files:
         site_name = force_label if force_label else parse_site_name(file_path)
@@ -80,8 +90,23 @@ def extract_aggregated_features(directory, force_label=None):
             ]
             X.append(features)
             y.append(site_name)
-        except Exception:
-            pass
+        except Exception as exc:
+            skipped.append((file_path, str(exc)))
+
+    if skipped:
+        for file_path, err in skipped[:10]:
+            LOGGER.warning("Skipping malformed feature file %s: %s", file_path, err)
+        if len(skipped) > 10:
+            LOGGER.warning("... plus %d additional malformed files", len(skipped) - 10)
+
+    total_files = len(csv_files)
+    skip_ratio = (len(skipped) / total_files) if total_files else 0.0
+    if fail_on_high_skip and total_files > 0 and skip_ratio > max_skip_ratio:
+        raise RuntimeError(
+            "Feature extraction skip ratio too high "
+            f"({len(skipped)}/{total_files} = {skip_ratio:.2%}). "
+            "Please inspect malformed CSV inputs."
+        )
 
     return pd.DataFrame(X, columns=FEATURE_NAMES), np.array(y)
 
@@ -147,6 +172,22 @@ def select_stable_top_features(
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2)
 
+    return top_features, ranking_df
+
+
+def select_top_features_mutual_info(X, y, top_k=10, random_state=42):
+    if X.empty:
+        return [], pd.DataFrame(columns=["feature", "score"])
+
+    y_encoded = pd.Series(y).astype("category").cat.codes.values
+    scores = mutual_info_classif(X.values, y_encoded, random_state=random_state)
+    ranking_df = pd.DataFrame(
+        {
+            "feature": X.columns,
+            "score": scores,
+        }
+    ).sort_values("score", ascending=False)
+    top_features = ranking_df.head(top_k)["feature"].tolist()
     return top_features, ranking_df
 
 

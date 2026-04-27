@@ -1,22 +1,19 @@
 import json
 import os
+import random
 
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from sklearn.metrics import accuracy_score, f1_score, recall_score
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, Dataset
 
-from feature_pool import (
-    extract_aggregated_features,
-    load_locked_top_features,
-    select_stable_top_features,
-)
+from feature_pool import extract_aggregated_features, select_top_features_mutual_info
 
 # --- CONFIGURATION ---
 BASE_DIR = os.path.abspath(
@@ -27,11 +24,13 @@ OBFS4_DIR = os.path.join(BASE_DIR, "obfs4_features")
 OTHER_DIR = os.path.join(BASE_DIR, "other_features")
 FIGURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "figures"))
 DL_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_dl.json")
-TOP_FEATURES_PATH = os.path.join(FIGURES_DIR, "selected_top10_features.json")
+
 TOP_K_FEATURES = 10
+SEEDS = [42, 52, 62]
+PRIMARY_SEED = 42
+DL_EPOCHS = 30
 
 
-# --- 1. PYTORCH DATASET ---
 class TripletDataset(Dataset):
     def __init__(self, X, y):
         self.X = torch.FloatTensor(X)
@@ -57,10 +56,9 @@ class TripletDataset(Dataset):
         negative_index = np.random.choice(self.label_to_indices[negative_label])
         negative = self.X[negative_index]
 
-        return anchor, positive, negative, anchor_label
+        return anchor, positive, negative
 
 
-# --- 2. NEURAL NETWORK (Triplet MLP) ---
 class TripletMLP(nn.Module):
     def __init__(self, input_size):
         super(TripletMLP, self).__init__()
@@ -76,7 +74,17 @@ class TripletMLP(nn.Module):
         return nn.functional.normalize(self.fc(x), p=2, dim=1)
 
 
-# --- 3. TRAINING & EVALUATION ---
+def set_global_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    if hasattr(torch.backends, "cudnn"):
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+
 def evaluate_metrics(y_true, y_pred):
     labels = np.sort(np.unique(y_true))
     recalls = recall_score(y_true, y_pred, labels=labels, average=None, zero_division=0)
@@ -89,11 +97,17 @@ def evaluate_metrics(y_true, y_pred):
     }
 
 
-def print_metrics(name, metrics):
-    print(f"[{name}] Accuracy: {metrics['accuracy']:.2f}% | Macro-F1: {metrics['macro_f1']:.2f}%")
+def build_confusion_payload(y_true, y_pred):
+    labels = np.sort(np.unique(np.concatenate([y_true, y_pred])))
+    cm = confusion_matrix(y_true, y_pred, labels=labels)
+    return {
+        "labels": [str(x) for x in labels.tolist()],
+        "matrix": cm.tolist(),
+    }
 
 
-def train_embedding_model(X_train, y_train, epochs=50):
+def train_embedding_model(X_train, y_train, seed):
+    set_global_seed(seed)
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
 
@@ -101,14 +115,16 @@ def train_embedding_model(X_train, y_train, epochs=50):
     model = TripletMLP(input_size=X_train_scaled.shape[1]).to(device)
 
     dataset = TripletDataset(X_train_scaled, y_train)
-    loader = DataLoader(dataset, batch_size=32, shuffle=True)
+    generator = torch.Generator()
+    generator.manual_seed(seed)
+    loader = DataLoader(dataset, batch_size=32, shuffle=True, generator=generator)
 
     criterion = nn.TripletMarginLoss(margin=1.0, p=2)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     model.train()
-    for _ in range(epochs):
-        for anchor, positive, negative, _ in loader:
+    for _ in range(DL_EPOCHS):
+        for anchor, positive, negative in loader:
             anchor = anchor.to(device)
             positive = positive.to(device)
             negative = negative.to(device)
@@ -118,6 +134,7 @@ def train_embedding_model(X_train, y_train, epochs=50):
             loss.backward()
             optimizer.step()
 
+    model.eval()
     with torch.no_grad():
         train_emb = model(torch.FloatTensor(X_train_scaled).to(device)).cpu().numpy()
 
@@ -134,34 +151,185 @@ def predict_labels(scaler, model, device, knn, X_test):
     return knn.predict(emb)
 
 
-def select_top_features(X_base, y_base, X_obfs, y_obfs, X_other):
-    locked = load_locked_top_features(TOP_FEATURES_PATH)
-    if locked:
-        print("Using locked top-10 features from previous run.")
-        return locked
-
-    feature_frames = [X_base, X_obfs]
-    labels = [y_base, y_obfs]
-
-    if not X_other.empty:
-        feature_frames.append(X_other)
-        labels.append(np.array(["other"] * len(X_other)))
-
-    X_all = pd.concat(feature_frames, ignore_index=True)
-    y_all = np.concatenate(labels)
-
-    top_features, ranking_df = select_stable_top_features(
-        X_all,
-        y_all,
+def select_shared_features(X_pool_train, y_pool_train):
+    top_features, _ = select_top_features_mutual_info(
+        X_pool_train,
+        y_pool_train,
         top_k=TOP_K_FEATURES,
-        n_runs=8,
-        n_estimators=300,
-        out_path=TOP_FEATURES_PATH,
-    )
-    ranking_df.to_json(
-        os.path.join(FIGURES_DIR, "feature_stability_dl.json"), orient="records", indent=2
+        random_state=42,
     )
     return top_features
+
+
+def select_dl_optimized_features(X_train, y_train):
+    top_features, _ = select_top_features_mutual_info(
+        X_train,
+        y_train,
+        top_k=TOP_K_FEATURES,
+        random_state=42,
+    )
+    return top_features
+
+
+def split_other_dataset(X_other, seed):
+    if X_other.empty or len(X_other) < 2:
+        return None, None, None, None
+
+    X_train, X_test = train_test_split(X_other, test_size=0.5, random_state=seed)
+    y_train = np.array(["other"] * len(X_train))
+    y_test = np.array(["other"] * len(X_test))
+    return X_train, X_test, y_train, y_test
+
+
+def scenario_stats_from_runs(runs):
+    scenario_names = sorted({name for run in runs for name in run.keys()})
+    stats = {}
+
+    for scenario in scenario_names:
+        acc_vals = [run[scenario]["accuracy"] for run in runs if scenario in run]
+        f1_vals = [run[scenario]["macro_f1"] for run in runs if scenario in run]
+        stats[scenario] = {
+            "accuracy_mean": round(float(np.mean(acc_vals)), 2),
+            "accuracy_std": round(float(np.std(acc_vals)), 2),
+            "macro_f1_mean": round(float(np.mean(f1_vals)), 2),
+            "macro_f1_std": round(float(np.std(f1_vals)), 2),
+            "n_runs": len(acc_vals),
+        }
+
+    return stats
+
+
+def evaluate_dl_model(X_train, y_train, X_test, y_test, seed):
+    scaler, model, device, knn = train_embedding_model(X_train, y_train, seed=seed)
+    pred = predict_labels(scaler, model, device, knn, X_test)
+    return evaluate_metrics(y_test, pred), pred
+
+
+def run_track_for_seed(
+    seed,
+    track_name,
+    X_base,
+    y_base,
+    X_obfs,
+    y_obfs,
+    X_other,
+):
+    X_train_b, X_test_b, y_train_b, y_test_b = train_test_split(
+        X_base, y_base, test_size=0.2, random_state=seed, stratify=y_base
+    )
+    X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(
+        X_obfs, y_obfs, test_size=0.2, random_state=seed, stratify=y_obfs
+    )
+
+    X_other_train, X_other_test, y_other_train, y_other_test = split_other_dataset(X_other, seed)
+
+    if X_other_train is not None:
+        X_pool_train = pd.concat([X_train_b, X_train_o, X_other_train], ignore_index=True)
+        y_pool_train = np.concatenate([y_train_b, y_train_o, y_other_train])
+    else:
+        X_pool_train = pd.concat([X_train_b, X_train_o], ignore_index=True)
+        y_pool_train = np.concatenate([y_train_b, y_train_o])
+
+    if track_name == "shared":
+        shared_features = select_shared_features(X_pool_train, y_pool_train)
+        feature_map = {
+            "baseline": shared_features,
+            "obfs4": shared_features,
+            "zero_shot": shared_features,
+            "open_world_baseline": shared_features,
+            "open_world_obfs4": shared_features,
+            "open_world_zero_shot": shared_features,
+        }
+    else:
+        feature_map = {
+            "baseline": select_dl_optimized_features(X_train_b, y_train_b),
+            "obfs4": select_dl_optimized_features(X_train_o, y_train_o),
+            "zero_shot": select_dl_optimized_features(X_train_b, y_train_b),
+        }
+        if X_other_train is not None:
+            X_train_ob = pd.concat([X_train_b, X_other_train], ignore_index=True)
+            y_train_ob = np.concatenate([y_train_b, y_other_train])
+            X_train_oo = pd.concat([X_train_o, X_other_train], ignore_index=True)
+            y_train_oo = np.concatenate([y_train_o, y_other_train])
+            feature_map["open_world_baseline"] = select_dl_optimized_features(X_train_ob, y_train_ob)
+            feature_map["open_world_obfs4"] = select_dl_optimized_features(X_train_oo, y_train_oo)
+            feature_map["open_world_zero_shot"] = select_dl_optimized_features(X_train_ob, y_train_ob)
+
+    scenarios = {}
+    confusion_payload = {}
+
+    # 1. BASELINE
+    feats = feature_map["baseline"]
+    m_base, pred_base = evaluate_dl_model(
+        X_train_b[feats].values, y_train_b, X_test_b[feats].values, y_test_b, seed
+    )
+    scenarios["baseline"] = m_base
+    confusion_payload["baseline"] = build_confusion_payload(y_test_b, pred_base)
+
+    # 2. OBFS4
+    feats = feature_map["obfs4"]
+    m_obfs, pred_obfs = evaluate_dl_model(
+        X_train_o[feats].values, y_train_o, X_test_o[feats].values, y_test_o, seed
+    )
+    scenarios["obfs4"] = m_obfs
+    confusion_payload["obfs4"] = build_confusion_payload(y_test_o, pred_obfs)
+
+    # 3. ZERO-SHOT (Train: Baseline -> Test: Obfs4 test split)
+    feats = feature_map["zero_shot"]
+    scaler_z, model_z, device_z, knn_z = train_embedding_model(X_train_b[feats].values, y_train_b, seed=seed)
+    pred_zero = predict_labels(scaler_z, model_z, device_z, knn_z, X_test_o[feats].values)
+    scenarios["zero_shot"] = evaluate_metrics(y_test_o, pred_zero)
+    confusion_payload["zero_shot"] = build_confusion_payload(y_test_o, pred_zero)
+
+    if X_other_train is not None and len(X_other_test) > 0:
+        # 4. OPEN-WORLD BASELINE
+        feats = feature_map["open_world_baseline"]
+        X_train_ob = pd.concat([X_train_b, X_other_train], ignore_index=True)
+        y_train_ob = np.concatenate([y_train_b, y_other_train])
+        X_test_ob = pd.concat([X_test_b, X_other_test], ignore_index=True)
+        y_test_ob = np.concatenate([y_test_b, y_other_test])
+        m_ob, pred_ob = evaluate_dl_model(
+            X_train_ob[feats].values,
+            y_train_ob,
+            X_test_ob[feats].values,
+            y_test_ob,
+            seed,
+        )
+        scenarios["open_world_baseline"] = m_ob
+        confusion_payload["open_world_baseline"] = build_confusion_payload(y_test_ob, pred_ob)
+
+        # 5. OPEN-WORLD OBFS4
+        feats = feature_map["open_world_obfs4"]
+        X_train_oo = pd.concat([X_train_o, X_other_train], ignore_index=True)
+        y_train_oo = np.concatenate([y_train_o, y_other_train])
+        X_test_oo = pd.concat([X_test_o, X_other_test], ignore_index=True)
+        y_test_oo = np.concatenate([y_test_o, y_other_test])
+        m_oo, pred_oo = evaluate_dl_model(
+            X_train_oo[feats].values,
+            y_train_oo,
+            X_test_oo[feats].values,
+            y_test_oo,
+            seed,
+        )
+        scenarios["open_world_obfs4"] = m_oo
+        confusion_payload["open_world_obfs4"] = build_confusion_payload(y_test_oo, pred_oo)
+
+        # 6. OPEN-WORLD ZERO-SHOT
+        feats = feature_map["open_world_zero_shot"]
+        X_train_oz = pd.concat([X_train_b, X_other_train], ignore_index=True)
+        y_train_oz = np.concatenate([y_train_b, y_other_train])
+        X_test_oz = pd.concat([X_test_o, X_other_test], ignore_index=True)
+        y_test_oz = np.concatenate([y_test_o, y_other_test])
+        scaler_oz, model_oz, device_oz, knn_oz = train_embedding_model(
+            X_train_oz[feats].values,
+            y_train_oz,
+            seed=seed,
+        )
+        pred_oz = predict_labels(scaler_oz, model_oz, device_oz, knn_oz, X_test_oz[feats].values)
+        scenarios["open_world_zero_shot"] = evaluate_metrics(y_test_oz, pred_oz)
+        confusion_payload["open_world_zero_shot"] = build_confusion_payload(y_test_oz, pred_oz)
+
+    return scenarios, feature_map, confusion_payload
 
 
 def main():
@@ -173,103 +341,73 @@ def main():
     if os.path.isdir(OTHER_DIR):
         X_other, _ = extract_aggregated_features(OTHER_DIR, force_label="other")
 
-    if len(X_base) == 0 or len(X_obfs) == 0:
+    if X_base.empty or X_obfs.empty:
         print("Error: Missing baseline/obfs4 data.")
         return
 
     os.makedirs(FIGURES_DIR, exist_ok=True)
-    top_features = select_top_features(X_base, y_base, X_obfs, y_obfs, X_other)
 
-    X_base = X_base[top_features].values
-    X_obfs = X_obfs[top_features].values
-    if not X_other.empty:
-        X_other = X_other[top_features].values
+    tracks = {}
+    for track_name in ["shared", "optimized"]:
+        print(f"\nRunning DL track: {track_name}")
+        run_metrics = []
+        primary_features = None
+        primary_scenarios = None
+        primary_confusions = None
 
-    print("\n" + "=" * 70)
-    print(" HYBRID DEEP LEARNING RESULTS (Triplet MLP, Top-10 Stable Features)")
-    print("=" * 70)
+        for seed in SEEDS:
+            scenarios, feature_map, confusions = run_track_for_seed(
+                seed,
+                track_name,
+                X_base,
+                y_base,
+                X_obfs,
+                y_obfs,
+                X_other,
+            )
+            run_metrics.append(scenarios)
 
-    scenarios = {}
+            if seed == PRIMARY_SEED:
+                primary_scenarios = scenarios
+                primary_confusions = confusions
+                if track_name == "shared":
+                    primary_features = feature_map["baseline"]
+                else:
+                    primary_features = {
+                        "baseline": feature_map.get("baseline", []),
+                        "obfs4": feature_map.get("obfs4", []),
+                        "zero_shot": feature_map.get("zero_shot", []),
+                        "open_world_baseline": feature_map.get("open_world_baseline", []),
+                        "open_world_obfs4": feature_map.get("open_world_obfs4", []),
+                        "open_world_zero_shot": feature_map.get("open_world_zero_shot", []),
+                    }
 
-    # 1. BASELINE
-    X_train_b, X_test_b, y_train_b, y_test_b = train_test_split(
-        X_base, y_base, test_size=0.2, random_state=42, stratify=y_base
-    )
-    scaler_b, model_b, device_b, knn_b = train_embedding_model(X_train_b, y_train_b)
-    pred_b = predict_labels(scaler_b, model_b, device_b, knn_b, X_test_b)
-    scenarios["baseline"] = evaluate_metrics(y_test_b, pred_b)
-    print_metrics("1. Baseline", scenarios["baseline"])
+        tracks[track_name] = {
+            "scenario_stats": scenario_stats_from_runs(run_metrics),
+            "primary_seed": PRIMARY_SEED,
+            "primary_seed_scenarios": primary_scenarios,
+            "primary_seed_confusion_matrices": primary_confusions,
+            "primary_seed_features": primary_features,
+        }
 
-    # 2. OBFS4
-    X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(
-        X_obfs, y_obfs, test_size=0.2, random_state=42, stratify=y_obfs
-    )
-    scaler_o, model_o, device_o, knn_o = train_embedding_model(X_train_o, y_train_o)
-    pred_o = predict_labels(scaler_o, model_o, device_o, knn_o, X_test_o)
-    scenarios["obfs4"] = evaluate_metrics(y_test_o, pred_o)
-    print_metrics("2. Obfs4", scenarios["obfs4"])
+    primary_shared = tracks["shared"]["primary_seed_scenarios"]
 
-    # 3. ZERO-SHOT (Train: Baseline -> Test: Obfs4)
-    pred_z = predict_labels(scaler_b, model_b, device_b, knn_b, X_obfs)
-    scenarios["zero_shot"] = evaluate_metrics(y_obfs, pred_z)
-    print_metrics("3. Zero-Shot", scenarios["zero_shot"])
-
-    # 4-6. OPEN-WORLD (if Other exists)
-    if isinstance(X_other, np.ndarray) and len(X_other) > 4:
-        y_other = np.array(["other"] * len(X_other))
-
-        X_open_b = np.vstack([X_base, X_other])
-        y_open_b = np.concatenate([y_base, y_other])
-        X_train_ob, X_test_ob, y_train_ob, y_test_ob = train_test_split(
-            X_open_b, y_open_b, test_size=0.2, random_state=42, stratify=y_open_b
-        )
-        scaler_ob, model_ob, device_ob, knn_ob = train_embedding_model(X_train_ob, y_train_ob)
-        pred_ob = predict_labels(scaler_ob, model_ob, device_ob, knn_ob, X_test_ob)
-        scenarios["open_world_baseline"] = evaluate_metrics(y_test_ob, pred_ob)
-        print_metrics("4. Open-World Baseline", scenarios["open_world_baseline"])
-
-        X_open_o = np.vstack([X_obfs, X_other])
-        y_open_o = np.concatenate([y_obfs, y_other])
-        X_train_oo, X_test_oo, y_train_oo, y_test_oo = train_test_split(
-            X_open_o, y_open_o, test_size=0.2, random_state=42, stratify=y_open_o
-        )
-        scaler_oo, model_oo, device_oo, knn_oo = train_embedding_model(X_train_oo, y_train_oo)
-        pred_oo = predict_labels(scaler_oo, model_oo, device_oo, knn_oo, X_test_oo)
-        scenarios["open_world_obfs4"] = evaluate_metrics(y_test_oo, pred_oo)
-        print_metrics("5. Open-World Obfs4", scenarios["open_world_obfs4"])
-
-        X_other_train, X_other_test = train_test_split(
-            X_other, test_size=0.5, random_state=42
-        )
-        y_other_train = np.array(["other"] * len(X_other_train))
-        y_other_test = np.array(["other"] * len(X_other_test))
-
-        X_train_oz = np.vstack([X_base, X_other_train])
-        y_train_oz = np.concatenate([y_base, y_other_train])
-        X_test_oz = np.vstack([X_obfs, X_other_test])
-        y_test_oz = np.concatenate([y_obfs, y_other_test])
-
-        scaler_oz, model_oz, device_oz, knn_oz = train_embedding_model(X_train_oz, y_train_oz)
-        pred_oz = predict_labels(scaler_oz, model_oz, device_oz, knn_oz, X_test_oz)
-        scenarios["open_world_zero_shot"] = evaluate_metrics(y_test_oz, pred_oz)
-        print_metrics("6. Open-World Zero-Shot", scenarios["open_world_zero_shot"])
-    else:
-        print("[Open-World] Skipped: no Other dataset found in extracted_features/other_features")
-
-    print("=" * 70)
+    payload = {
+        "primary_track": "shared",
+        "seeds": SEEDS,
+        "dl_epochs": DL_EPOCHS,
+        "tracks": tracks,
+        # Backward-compatible fields used by figure scripts.
+        "baseline": primary_shared["baseline"]["accuracy"],
+        "obfs4": primary_shared["obfs4"]["accuracy"],
+        "zero_shot": primary_shared["zero_shot"]["accuracy"],
+        "top_features": tracks["shared"]["primary_seed_features"],
+        "scenarios": primary_shared,
+    }
 
     with open(DL_METRICS_PATH, "w", encoding="utf-8") as f:
-        json.dump(
-            {
-                "baseline": scenarios["baseline"]["accuracy"],
-                "obfs4": scenarios["obfs4"]["accuracy"],
-                "zero_shot": scenarios["zero_shot"]["accuracy"],
-                "top_features": top_features,
-                "scenarios": scenarios,
-            },
-            f,
-            indent=2,
-        )
+        json.dump(payload, f, indent=2)
+
     print(f"Saved DL metrics to: {DL_METRICS_PATH}")
 
 

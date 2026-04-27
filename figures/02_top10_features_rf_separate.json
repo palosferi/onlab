@@ -1,0 +1,117 @@
+{
+  "baseline_top10": [
+    {
+      "rank": 1,
+      "feature": "total_bytes",
+      "importance": 0.1334397890063788
+    },
+    {
+      "rank": 2,
+      "feature": "in_out_byte_ratio",
+      "importance": 0.10354012367390973
+    },
+    {
+      "rank": 3,
+      "feature": "incoming_bytes",
+      "importance": 0.09355993054799117
+    },
+    {
+      "rank": 4,
+      "feature": "outgoing_bytes",
+      "importance": 0.09011619931005246
+    },
+    {
+      "rank": 5,
+      "feature": "total_packets",
+      "importance": 0.060728927330856414
+    },
+    {
+      "rank": 6,
+      "feature": "outgoing_packets",
+      "importance": 0.057092508683544686
+    },
+    {
+      "rank": 7,
+      "feature": "direction_changes",
+      "importance": 0.055398891966993845
+    },
+    {
+      "rank": 8,
+      "feature": "in_out_packet_ratio",
+      "importance": 0.05025535329809322
+    },
+    {
+      "rank": 9,
+      "feature": "mean_inter_arrival",
+      "importance": 0.04329088137817389
+    },
+    {
+      "rank": 10,
+      "feature": "incoming_packets",
+      "importance": 0.03697302153839441
+    }
+  ],
+  "obfs4_top10": [
+    {
+      "rank": 1,
+      "feature": "total_bytes",
+      "importance": 0.13566693529249338
+    },
+    {
+      "rank": 2,
+      "feature": "in_out_byte_ratio",
+      "importance": 0.07909495621149679
+    },
+    {
+      "rank": 3,
+      "feature": "incoming_bytes",
+      "importance": 0.07848243254513802
+    },
+    {
+      "rank": 4,
+      "feature": "outgoing_bytes",
+      "importance": 0.06541585122522106
+    },
+    {
+      "rank": 5,
+      "feature": "mean_packet_size",
+      "importance": 0.06389700493891134
+    },
+    {
+      "rank": 6,
+      "feature": "total_packets",
+      "importance": 0.0617202633849042
+    },
+    {
+      "rank": 7,
+      "feature": "direction_changes",
+      "importance": 0.06110263394687691
+    },
+    {
+      "rank": 8,
+      "feature": "outgoing_packets",
+      "importance": 0.058104862061506855
+    },
+    {
+      "rank": 9,
+      "feature": "mean_inter_arrival",
+      "importance": 0.047248144529660176
+    },
+    {
+      "rank": 10,
+      "feature": "incoming_packets",
+      "importance": 0.04006381016955797
+    }
+  ],
+  "overlap_features": [
+    "direction_changes",
+    "in_out_byte_ratio",
+    "incoming_bytes",
+    "incoming_packets",
+    "mean_inter_arrival",
+    "outgoing_bytes",
+    "outgoing_packets",
+    "total_bytes",
+    "total_packets"
+  ]
+}

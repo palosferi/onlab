@@ -4,13 +4,13 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, f1_score, recall_score
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, recall_score
 from sklearn.model_selection import train_test_split
 
 from feature_pool import (
     extract_aggregated_features,
-    load_locked_top_features,
     select_stable_top_features,
+    select_top_features_mutual_info,
 )
 
 # --- CONFIGURATION ---
@@ -22,9 +22,11 @@ OBFS4_DIR = os.path.join(BASE_DIR, "obfs4_features")
 OTHER_DIR = os.path.join(BASE_DIR, "other_features")
 FIGURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "figures"))
 RF_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_rf.json")
-TOP_FEATURES_PATH = os.path.join(FIGURES_DIR, "selected_top10_features.json")
+
 RF_N_ESTIMATORS = 300
 TOP_K_FEATURES = 10
+SEEDS = [42, 52, 62]
+PRIMARY_SEED = 42
 
 
 def evaluate_metrics(y_true, y_pred):
@@ -39,41 +41,197 @@ def evaluate_metrics(y_true, y_pred):
     }
 
 
-def print_metrics(name, metrics):
-    print(f"[{name}] Accuracy: {metrics['accuracy']:.2f}% | Macro-F1: {metrics['macro_f1']:.2f}%")
-
-
-def select_top_features(X_base, y_base, X_obfs, y_obfs, X_other):
-    locked = load_locked_top_features(TOP_FEATURES_PATH)
-    if locked:
-        print("Using locked top-10 features from previous run.")
-        return locked
-
-    feature_frames = [X_base, X_obfs]
-    labels = [y_base, y_obfs]
-
-    if not X_other.empty:
-        feature_frames.append(X_other)
-        labels.append(np.array(["other"] * len(X_other)))
-
-    X_all = pd.concat(feature_frames, ignore_index=True)
-    y_all = np.concatenate(labels)
-
-    top_features, ranking_df = select_stable_top_features(
-        X_all,
-        y_all,
-        top_k=TOP_K_FEATURES,
-        n_runs=8,
+def evaluate_rf_model(X_train, y_train, X_test, y_test):
+    model = RandomForestClassifier(
         n_estimators=RF_N_ESTIMATORS,
-        out_path=TOP_FEATURES_PATH,
+        random_state=42,
+        n_jobs=-1,
     )
-    print("Selected stable top-10 features:")
-    for i, feat in enumerate(top_features, start=1):
-        print(f"  {i}. {feat}")
-    ranking_df.to_json(
-        os.path.join(FIGURES_DIR, "feature_stability_rf.json"), orient="records", indent=2
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    return evaluate_metrics(y_test, y_pred), y_pred
+
+
+def select_shared_features(X_pool_train, y_pool_train):
+    top_features, _ = select_top_features_mutual_info(
+        X_pool_train,
+        y_pool_train,
+        top_k=TOP_K_FEATURES,
+        random_state=42,
     )
     return top_features
+
+
+def select_rf_optimized_features(X_train, y_train):
+    top_features, _ = select_stable_top_features(
+        X_train,
+        y_train,
+        top_k=TOP_K_FEATURES,
+        n_runs=4,
+        n_estimators=RF_N_ESTIMATORS,
+        out_path=None,
+    )
+    return top_features
+
+
+def split_other_dataset(X_other, seed):
+    if X_other.empty or len(X_other) < 2:
+        return None, None, None, None
+
+    X_train, X_test = train_test_split(X_other, test_size=0.5, random_state=seed)
+    y_train = np.array(["other"] * len(X_train))
+    y_test = np.array(["other"] * len(X_test))
+    return X_train, X_test, y_train, y_test
+
+
+def scenario_stats_from_runs(runs):
+    scenario_names = sorted({name for run in runs for name in run.keys()})
+    stats = {}
+
+    for scenario in scenario_names:
+        acc_vals = [run[scenario]["accuracy"] for run in runs if scenario in run]
+        f1_vals = [run[scenario]["macro_f1"] for run in runs if scenario in run]
+        stats[scenario] = {
+            "accuracy_mean": round(float(np.mean(acc_vals)), 2),
+            "accuracy_std": round(float(np.std(acc_vals)), 2),
+            "macro_f1_mean": round(float(np.mean(f1_vals)), 2),
+            "macro_f1_std": round(float(np.std(f1_vals)), 2),
+            "n_runs": len(acc_vals),
+        }
+
+    return stats
+
+
+def build_confusion_payload(y_true, y_pred):
+    labels = np.sort(np.unique(np.concatenate([y_true, y_pred])))
+    cm = confusion_matrix(y_true, y_pred, labels=labels)
+    return {
+        "labels": [str(x) for x in labels.tolist()],
+        "matrix": cm.tolist(),
+    }
+
+
+def run_track_for_seed(
+    seed,
+    track_name,
+    X_base,
+    y_base,
+    X_obfs,
+    y_obfs,
+    X_other,
+):
+    X_train_b, X_test_b, y_train_b, y_test_b = train_test_split(
+        X_base, y_base, test_size=0.2, random_state=seed, stratify=y_base
+    )
+    X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(
+        X_obfs, y_obfs, test_size=0.2, random_state=seed, stratify=y_obfs
+    )
+
+    X_other_train, X_other_test, y_other_train, y_other_test = split_other_dataset(X_other, seed)
+
+    if X_other_train is not None:
+        X_pool_train = pd.concat([X_train_b, X_train_o, X_other_train], ignore_index=True)
+        y_pool_train = np.concatenate([y_train_b, y_train_o, y_other_train])
+    else:
+        X_pool_train = pd.concat([X_train_b, X_train_o], ignore_index=True)
+        y_pool_train = np.concatenate([y_train_b, y_train_o])
+
+    if track_name == "shared":
+        shared_features = select_shared_features(X_pool_train, y_pool_train)
+        feature_map = {
+            "baseline": shared_features,
+            "obfs4": shared_features,
+            "zero_shot": shared_features,
+            "open_world_baseline": shared_features,
+            "open_world_obfs4": shared_features,
+            "open_world_zero_shot": shared_features,
+        }
+    else:
+        feature_map = {
+            "baseline": select_rf_optimized_features(X_train_b, y_train_b),
+            "obfs4": select_rf_optimized_features(X_train_o, y_train_o),
+            "zero_shot": select_rf_optimized_features(X_train_b, y_train_b),
+        }
+        if X_other_train is not None:
+            X_train_ob = pd.concat([X_train_b, X_other_train], ignore_index=True)
+            y_train_ob = np.concatenate([y_train_b, y_other_train])
+            X_train_oo = pd.concat([X_train_o, X_other_train], ignore_index=True)
+            y_train_oo = np.concatenate([y_train_o, y_other_train])
+            feature_map["open_world_baseline"] = select_rf_optimized_features(X_train_ob, y_train_ob)
+            feature_map["open_world_obfs4"] = select_rf_optimized_features(X_train_oo, y_train_oo)
+            feature_map["open_world_zero_shot"] = select_rf_optimized_features(X_train_ob, y_train_ob)
+
+    scenarios = {}
+    confusion_payload = {}
+
+    # 1. BASELINE
+    feats = feature_map["baseline"]
+    m_base, pred_base = evaluate_rf_model(
+        X_train_b[feats], y_train_b, X_test_b[feats], y_test_b
+    )
+    scenarios["baseline"] = m_base
+    confusion_payload["baseline"] = build_confusion_payload(y_test_b, pred_base)
+
+    # 2. OBFS4
+    feats = feature_map["obfs4"]
+    m_obfs, pred_obfs = evaluate_rf_model(
+        X_train_o[feats], y_train_o, X_test_o[feats], y_test_o
+    )
+    scenarios["obfs4"] = m_obfs
+    confusion_payload["obfs4"] = build_confusion_payload(y_test_o, pred_obfs)
+
+    # 3. ZERO-SHOT (Train: Baseline -> Test: Obfs4 test split)
+    feats = feature_map["zero_shot"]
+    rf_zero = RandomForestClassifier(
+        n_estimators=RF_N_ESTIMATORS,
+        random_state=42,
+        n_jobs=-1,
+    )
+    rf_zero.fit(X_train_b[feats], y_train_b)
+    pred_zero = rf_zero.predict(X_test_o[feats])
+    scenarios["zero_shot"] = evaluate_metrics(y_test_o, pred_zero)
+    confusion_payload["zero_shot"] = build_confusion_payload(y_test_o, pred_zero)
+
+    if X_other_train is not None and len(X_other_test) > 0:
+        # 4. OPEN-WORLD BASELINE
+        feats = feature_map["open_world_baseline"]
+        X_train_ob = pd.concat([X_train_b, X_other_train], ignore_index=True)
+        y_train_ob = np.concatenate([y_train_b, y_other_train])
+        X_test_ob = pd.concat([X_test_b, X_other_test], ignore_index=True)
+        y_test_ob = np.concatenate([y_test_b, y_other_test])
+        m_ob, pred_ob = evaluate_rf_model(
+            X_train_ob[feats], y_train_ob, X_test_ob[feats], y_test_ob
+        )
+        scenarios["open_world_baseline"] = m_ob
+        confusion_payload["open_world_baseline"] = build_confusion_payload(y_test_ob, pred_ob)
+
+        # 5. OPEN-WORLD OBFS4
+        feats = feature_map["open_world_obfs4"]
+        X_train_oo = pd.concat([X_train_o, X_other_train], ignore_index=True)
+        y_train_oo = np.concatenate([y_train_o, y_other_train])
+        X_test_oo = pd.concat([X_test_o, X_other_test], ignore_index=True)
+        y_test_oo = np.concatenate([y_test_o, y_other_test])
+        m_oo, pred_oo = evaluate_rf_model(
+            X_train_oo[feats], y_train_oo, X_test_oo[feats], y_test_oo
+        )
+        scenarios["open_world_obfs4"] = m_oo
+        confusion_payload["open_world_obfs4"] = build_confusion_payload(y_test_oo, pred_oo)
+
+        # 6. OPEN-WORLD ZERO-SHOT
+        feats = feature_map["open_world_zero_shot"]
+        rf_oz = RandomForestClassifier(
+            n_estimators=RF_N_ESTIMATORS,
+            random_state=42,
+            n_jobs=-1,
+        )
+        rf_oz.fit(X_train_ob[feats], y_train_ob)
+        X_test_oz = pd.concat([X_test_o, X_other_test], ignore_index=True)
+        y_test_oz = np.concatenate([y_test_o, y_other_test])
+        pred_oz = rf_oz.predict(X_test_oz[feats])
+        scenarios["open_world_zero_shot"] = evaluate_metrics(y_test_oz, pred_oz)
+        confusion_payload["open_world_zero_shot"] = build_confusion_payload(y_test_oz, pred_oz)
+
+    return scenarios, feature_map, confusion_payload
 
 
 def main():
@@ -93,117 +251,68 @@ def main():
         return
 
     os.makedirs(FIGURES_DIR, exist_ok=True)
-    top_features = select_top_features(X_base, y_base, X_obfs, y_obfs, X_other)
 
-    X_base = X_base[top_features]
-    X_obfs = X_obfs[top_features]
-    if not X_other.empty:
-        X_other = X_other[top_features]
+    tracks = {}
+    for track_name in ["shared", "optimized"]:
+        print(f"\nRunning RF track: {track_name}")
+        run_metrics = []
+        primary_features = None
+        primary_scenarios = None
+        primary_confusions = None
 
-    print("\n" + "=" * 65)
-    print(" RANDOM FOREST RESULTS (Top-10 Stable Features + Open-World)")
-    print("=" * 65)
+        for seed in SEEDS:
+            scenarios, feature_map, confusions = run_track_for_seed(
+                seed,
+                track_name,
+                X_base,
+                y_base,
+                X_obfs,
+                y_obfs,
+                X_other,
+            )
+            run_metrics.append(scenarios)
 
-    scenarios = {}
+            if seed == PRIMARY_SEED:
+                primary_scenarios = scenarios
+                primary_confusions = confusions
+                if track_name == "shared":
+                    primary_features = feature_map["baseline"]
+                else:
+                    primary_features = {
+                        "baseline": feature_map.get("baseline", []),
+                        "obfs4": feature_map.get("obfs4", []),
+                        "zero_shot": feature_map.get("zero_shot", []),
+                        "open_world_baseline": feature_map.get("open_world_baseline", []),
+                        "open_world_obfs4": feature_map.get("open_world_obfs4", []),
+                        "open_world_zero_shot": feature_map.get("open_world_zero_shot", []),
+                    }
 
-    # 1. BASELINE
-    X_train_b, X_test_b, y_train_b, y_test_b = train_test_split(
-        X_base, y_base, test_size=0.2, random_state=42, stratify=y_base
-    )
-    rf_base = RandomForestClassifier(
-        n_estimators=RF_N_ESTIMATORS, random_state=42, n_jobs=-1
-    )
-    rf_base.fit(X_train_b, y_train_b)
-    y_pred_b = rf_base.predict(X_test_b)
-    scenarios["baseline"] = evaluate_metrics(y_test_b, y_pred_b)
-    print_metrics("1. Baseline", scenarios["baseline"])
+        tracks[track_name] = {
+            "scenario_stats": scenario_stats_from_runs(run_metrics),
+            "primary_seed": PRIMARY_SEED,
+            "primary_seed_scenarios": primary_scenarios,
+            "primary_seed_confusion_matrices": primary_confusions,
+            "primary_seed_features": primary_features,
+        }
 
-    # 2. OBFS4
-    X_train_o, X_test_o, y_train_o, y_test_o = train_test_split(
-        X_obfs, y_obfs, test_size=0.2, random_state=42, stratify=y_obfs
-    )
-    rf_obfs = RandomForestClassifier(
-        n_estimators=RF_N_ESTIMATORS, random_state=42, n_jobs=-1
-    )
-    rf_obfs.fit(X_train_o, y_train_o)
-    y_pred_o = rf_obfs.predict(X_test_o)
-    scenarios["obfs4"] = evaluate_metrics(y_test_o, y_pred_o)
-    print_metrics("2. Obfs4", scenarios["obfs4"])
+    primary_shared = tracks["shared"]["primary_seed_scenarios"]
 
-    # 3. ZERO-SHOT (Train: Baseline -> Test: Obfs4)
-    y_pred_z = rf_base.predict(X_obfs)
-    scenarios["zero_shot"] = evaluate_metrics(y_obfs, y_pred_z)
-    print_metrics("3. Zero-Shot", scenarios["zero_shot"])
-
-    # 4-6. OPEN-WORLD (if Other exists)
-    if not X_other.empty and len(X_other) > 4:
-        y_other = np.array(["other"] * len(X_other))
-
-        X_open_b = pd.concat([X_base, X_other], ignore_index=True)
-        y_open_b = np.concatenate([y_base, y_other])
-        X_train_ob, X_test_ob, y_train_ob, y_test_ob = train_test_split(
-            X_open_b, y_open_b, test_size=0.2, random_state=42, stratify=y_open_b
-        )
-        rf_open_b = RandomForestClassifier(
-            n_estimators=RF_N_ESTIMATORS, random_state=42, n_jobs=-1
-        )
-        rf_open_b.fit(X_train_ob, y_train_ob)
-        scenarios["open_world_baseline"] = evaluate_metrics(
-            y_test_ob, rf_open_b.predict(X_test_ob)
-        )
-        print_metrics("4. Open-World Baseline", scenarios["open_world_baseline"])
-
-        X_open_o = pd.concat([X_obfs, X_other], ignore_index=True)
-        y_open_o = np.concatenate([y_obfs, y_other])
-        X_train_oo, X_test_oo, y_train_oo, y_test_oo = train_test_split(
-            X_open_o, y_open_o, test_size=0.2, random_state=42, stratify=y_open_o
-        )
-        rf_open_o = RandomForestClassifier(
-            n_estimators=RF_N_ESTIMATORS, random_state=42, n_jobs=-1
-        )
-        rf_open_o.fit(X_train_oo, y_train_oo)
-        scenarios["open_world_obfs4"] = evaluate_metrics(
-            y_test_oo, rf_open_o.predict(X_test_oo)
-        )
-        print_metrics("5. Open-World Obfs4", scenarios["open_world_obfs4"])
-
-        X_other_train, X_other_test = train_test_split(
-            X_other, test_size=0.5, random_state=42
-        )
-        y_other_train = np.array(["other"] * len(X_other_train))
-        y_other_test = np.array(["other"] * len(X_other_test))
-
-        X_train_oz = pd.concat([X_base, X_other_train], ignore_index=True)
-        y_train_oz = np.concatenate([y_base, y_other_train])
-        X_test_oz = pd.concat([X_obfs, X_other_test], ignore_index=True)
-        y_test_oz = np.concatenate([y_obfs, y_other_test])
-
-        rf_open_z = RandomForestClassifier(
-            n_estimators=RF_N_ESTIMATORS, random_state=42, n_jobs=-1
-        )
-        rf_open_z.fit(X_train_oz, y_train_oz)
-        scenarios["open_world_zero_shot"] = evaluate_metrics(
-            y_test_oz, rf_open_z.predict(X_test_oz)
-        )
-        print_metrics("6. Open-World Zero-Shot", scenarios["open_world_zero_shot"])
-    else:
-        print("[Open-World] Skipped: no Other dataset found in extracted_features/other_features")
-
-    print("=" * 65)
+    payload = {
+        "primary_track": "shared",
+        "seeds": SEEDS,
+        "n_estimators": RF_N_ESTIMATORS,
+        "tracks": tracks,
+        # Backward-compatible fields used by figure scripts.
+        "baseline": primary_shared["baseline"]["accuracy"],
+        "obfs4": primary_shared["obfs4"]["accuracy"],
+        "zero_shot": primary_shared["zero_shot"]["accuracy"],
+        "top_features": tracks["shared"]["primary_seed_features"],
+        "scenarios": primary_shared,
+    }
 
     with open(RF_METRICS_PATH, "w", encoding="utf-8") as f:
-        json.dump(
-            {
-                "baseline": scenarios["baseline"]["accuracy"],
-                "obfs4": scenarios["obfs4"]["accuracy"],
-                "zero_shot": scenarios["zero_shot"]["accuracy"],
-                "top_features": top_features,
-                "scenarios": scenarios,
-                "n_estimators": RF_N_ESTIMATORS,
-            },
-            f,
-            indent=2,
-        )
+        json.dump(payload, f, indent=2)
+
     print(f"Saved RF metrics to: {RF_METRICS_PATH}")
 
 
