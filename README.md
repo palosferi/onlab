@@ -19,13 +19,13 @@ The pipeline utilizes the following techniques for feature extraction and model 
 The models are evaluated using accuracy and macro-F1 metrics based on the shared features track.
 
 **Open-World Scenarios (Random Forest vs. Deep Learning):**
-* Open-World Baseline: 80.93% Accuracy (RF) | 61.35% Accuracy (DL)
-* Open-World Obfs4: 74.10% Accuracy (RF) | 49.31% Accuracy (DL)
-* Open-World Zero-Shot: 22.73% Accuracy (RF) | 27.13% Accuracy (DL)
+* Open-World Baseline: 80.93% Accuracy (RF) | 62.00% Accuracy (DL)
+* Open-World Obfs4: 74.10% Accuracy (RF) | 48.90% Accuracy (DL)
+* Open-World Zero-Shot: 22.73% Accuracy (RF) | 27.27% Accuracy (DL)
 
 **Closed-World Scenarios (Random Forest vs. Deep Learning):**
-* Standard Baseline: 80.44% Accuracy (RF) | 59.71% Accuracy (DL)
-* Standard Obfs4: 73.33% Accuracy (RF) | 50.79% Accuracy (DL)
-* Standard Zero-Shot: 15.08% Accuracy (RF) | 22.70% Accuracy (DL)
+* Standard Baseline: 80.44% Accuracy (RF) | 61.19% Accuracy (DL)
+* Standard Obfs4: 73.33% Accuracy (RF) | 50.64% Accuracy (DL)
+* Standard Zero-Shot: 15.08% Accuracy (RF) | 23.01% Accuracy (DL)
 
-*(Note: Zero-shot fingerprinting remains challenging and yields low accuracy across both models due to the heavy domain shift introduced by obfuscation. Interestingly, the Triplet MLP shows better domain generalization in both standard and open-world zero-shot scenarios compared to the Random Forest).*
+*(Note: Zero-shot fingerprinting remains challenging and yields low accuracy across both models due to the heavy domain shift introduced by obfuscation. The Triplet MLP shows better domain generalization in both standard and open-world zero-shot scenarios compared to the Random Forest.)*

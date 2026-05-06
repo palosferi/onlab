@@ -42,7 +42,7 @@ Train the models and generate evaluation metrics (accuracy, macro-F1, per-class 
 Generate visualizations based on the trained models and output metrics.
 
 * Run command: `python src/generate_all_figures.py`
-* Output: PNG charts saved to the `figures/` directory, including final comparisons, macro-F1 spreads, open-world focus charts, and confusion matrices.
+* Output: PNG charts saved to the `figures/` directory, including closed-world summaries, macro-F1 comparisons, shared-vs-optimized deltas, open-world focus charts, feature importance plots, confusion matrices, and recall-normalized confusion matrices.
 
 ## 5. Overleaf Synchronization
 To keep your thesis document updated with the latest figures and JSON metrics without manually uploading files:

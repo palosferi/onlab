@@ -39,3 +39,23 @@ figures/*.eps
 
 # Logs and local outputs
 *.log
+
+# LaTeX build artifacts (keep .tex and generated .pdf)
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.synctex(busy)
+*.toc
+
+# LaTeX editor backups
+*~
+
+# Coverage outputs
+.coverage
+coverage.xml
+htmlcov/
+*.cover
