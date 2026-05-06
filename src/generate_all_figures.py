@@ -206,12 +206,12 @@ def plot_final_bar_chart():
 
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "01_final_comparison.png"),
+        os.path.join(FIGURES_DIR, "01_closed_world_summary.png"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Chart 1/4 Generated: 01_final_comparison.png")
+    print("Generated: 01_closed_world_summary.png")
 
 
 def plot_all_scenarios_macro_f1_chart():
@@ -244,12 +244,12 @@ def plot_all_scenarios_macro_f1_chart():
     ax.tick_params(axis="x", rotation=15)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "01b_macro_f1_all_scenarios.png"),
+        os.path.join(FIGURES_DIR, "02_macro_f1_all_scenarios.png"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Chart 2/4 Generated: 01b_macro_f1_all_scenarios.png")
+    print("Generated: 02_macro_f1_all_scenarios.png")
 
 
 def plot_shared_vs_optimized_delta_chart():
@@ -305,12 +305,12 @@ def plot_shared_vs_optimized_delta_chart():
     fig.suptitle("Shared vs Optimized Feature Track Improvements", fontsize=14)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "01c_shared_vs_optimized_delta.png"),
+        os.path.join(FIGURES_DIR, "03_shared_vs_optimized_delta.png"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Chart 3/6 Generated: 01c_shared_vs_optimized_delta.png")
+    print("Generated: 03_shared_vs_optimized_delta.png")
 
 
 def plot_open_world_focus_chart():
@@ -352,12 +352,12 @@ def plot_open_world_focus_chart():
     fig.suptitle("Open-World Performance Focus", fontsize=14)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "01d_open_world_focus.png"),
+        os.path.join(FIGURES_DIR, "04_open_world_focus.png"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Chart 4/6 Generated: 01d_open_world_focus.png")
+    print("Generated: 04_open_world_focus.png")
 
 
 def get_feature_importance(X, y):
@@ -422,7 +422,7 @@ def plot_feature_importance(
     fig.suptitle("Random Forest Feature Importance (Scenario-Specific Ordering)", fontsize=14)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "02_feature_importance.png"),
+        os.path.join(FIGURES_DIR, "05_feature_importance_shared.png"),
         dpi=300,
         bbox_inches="tight",
     )
@@ -518,13 +518,13 @@ def plot_feature_importance(
     fig.suptitle("Random Forest Feature Importance (Independent Top-10 Lists)", fontsize=14)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "02b_feature_importance_separate_top10.png"),
+        os.path.join(FIGURES_DIR, "06_feature_importance_separate.png"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
 
-    print("Chart 5/6 Generated: 02_feature_importance.png (+ separate top10 figure/json)")
+    print("Generated: 05_feature_importance_shared.png (+ 06_feature_importance_separate.png)")
 
 
 def plot_confusion_matrices_from_metrics():
@@ -569,12 +569,12 @@ def plot_confusion_matrices_from_metrics():
 
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "03_confusion_matrices.png"),
+        os.path.join(FIGURES_DIR, "07_confusion_matrices.png"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Chart 6/6 Generated: 03_confusion_matrices.png")
+    print("Generated: 07_confusion_matrices.png")
 
 
 def main():

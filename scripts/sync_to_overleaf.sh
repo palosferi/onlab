@@ -23,13 +23,13 @@ cp -f "$REPO_ROOT/figures/metrics_dl.json" "$DEST_DIR/figures/" 2>/dev/null || t
 cp -f "$REPO_ROOT/figures/02_top10_features_rf.json" "$DEST_DIR/figures/" 2>/dev/null || true
 cp -f "$REPO_ROOT/figures/02_top10_features_rf_separate.json" "$DEST_DIR/figures/" 2>/dev/null || true
 cp -f "$REPO_ROOT/figures/selected_top10_features.json" "$DEST_DIR/figures/" 2>/dev/null || true
-cp -f "$REPO_ROOT/figures/01_final_comparison.png" "$DEST_DIR/figures/" 2>/dev/null || true
-cp -f "$REPO_ROOT/figures/01b_macro_f1_all_scenarios.png" "$DEST_DIR/figures/" 2>/dev/null || true
-cp -f "$REPO_ROOT/figures/01c_shared_vs_optimized_delta.png" "$DEST_DIR/figures/" 2>/dev/null || true
-cp -f "$REPO_ROOT/figures/01d_open_world_focus.png" "$DEST_DIR/figures/" 2>/dev/null || true
-cp -f "$REPO_ROOT/figures/02_feature_importance.png" "$DEST_DIR/figures/" 2>/dev/null || true
-cp -f "$REPO_ROOT/figures/02b_feature_importance_separate_top10.png" "$DEST_DIR/figures/" 2>/dev/null || true
-cp -f "$REPO_ROOT/figures/03_confusion_matrices.png" "$DEST_DIR/figures/" 2>/dev/null || true
+cp -f "$REPO_ROOT/figures/01_closed_world_summary.png" "$DEST_DIR/figures/" 2>/dev/null || true
+cp -f "$REPO_ROOT/figures/02_macro_f1_all_scenarios.png" "$DEST_DIR/figures/" 2>/dev/null || true
+cp -f "$REPO_ROOT/figures/03_shared_vs_optimized_delta.png" "$DEST_DIR/figures/" 2>/dev/null || true
+cp -f "$REPO_ROOT/figures/04_open_world_focus.png" "$DEST_DIR/figures/" 2>/dev/null || true
+cp -f "$REPO_ROOT/figures/05_feature_importance_shared.png" "$DEST_DIR/figures/" 2>/dev/null || true
+cp -f "$REPO_ROOT/figures/06_feature_importance_separate.png" "$DEST_DIR/figures/" 2>/dev/null || true
+cp -f "$REPO_ROOT/figures/07_confusion_matrices.png" "$DEST_DIR/figures/" 2>/dev/null || true
 cp -f "$REPO_ROOT/README.md" "$DEST_DIR/docs/project_summary.md" 2>/dev/null || true
 
 echo "Synced results to: $DEST_DIR"
