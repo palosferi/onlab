@@ -1,52 +1,52 @@
 [
   {
     "feature":"total_bytes",
-    "baseline_importance":0.2030487573,
-    "obfs4_importance":0.2018037607
+    "baseline_importance":0.200379422,
+    "obfs4_importance":0.2059860942
   },
   {
     "feature":"incoming_bytes",
-    "baseline_importance":0.123929227,
-    "obfs4_importance":0.1242816695
+    "baseline_importance":0.1261099743,
+    "obfs4_importance":0.1235003205
   },
   {
     "feature":"total_packets",
-    "baseline_importance":0.0816594163,
-    "obfs4_importance":0.0793619867
+    "baseline_importance":0.0785279741,
+    "obfs4_importance":0.0784456689
   },
   {
     "feature":"outgoing_bytes",
-    "baseline_importance":0.1239793711,
-    "obfs4_importance":0.102048612
+    "baseline_importance":0.1286349156,
+    "obfs4_importance":0.1021932826
   },
   {
     "feature":"direction_changes",
-    "baseline_importance":0.0705694963,
-    "obfs4_importance":0.0853481905
+    "baseline_importance":0.0700344308,
+    "obfs4_importance":0.0843354722
   },
   {
     "feature":"in_out_byte_ratio",
-    "baseline_importance":0.1517464244,
-    "obfs4_importance":0.1345953804
+    "baseline_importance":0.1536076245,
+    "obfs4_importance":0.1340216531
   },
   {
     "feature":"mean_inter_arrival",
-    "baseline_importance":0.0673722842,
-    "obfs4_importance":0.076564444
+    "baseline_importance":0.0665742293,
+    "obfs4_importance":0.0776877002
   },
   {
     "feature":"outgoing_packets",
-    "baseline_importance":0.0743202693,
-    "obfs4_importance":0.0839633507
+    "baseline_importance":0.0743816057,
+    "obfs4_importance":0.0814787832
   },
   {
     "feature":"incoming_packets",
-    "baseline_importance":0.0493066861,
-    "obfs4_importance":0.0556318371
+    "baseline_importance":0.0474782812,
+    "obfs4_importance":0.055852254
   },
   {
     "feature":"p90_inter_arrival",
-    "baseline_importance":0.054068068,
-    "obfs4_importance":0.0564007684
+    "baseline_importance":0.0542715424,
+    "obfs4_importance":0.0564987711
   }
 ]

@@ -3,104 +3,104 @@
     {
       "rank": 1,
       "feature": "total_bytes",
-      "importance": 0.1334397890063788
+      "importance": 0.1398914712110673
     },
     {
       "rank": 2,
       "feature": "in_out_byte_ratio",
-      "importance": 0.10354012367390973
+      "importance": 0.10326834606000096
     },
     {
       "rank": 3,
       "feature": "incoming_bytes",
-      "importance": 0.09355993054799117
+      "importance": 0.09144692419949002
     },
     {
       "rank": 4,
       "feature": "outgoing_bytes",
-      "importance": 0.09011619931005246
+      "importance": 0.09111934944970654
     },
     {
       "rank": 5,
       "feature": "total_packets",
-      "importance": 0.060728927330856414
+      "importance": 0.06027678337749748
     },
     {
       "rank": 6,
       "feature": "outgoing_packets",
-      "importance": 0.057092508683544686
+      "importance": 0.05577375015575173
     },
     {
       "rank": 7,
       "feature": "direction_changes",
-      "importance": 0.055398891966993845
+      "importance": 0.05418583590130994
     },
     {
       "rank": 8,
       "feature": "in_out_packet_ratio",
-      "importance": 0.05025535329809322
+      "importance": 0.04914357222961549
     },
     {
       "rank": 9,
       "feature": "mean_inter_arrival",
-      "importance": 0.04329088137817389
+      "importance": 0.04312365560329809
     },
     {
       "rank": 10,
       "feature": "incoming_packets",
-      "importance": 0.03697302153839441
+      "importance": 0.03659933596505179
     }
   ],
   "obfs4_top10": [
     {
       "rank": 1,
       "feature": "total_bytes",
-      "importance": 0.13566693529249338
+      "importance": 0.13700707815732896
     },
     {
       "rank": 2,
       "feature": "in_out_byte_ratio",
-      "importance": 0.07909495621149679
+      "importance": 0.07801478664167769
     },
     {
       "rank": 3,
       "feature": "incoming_bytes",
-      "importance": 0.07848243254513802
+      "importance": 0.0759273540251271
     },
     {
       "rank": 4,
-      "feature": "outgoing_bytes",
-      "importance": 0.06541585122522106
+      "feature": "mean_packet_size",
+      "importance": 0.06571146032684903
     },
     {
       "rank": 5,
-      "feature": "mean_packet_size",
-      "importance": 0.06389700493891134
+      "feature": "outgoing_bytes",
+      "importance": 0.0643196223459404
     },
     {
       "rank": 6,
       "feature": "total_packets",
-      "importance": 0.0617202633849042
+      "importance": 0.06351510693965369
     },
     {
       "rank": 7,
-      "feature": "direction_changes",
-      "importance": 0.06110263394687691
+      "feature": "outgoing_packets",
+      "importance": 0.06000642926764062
     },
     {
       "rank": 8,
-      "feature": "outgoing_packets",
-      "importance": 0.058104862061506855
+      "feature": "direction_changes",
+      "importance": 0.05984333322698012
     },
     {
       "rank": 9,
       "feature": "mean_inter_arrival",
-      "importance": 0.047248144529660176
+      "importance": 0.04525860277980885
     },
     {
       "rank": 10,
       "feature": "incoming_packets",
-      "importance": 0.04006381016955797
+      "importance": 0.04078354769326263
     }
   ],
   "overlap_features": [

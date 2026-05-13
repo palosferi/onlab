@@ -24,6 +24,10 @@ FIGURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fig
 RF_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_rf.json")
 DL_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_dl.json")
 TOP_FEATURES_PATH = os.path.join(FIGURES_DIR, "selected_top10_features.json")
+FEATURE_STABILITY_PATH = os.path.join(FIGURES_DIR, "feature_stability_rf.json")
+FEATURE_STABILITY_FIG_PATH = os.path.join(
+    FIGURES_DIR, "feature_stability_for_figures.json"
+)
 RF_N_ESTIMATORS = 300
 TOP_K_FEATURES = 10
 
@@ -84,6 +88,18 @@ def load_primary_confusions(metrics_path):
             .get("primary_seed_confusion_matrices", {})
         )
     return metrics.get("confusion_matrices", {})
+
+
+def load_other_recall(metrics_path, scenario_key):
+    payload = load_metrics_payload(metrics_path)
+    primary_track = payload.get("primary_track", "shared")
+    scenarios = (
+        payload.get("tracks", {})
+        .get(primary_track, {})
+        .get("primary_seed_scenarios", {})
+    )
+    per_class = scenarios.get(scenario_key, {}).get("per_class_recall", {})
+    return per_class.get("other", np.nan)
 
 
 def load_metrics_payload(metrics_path):
@@ -250,6 +266,44 @@ def plot_all_scenarios_macro_f1_chart():
     )
     plt.close()
     print("Generated: 02_macro_f1_all_scenarios.png")
+
+
+def plot_all_scenarios_accuracy_chart():
+    scenario_pairs = [
+        ("baseline", "Baseline"),
+        ("obfs4", "Obfs4"),
+        ("zero_shot", "Zero-Shot"),
+        ("open_world_baseline", "OW-Baseline"),
+        ("open_world_obfs4", "OW-Obfs4"),
+        ("open_world_zero_shot", "OW-Zero-Shot"),
+    ]
+    scenario_keys = [k for k, _ in scenario_pairs]
+    labels = [lbl for _, lbl in scenario_pairs]
+
+    rf_acc = load_scenario_metric(RF_METRICS_PATH, scenario_keys, "accuracy")
+    dl_acc = load_scenario_metric(DL_METRICS_PATH, scenario_keys, "accuracy")
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    _plot_grouped_bars(
+        ax,
+        labels,
+        rf_acc,
+        dl_acc,
+        "Random Forest",
+        "Triplet MLP",
+        "Accuracy Across Closed and Open-World Scenarios",
+        "Accuracy (%)",
+    )
+    ax.legend(fontsize=10)
+    ax.tick_params(axis="x", rotation=15)
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(FIGURES_DIR, "10_accuracy_all_scenarios.png"),
+        dpi=300,
+        bbox_inches="tight",
+    )
+    plt.close()
+    print("Generated: 10_accuracy_all_scenarios.png")
 
 
 def plot_shared_vs_optimized_delta_chart():
@@ -527,6 +581,55 @@ def plot_feature_importance(
     print("Generated: 05_feature_importance_shared.png (+ 06_feature_importance_separate.png)")
 
 
+def plot_feature_stability_chart():
+    stability_path = None
+    if os.path.exists(FEATURE_STABILITY_FIG_PATH):
+        stability_path = FEATURE_STABILITY_FIG_PATH
+    elif os.path.exists(FEATURE_STABILITY_PATH):
+        stability_path = FEATURE_STABILITY_PATH
+
+    if not stability_path:
+        print("Skipping feature stability chart: no feature stability data found.")
+        return
+
+    with open(stability_path, "r", encoding="utf-8") as f:
+        payload = json.load(f)
+
+    if isinstance(payload, dict) and "ranking" in payload:
+        ranking = payload["ranking"]
+    else:
+        ranking = payload
+
+    if not ranking:
+        print("Skipping feature stability chart: empty payload.")
+        return
+
+    df = pd.DataFrame(ranking)
+    df = df.sort_values("importance_mean", ascending=False).head(10)
+    df = df.sort_values("importance_mean", ascending=True)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.barh(
+        df["feature"],
+        df["importance_mean"],
+        xerr=df["importance_std"],
+        color="#2c3e50",
+        alpha=0.85,
+    )
+    ax.set_xlabel("Mean Feature Importance")
+    ax.set_ylabel("Feature")
+    ax.set_title("Random Forest Feature Stability (Top-10)")
+    ax.grid(axis="x", linestyle="--", alpha=0.6)
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(FIGURES_DIR, "11_feature_stability_rf.png"),
+        dpi=300,
+        bbox_inches="tight",
+    )
+    plt.close()
+    print("Generated: 11_feature_stability_rf.png")
+
+
 def plot_confusion_matrices_from_metrics():
     confusions = load_primary_confusions(RF_METRICS_PATH)
     if not confusions:
@@ -577,10 +680,108 @@ def plot_confusion_matrices_from_metrics():
     print("Generated: 07_confusion_matrices.png")
 
 
+def plot_confusion_matrices_recall():
+    confusions = load_primary_confusions(RF_METRICS_PATH)
+    if not confusions:
+        print("Skipping recall confusion matrices: no persisted confusion payload found.")
+        return
+
+    if all(k in confusions for k in ["open_world_baseline", "open_world_obfs4", "open_world_zero_shot"]):
+        scenario_keys = ["open_world_baseline", "open_world_obfs4", "open_world_zero_shot"]
+        titles = [
+            "1. Open-World Baseline (Recall)",
+            "2. Open-World Obfs4 (Recall)",
+            "3. Open-World Zero-Shot (Recall)",
+        ]
+        cmaps = ["Blues", "Oranges", "Reds"]
+    else:
+        scenario_keys = ["baseline", "obfs4", "zero_shot"]
+        titles = ["1. Baseline (Recall)", "2. Obfs4 (Recall)", "3. Zero-Shot (Recall)"]
+        cmaps = ["Blues", "Oranges", "Reds"]
+
+    fig, axes = plt.subplots(1, 3, figsize=(24, 7))
+
+    for ax, scenario_key, title, cmap in zip(axes, scenario_keys, titles, cmaps):
+        payload = confusions.get(scenario_key)
+        if not payload:
+            ax.axis("off")
+            continue
+
+        labels = payload.get("labels", [])
+        matrix = np.array(payload.get("matrix", []), dtype=float)
+        row_sums = matrix.sum(axis=1, keepdims=True)
+        row_sums[row_sums == 0] = 1.0
+        matrix = matrix / row_sums
+        sns.heatmap(
+            matrix,
+            cmap=cmap,
+            cbar=False,
+            vmin=0.0,
+            vmax=1.0,
+            xticklabels=labels,
+            yticklabels=labels,
+            ax=ax,
+        )
+        ax.set_title(title, fontsize=14)
+
+    for ax in axes:
+        ax.set_ylabel("True Website")
+        ax.set_xlabel("Predicted Website")
+        ax.tick_params(axis="x", rotation=90)
+
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(FIGURES_DIR, "08_confusion_matrices_recall.png"),
+        dpi=300,
+        bbox_inches="tight",
+    )
+    plt.close()
+    print("Generated: 08_confusion_matrices_recall.png")
+
+
+def plot_other_recall_open_world():
+    scenario_pairs = [
+        ("open_world_baseline", "OW-Baseline"),
+        ("open_world_obfs4", "OW-Obfs4"),
+        ("open_world_zero_shot", "OW-Zero-Shot"),
+    ]
+    scenario_keys = [k for k, _ in scenario_pairs]
+    labels = [lbl for _, lbl in scenario_pairs]
+
+    rf_vals = [load_other_recall(RF_METRICS_PATH, key) for key in scenario_keys]
+    dl_vals = [load_other_recall(DL_METRICS_PATH, key) for key in scenario_keys]
+
+    if all(np.isnan(rf_vals)) and all(np.isnan(dl_vals)):
+        print("Skipping other recall chart: no 'other' class found in metrics.")
+        return
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    _plot_grouped_bars(
+        ax,
+        labels,
+        rf_vals,
+        dl_vals,
+        "Random Forest",
+        "Triplet MLP",
+        "Other Class Recall (Open-World)",
+        "Recall (%)",
+    )
+    ax.legend(fontsize=10)
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(FIGURES_DIR, "09_other_recall_open_world.png"),
+        dpi=300,
+        bbox_inches="tight",
+    )
+    plt.close()
+    print("Generated: 09_other_recall_open_world.png")
+
+
 def main():
     print("Generating all final figures for the report...")
     plot_final_bar_chart()
     plot_all_scenarios_macro_f1_chart()
+    plot_all_scenarios_accuracy_chart()
     plot_shared_vs_optimized_delta_chart()
     plot_open_world_focus_chart()
 
@@ -614,7 +815,14 @@ def main():
             X_obfs_full=X_obfs_full,
         )
         _ = y_other
-        plot_confusion_matrices_from_metrics()
+    else:
+        print("Skipping feature importance: missing extracted features.")
+
+    plot_feature_stability_chart()
+
+    plot_confusion_matrices_from_metrics()
+    plot_confusion_matrices_recall()
+    plot_other_recall_open_world()
 
     print("\nSuccess! All charts are in 'figures/' folder.")
 

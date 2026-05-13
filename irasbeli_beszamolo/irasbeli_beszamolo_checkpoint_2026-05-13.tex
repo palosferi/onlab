@@ -6,7 +6,6 @@
 \usepackage{xcolor}
 \usepackage{titlesec}
 \usepackage{graphicx}
-\usepackage{subcaption}
 \usepackage{hyperref}
 
 \geometry{margin=25mm}
@@ -29,9 +28,7 @@ feladatát mutatja be, két eltérő modellcsalád összehasonlításával: klas
 (baseline, obfs4), a zero-shot és a nyílt világú (open-world) forgatókönyvekben méri a
 teljesítményt. A végső értékelés a futtatott Python pipeline által számolt metrikákon és a
 generált ábrákon alapul. A Random Forest erős baseline és obfs4 teljesítményt ad, míg a
-Triplet MLP a zero-shot beállításokban kedvezőbb általánosítást mutat. A dokumentum
-részletesen bemutatja az adatgyűjtési és reprodukálhatósági lépéseket is, hogy a
-pipeline végponttól végpontig újrafuttatható legyen.
+Triplet MLP a zero-shot beállításokban kedvezőbb általánosítást mutat.
 
 \section{Célkitűzések és hozzájárulások}
 A projekt célja egy reprodukálható WF pipeline kialakítása és két modellcsalád objektív
@@ -41,8 +38,7 @@ Ennek keretében:
     \item a PCAP állományoktól a kiértékelési metrikákig egy végig automatizált feldolgozási láncot raktam össze,
     \item aggregált folyamjellemzőket definiáltam és egységes 21-dimenziós feature teret alkalmaztam,
     \item \textit{shared} és \textit{optimized} top-10 feature track-eket vezettem be,
-    \item egységes ábragenerálást biztosítottam a kiértékelési JSON-okból,
-    \item az open-world ``Other'' osztály kezelését és a zero-shot beállításokat külön mérési szálként kezeltem.
+    \item egységes ábragenerálást biztosítottam a kiértékelési JSON-okból.
 \end{itemize}
 
 \section{Adatok és forgatókönyvek}
@@ -54,28 +50,8 @@ az open-world ``Other'' kategória. A fő forgatókönyvek:
     \item \textbf{Zero-shot:} baseline-on tanított modellek tesztelése obfs4 forgalmon.
     \item \textbf{Open-world:} ``Other'' kategória hozzáadása az ismeretlen oldalak modellezésére.
 \end{itemize}
-A zárt világú osztályokat rétegzett 80\%/20\% tanító/teszt felosztással értékelem. Az
-open-world ``Other'' osztályt ezzel szemben 50\%--50\% arányban bontom tanító/teszt
-részre, mert itt a cél nem az adott ``Other'' webhelyek pontos felismerése, hanem az
-ismeretlen forgalomra való általánosítás. A nagyobb ``Other'' teszt rész valósághűbb
-``ismeretlen'' mintaállományt ad, csökkenti a recall becslés zaját, és akkor is
-értelmezhető méretű tesztet hagy, ha az ``Other'' mintaszám kisebb.
-
-\section{Adatgyűjtés és előfeldolgozás}
-Az adatgyűjtés automatizált headless böngészéssel és \texttt{tcpdump}-pal történik, aktív Tor
-SOCKS proxy és ControlPort mellett. A SOCKS proxy a Tor hálózatra irányítja a böngésző
-forgalmát, míg a ControlPort a Tor példány vezérlését teszi lehetővé (pl. új áramkör
-kérése, állapotlekérdezés). A zárt világú baseline/obfs4 forgalmat a
-\texttt{scripts/collection/collector.py} (futtató: \texttt{run\_collector.sh}) gyűjti, míg
-az open-world ``Other'' adatokat a \texttt{server\_collect\_other.py} szkript (futtató:
-\texttt{run\_server\_collect\_other.sh}) állítja elő és a \texttt{tor\_dataset/other\_tor/}
-könyvtárba menti. A gyűjtés környezetét opcionálisan környezeti változók (pl.
-\texttt{TOR\_WF\_PCAP\_DIR}, \texttt{TOR\_WF\_INTERFACE}, \texttt{TOR\_WF\_GUARD\_IP},
-\texttt{TOR\_WF\_CAPTURE\_DURATION}, \texttt{TOR\_WF\_WARMUP\_DURATION}) szabályozzák.
-Itt a \texttt{TOR\_WF\_INTERFACE} adja meg a \texttt{tcpdump} által figyelt hálózati
-interfészt (pl. \texttt{eth0} vagy \texttt{wlan0}), a \texttt{TOR\_WF\_WARMUP\_DURATION}
-pedig a tényleges mérés előtti bemelegítési időt másodpercben, amely a Tor/circuit
-stabilizálását szolgálja.
+Az open-world ``Other'' osztályt 50\%--50\% arányban bontom tanító/teszt részre, hogy
+valós idejű ismeretlen forgalom esetét szimuláljam.
 
 \section{Feldolgozási pipeline és jellemzők}
 A pipeline három lépésből áll. \textbf{(1)} A PCAP fájlokból kiolvasom az egyes csomagokat,
@@ -85,26 +61,6 @@ jellemzőket számolok. Ilyenek például az összes be- és kimenő csomagszám
 bájtok összege, a csomagok közti érkezési idők statisztikái (átlag, szórás, kvantilisek),
 a kapcsolat időtartama, illetve az irányváltások száma. \textbf{(3)} A jellemzőkön tanítom
 és értékelem a modelleket.
-Az alap 21 jellemzőből minden futásban top-10 készletet választok, így a modellek összehasonlítása
-egységes dimenziószámon történik.
-A jellemzők főbb csoportjait a \ref{tab:feature_groups} táblázat foglalja össze.
-
-\begin{table}[hbt!]
-    \caption{Aggregált folyamjellemzők csoportjai és példák.}
-    \vspace{2mm}
-    \centering
-    \begin{tabular}{ll}
-        \toprule
-        \textbf{Csoport} & \textbf{Jellemzők (példák)} \\ \midrule
-        Csomagszámok & total\_pkts, in\_pkts, out\_pkts \\
-        Bájtstatisztikák & total\_bytes, in\_bytes, out\_bytes, in/out ratio \\
-        Időköz-statisztikák & iat\_mean, iat\_std, iat\_median, iat\_p90 \\
-        Méretstatisztikák & size\_mean, size\_std, size\_median, size\_p90 \\
-        Időtartam és dinamika & duration, direction\_changes \\
-        \bottomrule
-    \end{tabular}
-    \label{tab:feature_groups}
-\end{table}
 
 \section{Modellek és kiértékelés}
 \textbf{Random Forest.} 300 döntési fából álló modell, stabilizált top-10 jellemzőkiválasztással
@@ -115,19 +71,7 @@ arra kényszeríti a modellt, hogy az azonos weboldalhoz tartozó minták beágy
 míg a különböző weboldalaké távol. A beágyazásokon $k=5$ KNN osztályozást végzek.\\
 \textbf{Feature track-ek.} \textit{shared} track-ben egy közös top-10 készletet választok ki a
 mutual information alapján. \textit{optimized} track-ben forgatókönyvenként külön top-10
-készlet készül (RF: több futásból stabilizált fontossági rangsor, DL: mutual information).\\
-\textbf{Mélytanulási beállítások.} A Triplet MLP 30 epochon tanul standardizált bemeneten,
-BatchNorm és Dropout rétegekkel, hogy csökkentse a túltanulást.
-
-\section{Kiértékelési metrikák}
-A teljesítményt pontossággal és macro-F1 értékkel mérem. A pontosság a helyes predikciók
-aránya, a macro-F1 pedig az osztályonként számolt F1-értékek átlaga:
-\begin{equation}
-    \mathrm{Acc} = \frac{1}{N} \sum_{i=1}^{N} \mathbf{1}[\hat{y}_i = y_i], \quad
-    \mathrm{MacroF1} = \frac{1}{C} \sum_{c=1}^{C} \mathrm{F1}_c.
-\end{equation}
-Open-world esetben külön vizsgálom az ``Other'' osztály recall értékét is, mivel ez mutatja,
-hogy az ismeretlen forgalmat mennyire képes a modell leválasztani.
+készlet készül (RF: több futásból stabilizált fontossági rangsor, DL: mutual information).
 
 \section{Ábrák és vizuális összegzés}
 A \texttt{generate\_all\_figures.py} szkript a mentett metrikákból generálja a végső ábrákat,
@@ -193,21 +137,16 @@ forgatókönyv, feature track és osztályszintű viselkedés szerint.
 
 \begin{figure}[hbt!]
     \centering
-    \begin{subfigure}[b]{0.49\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{../figures/07_confusion_matrices.png}
-        \caption{Alap konfúziós mátrixok.}
-        \label{fig:confusion_matrices_raw}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.49\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{../figures/08_confusion_matrices_recall.png}
-        \caption{Recall-normalizált változatok.}
-        \label{fig:confusion_matrices_recall}
-    \end{subfigure}
+    \includegraphics[width=0.95\linewidth]{../figures/07_confusion_matrices.png}
     \caption{Konfúziós mátrixok a főbb forgatókönyvekben (shared track, seed=42).}
-    \label{fig:confusion_matrices_pair}
+    \label{fig:confusion_matrices}
+\end{figure}
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.95\linewidth]{../figures/08_confusion_matrices_recall.png}
+    \caption{Recall-normalizált konfúziós mátrixok ugyanazokra a forgatókönyvekre.}
+    \label{fig:confusion_matrices_recall}
 \end{figure}
 
 \begin{figure}[hbt!]
@@ -218,22 +157,11 @@ forgatókönyv, feature track és osztályszintű viselkedés szerint.
 \end{figure}
 
 \section{Kísérleti beállítások}
-A tanítás és kiértékelés rétegzett tanító/teszt felosztással történik. A zárt világú
-osztályoknál 80\%/20\% arányt használok, míg az open-world ``Other'' osztályt 50\%--50\%
-arányban bontom az ismeretlen forgalomra való általánosítás hangsúlyozására. A stabilitást
-három véletlen mag biztosítja (42, 52, 62). Az eredményeket átlag $\pm$ szórás formában
-közlöm. A metrikák a pontosság (accuracy) és a macro-F1. A zero-shot beállításban a baseline
-adatokon tanított modelleket obfs4 teszt adatokon értékelem. A táblázatok a \textit{shared}
-track eredményeit mutatják.
-
-\section{Reprodukálhatóság és futtatás}
-A pipeline fő lépései az alábbi parancsokkal futtathatók:
-\begin{itemize}
-    \item \texttt{python src/extract\_all\_features.py}
-    \item \texttt{python src/evaluate\_all\_rf.py}
-    \item \texttt{python src/evaluate\_all\_dl.py}
-    \item \texttt{python src/generate\_all\_figures.py}
-\end{itemize}
+A tanítás és kiértékelés rétegzett tanító/teszt felosztással történik. A stabilitást három
+véletlen mag biztosítja (42, 52, 62). Az eredményeket átlag $\pm$ szórás formában közlöm.
+A metrikák a pontosság (accuracy) és a macro-F1. A zero-shot beállításban a baseline adatokon
+tanított modelleket obfs4 teszt adatokon értékelem. A táblázatok a \textit{shared} track
+eredményeit mutatják.
 
 \section{Eredmények}
 \begin{table}[hbt!]
@@ -288,21 +216,15 @@ osztályoktól, ugyanakkor ez nem feltétlenül jelent magas precíziót
     \item A vizsgálat aggregált folyamjellemzőkre épül, ami részben elfedheti a finom időbeli mintázatokat.
     \item Az open-world ``Other'' osztály sokféle weboldal forgalmát fogja össze, ezért a modell
     nehezebben választja el a zárt világú osztályoktól, ami csökkentheti a precíziós mutatókat.
-    \item A top-10 jellemzők statikus kiválasztása miatt a ritkább, de informatív mintázatok elveszhetnek.
 \end{itemize}
 
 \section{Következtetések és jövőbeli munka}
 A projekt igazolja, hogy a klasszikus és mélytanulási modellek eltérő erősségekkel rendelkeznek
 a Tor WF feladatban. A Random Forest magas baseline teljesítményt ad, míg a Triplet MLP
-zero-shot helyzetekben jobb általánosítást mutat. A jövőben a drift-robosztus tanítás
-(az időben változó forgalmi eloszláshoz igazított tréning, pl. időablakos validálás vagy
-domain-invariáns reprezentációk) és az adaptív újratanulás (drift detektálás után
-periodikus vagy online frissítés friss adatokból) lehet indokolt. Emellett a finomabb
-idősoros jellemzők integrálása is ígéretes (csomag-idősor, burst-mintázatok, n-gram vagy
-embedding alapú leírás), mert ezek érzékenyebben ragadják meg a forgalom dinamikáját.
-Végül érdemes a modellfrissítés költség-hatékonyságát is vizsgálni: mennyi új adat és
-számítási idő szükséges adott teljesítmény-nyereséghez, és milyen frissítési gyakoriság
-adja a legjobb kompromisszumot.
+zero-shot helyzetekben jobb általánosítást mutat. A jövőben a drift-robosztus tanítás,
+adaptív újratanulás, és finomabb idősoros jellemzők integrálása lehet indokolt. Emellett
+érdemes a hosszabb időhorizonton gyűjtött adatok elemzése és a modellfrissítés költség-hatékonyságának
+vizsgálata.
 
 \begin{thebibliography}{9}
     \bibitem{cherubin2022}

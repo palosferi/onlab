@@ -6,7 +6,7 @@ This document outlines the repository structure and provides step-by-step instru
 * `docs/` - Planning documents, written reports, and project summaries.
 * `figures/` - Generated evaluation charts (.png) and metric reports (.json).
 * `logs/` - Structured JSONL events and collection logs.
-* `scripts/` - Bash and Python scripts for server-side data collection and Overleaf synchronization.
+* `scripts/` - Bash and Python scripts for server-side data collection.
 * `src/` - Core Python pipeline for feature extraction, model training, and evaluation.
 * `tor_dataset/` - Raw PCAP files and extracted CSV features, organized by baseline, obfs4, and other.
 
@@ -43,11 +43,3 @@ Generate visualizations based on the trained models and output metrics.
 
 * Run command: `python src/generate_all_figures.py`
 * Output: PNG charts saved to the `figures/` directory, including closed-world summaries, macro-F1 comparisons, shared-vs-optimized deltas, open-world focus charts, feature importance plots, confusion matrices, and recall-normalized confusion matrices.
-
-## 5. Overleaf Synchronization
-To keep your thesis document updated with the latest figures and JSON metrics without manually uploading files:
-
-* Clone your Overleaf Git repository to your local machine.
-* Export the environment variable for your cloned repo path: `export OVERLEAF_REPO=/path/to/overleaf-clone`
-* Run the sync script: `./scripts/sync_to_overleaf.sh`
-* Navigate to your Overleaf clone, commit the changes, and push to the Overleaf remote repository.
