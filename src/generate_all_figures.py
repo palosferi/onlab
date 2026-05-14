@@ -222,12 +222,12 @@ def plot_final_bar_chart():
 
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "01_closed_world_summary.png"),
+        os.path.join(FIGURES_DIR, "01_closed_world_summary.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Generated: 01_closed_world_summary.png")
+    print("Generated: 01_closed_world_summary.pdf")
 
 
 def plot_all_scenarios_macro_f1_chart():
@@ -260,12 +260,12 @@ def plot_all_scenarios_macro_f1_chart():
     ax.tick_params(axis="x", rotation=15)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "02_macro_f1_all_scenarios.png"),
+        os.path.join(FIGURES_DIR, "02_macro_f1_all_scenarios.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Generated: 02_macro_f1_all_scenarios.png")
+    print("Generated: 02_macro_f1_all_scenarios.pdf")
 
 
 def plot_all_scenarios_accuracy_chart():
@@ -298,12 +298,12 @@ def plot_all_scenarios_accuracy_chart():
     ax.tick_params(axis="x", rotation=15)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "10_accuracy_all_scenarios.png"),
+        os.path.join(FIGURES_DIR, "10_accuracy_all_scenarios.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Generated: 10_accuracy_all_scenarios.png")
+    print("Generated: 10_accuracy_all_scenarios.pdf")
 
 
 def plot_shared_vs_optimized_delta_chart():
@@ -359,12 +359,12 @@ def plot_shared_vs_optimized_delta_chart():
     fig.suptitle("Shared vs Optimized Feature Track Improvements", fontsize=14)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "03_shared_vs_optimized_delta.png"),
+        os.path.join(FIGURES_DIR, "03_shared_vs_optimized_delta.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Generated: 03_shared_vs_optimized_delta.png")
+    print("Generated: 03_shared_vs_optimized_delta.pdf")
 
 
 def plot_open_world_focus_chart():
@@ -406,12 +406,12 @@ def plot_open_world_focus_chart():
     fig.suptitle("Open-World Performance Focus", fontsize=14)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "04_open_world_focus.png"),
+        os.path.join(FIGURES_DIR, "04_open_world_focus.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Generated: 04_open_world_focus.png")
+    print("Generated: 04_open_world_focus.pdf")
 
 
 def get_feature_importance(X, y):
@@ -476,7 +476,7 @@ def plot_feature_importance(
     fig.suptitle("Random Forest Feature Importance (Scenario-Specific Ordering)", fontsize=14)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "05_feature_importance_shared.png"),
+        os.path.join(FIGURES_DIR, "05_feature_importance_shared.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
@@ -572,13 +572,13 @@ def plot_feature_importance(
     fig.suptitle("Random Forest Feature Importance (Independent Top-10 Lists)", fontsize=14)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "06_feature_importance_separate.png"),
+        os.path.join(FIGURES_DIR, "06_feature_importance_separate.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
 
-    print("Generated: 05_feature_importance_shared.png (+ 06_feature_importance_separate.png)")
+    print("Generated: 05_feature_importance_shared.pdf (+ 06_feature_importance_separate.pdf)")
 
 
 def plot_feature_stability_chart():
@@ -622,12 +622,12 @@ def plot_feature_stability_chart():
     ax.grid(axis="x", linestyle="--", alpha=0.6)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "11_feature_stability_rf.png"),
+        os.path.join(FIGURES_DIR, "11_feature_stability_rf.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Generated: 11_feature_stability_rf.png")
+    print("Generated: 11_feature_stability_rf.pdf")
 
 
 def plot_confusion_matrices_from_metrics():
@@ -672,12 +672,12 @@ def plot_confusion_matrices_from_metrics():
 
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "07_confusion_matrices.png"),
+        os.path.join(FIGURES_DIR, "07_confusion_matrices.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Generated: 07_confusion_matrices.png")
+    print("Generated: 07_confusion_matrices.pdf")
 
 
 def plot_confusion_matrices_recall():
@@ -731,12 +731,12 @@ def plot_confusion_matrices_recall():
 
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "08_confusion_matrices_recall.png"),
+        os.path.join(FIGURES_DIR, "08_confusion_matrices_recall.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Generated: 08_confusion_matrices_recall.png")
+    print("Generated: 08_confusion_matrices_recall.pdf")
 
 
 def plot_other_recall_open_world():
@@ -769,12 +769,12 @@ def plot_other_recall_open_world():
     ax.legend(fontsize=10)
     plt.tight_layout()
     plt.savefig(
-        os.path.join(FIGURES_DIR, "09_other_recall_open_world.png"),
+        os.path.join(FIGURES_DIR, "09_other_recall_open_world.pdf"),
         dpi=300,
         bbox_inches="tight",
     )
     plt.close()
-    print("Generated: 09_other_recall_open_world.png")
+    print("Generated: 09_other_recall_open_world.pdf")
 
 
 def main():
