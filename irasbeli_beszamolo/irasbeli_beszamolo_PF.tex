@@ -54,6 +54,8 @@
 \usepackage{graphicx} %for graphics
 \usepackage{subcaption}
 \usepackage{placeins}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta}
 %kepek helye a gyokerhez(ehhez a file-hoz kepest) kepest
 \graphicspath{{./figs/}}
 
@@ -129,38 +131,17 @@
 
  
   %\szerzo argumentumok: #1=Név, #2=Neptunkód, #3=szakirány, #4=email,#5 konzulens-1, #6 konzulens-1-email
-  \onlabszerzo{Pálos Ferenc}{U1OTPN}{Mérnökinformatikus szak}{palosferenc@proton.me}{Ladóczki Bence}{ladoczki.bence@vik.bme.hu}{}{}
+    \onlabszerzo{Pálos Ferenc}{U1OTPN}{Mérnökinformatikus szak}{palosferenc@proton.me}{Dr. Ladóczki Bence}{ladoczki.bence@vik.bme.hu}{}{}
  
   %\feladatcim argumentuma a feladat rövid, 1 soros címe
-  \feladatcim{Website Fingerprinting vizsgálata Tor hálózaton} 
+    \feladatcim{Weboldal-ujjlenyomat-készítés (website fingerprinting) vizsgálata Tor hálózaton} 
 
   %\feladatmaga argumentuma a feladat 1-2 bekezdésnyi ismertetése
-  \feladatmaga{A Tor egy népszerű anonimizáló hálózat, amely napi több
-    millió felhasználó adatvédelmét szolgálja több ezer, önkéntesek
-    által üzemeltetett proxy segítségével. A hálózat célja, hogy
-    elrejtse a kommunikáció forrását és célját, így védve a
-    felhasználókat a megfigyeléstől, nyomkövetéstől és cenzúrától.
-    Ugyanakkor az egyik jelentős fenyegetés a Website Fingerprinting
-    (WF) támadás, amely során a támadó a belépési pont forgalmának
-    megfigyelésével következtethet a meglátogatott weboldalakra.
-    A feladat célja annak vizsgálata, hogy a WF támadások mennyire
-    jelentenek valós fenyegetést a Tor felhasználói számára, és hogy
-    eltérő forgalmi környezetekben (baseline, obfs4), valamint ismeretlen
-    forgalom mellett hogyan változik a modellek teljesítménye.
+  \feladatmaga{A Tor egy népszerű anonimizáló hálózat, amely napi több millió felhasználó adatvédelmét szolgálja önkéntesek által üzemeltetett proxyk (köztes átjátszó szerverek) segítségével. Célja, hogy elrejtse a kommunikáció forrását és célját, védve a felhasználókat a megfigyeléstől és a cenzúrától. Az anonimitást fenyegető egyik legjelentősebb támadási forma a weboldal-ujjlenyomat-készítés (website fingerprinting, WF), amely során a támadó a Tor hálózatba való belépési pont forgalmából következtethet a meglátogatott oldalakra. A projekt célja annak vizsgálata, hogy a WF támadások mekkora valós fenyegetést jelentenek a Tor felhasználóira, és hogy különböző forgalmi környezetekben – normál Tor forgalomban (baseline) és obfs4 pluggable transport (forgalom-elfedő modul) mellett –, illetve ismeretlen webhelyekkel bővített (nyílt világú) beállításban hogyan változik a gépi tanulási modellek teljesítménye.
 
-    Ennek részeként elvárás a valós forgalmi minták gyűjtése szimulált
-    környezetben, etikus keretek között, az adatok előkészítése a
-    gépi tanulási feldolgozáshoz, valamint egységes feature tér és
-    top-10 kiválasztási stratégiák kialakítása, hogy a modellek
-    összehasonlíthatóak legyenek különböző forgatókönyvekben.
+Ennek részeként elvárás a valós forgalmi minták gyűjtése szimulált környezetben, etikus keretek között, az adatok előkészítése a gépi tanuláshoz, valamint egy egységes jellemzőtér és a top-10 leginformatívabb jellemző kiválasztási stratégiájának kialakítása az alkalmazott modellcsaládok teljesítményének összehasonlíthatósága érdekében.
 
-    A feladat második részeként két eltérő modellcsalád kidolgozása és
-    kiértékelése szükséges: egy klasszikus gépi tanulási megoldás
-    (Random Forest) és egy mélytanulási beágyazás-alapú modell
-    (Triplet MLP + KNN). A kiértékelés egységes metrikákkal
-    (pontosság, macro-F1), több véletlen maggal és ábragenerálással
-    történjen, valamint a domain shift és a zero-shot beállítások
-    hatását is számszerűsíteni kell.}
+A munka második részeként két eltérő megközelítés kidolgozása és kiértékelése szükséges: egy klasszikus gépi tanulási megoldás (Random Forest) és egy reprezentáció-tanuláson alapuló architektúra (Triplet MLP + KNN), amely egy tanult beágyazási téren alkalmaz KNN osztályozást. A kiértékelésnek egységes metrikákkal (pontosság, macro-F1) és az eredmények grafikus ábrázolásával kell történnie. A tanítási és tesztelési adatok eloszlás-eltolódását (domain shift), amely a baseline és az obfs4 adatok közti különbségből adódik, valamint a zero-shot beállítások hatását – ahol a betanítás és a tesztelés eltérő környezetben történik – szintén számszerűsíteni kell.}
 
  
   %\tanevfelev argumentumok:
@@ -169,6 +150,8 @@
   \tanevfelev{2025/26}{II}
  
 \end{titlepage} 
+
+\setcounter{page}{2}
 
 %==================================================================
 \section{A laboratóriumi munka környezetének ismertetése,
@@ -179,210 +162,169 @@
 \subsection{Bevezető}
 \label{sec:bevezeto}
 
-Ez a beszámoló a Tor hálózaton végzett website fingerprinting (WF)
-feladatot tárgyalja. A Tor célja a felhasználók anonimitásának
-megőrzése, ugyanakkor a belépési ponton látható forgalmi mintázatok
-alapján egy támadó a meglátogatott weboldalakra következtethet. A WF
-gyakorlatban is releváns, mert a webes tartalmak és a hálózati
-környezet időben változik, továbbá a Tor ökoszisztémában megjelennek
-forgalom-elfedést célzó technikák is (pl. obfs4). Ez a projekt ezért
-nemcsak zárt világú, hanem zero-shot és nyílt világú forgatókönyvekben
-is vizsgálja a modellek teljesítményét.
+Jelen beszámoló a Tor hálózaton végzett weboldal-ujjlenyomat-készítés (website fingerprinting, WF) támadás vizsgálatát tárgyalja. A Tor célja a felhasználók anonimitásának megőrzése, ugyanakkor a Tor hálózatba való belépési ponton látható forgalmi mintázatok alapján egy külső megfigyelő következtethet a meglátogatott weboldalakra. Ezen támadási módszert azért fontos a gyakorlatban vizsgálni, mert a weboldalak felépítése és a hálózati környezet állapota (pl. csomópontok terhelése, obfs4 használata) időben változik, ami befolyásolja a támadás teljesítményét. A módszer stabilitásának felméréséhez ezt a változást számszerűsíteni kell. A Tor ökoszisztémában emellett megjelentek a forgalom-elfedést célzó technikák (pl. obfs4 pluggable transport) is, ezért a jelen vizsgálat zárt világú (closed-world), nyílt világú (open-world), valamint zero-shot beállításokat egyaránt tartalmaz. Zárt világ esetén a modell csak az előre ismert weboldalakat különbözteti meg, nyílt világban viszont az ismeretlen oldalak egy közös, ``Other'' gyűjtőosztályba kerülnek. A zero-shot kiértékelés során a modell betanítása egy adott környezetben történik, majd az értékelést egy attól eltérő környezetből származó forgalmon (pl. normál Tor forgalmon tanítva, de obfs4 forgalmon tesztelve) hajtja végre.
 
-A WF valós környezetben is releváns, és Toron mért forgalom alapján
-értékelhető támadói teljesítményt mutat\cite{cherubin2022}. A vizsgálat
-fókusza a domain shift (baseline vs. obfs4), a zero-shot általánosítás és
-a nyílt világú ismeretlen forgalom kezelése.
+Korábbi kutatások \cite{cherubin2022} rámutattak, hogy a WF támadások a Tor hálózat valós forgalmában is releváns fenyegetést jelentenek, ami indokolja a gyakorlati körülmények közötti vizsgálatukat. A beszámoló fókusza ennek megfelelően az eloszlás-eltolódás (domain shift) mérése – azaz a baseline és az obfs4 forgalom statisztikai eltéréseinek vizsgálata –, a zero-shot általánosítási képesség elemzése, valamint a nyílt világú, ismeretlen forgalom kezelése.
 
-A munka célja egy reprodukálható, végponttól végpontig futtatható
-feldolgozási lánc felépítése volt: a PCAP állományokból kiindulva a
-jellemzők kinyerésén és a modellek tanításán át egészen a kiértékelési
-metrikákig és ábrákig. A vizsgálat két eltérő modellcsaládot hasonlít
-össze: egy klasszikus gépi tanulási megoldást (Random Forest) és egy
-mélytanulási beágyazás-alapú modellt (Triplet MLP + KNN). A szakasz célja,
-hogy megadja a tágabb kontextust és rögzítse, miért ez a megközelítés
-indokolt a témában.
+A munka gyakorlati célja egy teljes mértékben reprodukálható adatfeldolgozási lánc (pipeline) felépítése volt: a nyers PCAP (packet capture) állományokból kiindulva, a jellemzők kinyerésén és a modellek betanításán át, egészen a kiértékelési metrikák kiszámításáig és az eredmények vizualizációjáig. A vizsgálat keretében két eltérő modellcsalád kerül összehasonlításra: egy klasszikus gépi tanulási megoldás (Random Forest) és egy reprezentáció-tanuláson alapuló architektúra (Triplet MLP + KNN).
 
 \subsection{Elméleti összefoglaló}
 
-Website fingerprinting során a támadó nem a tartalmat, hanem a
-metaadatokat figyeli (csomagméret, irány, érkezési idők), és ezekből
-próbálja a látogatott weboldalt azonosítani. A feladat tipikusan
-felügyelt osztályozás: minden weboldal egy osztály, a minták pedig a
-weboldal-látogatások forgalmi lenyomatai. Zárt világú beállításban
-csak ismert osztályok léteznek, nyílt világban viszont megjelenik egy
-gyűjtő ``Other'' kategória, amely az ismeretlen webhelyeket fedi le.
-A zero-shot eset a gyakorlatban fontos: a modell olyan forgalomra
-kerül kiértékelésre (pl. obfs4), amelynek eloszlása eltér a tanítástól.
+A WF során a támadó nem a hálózati forgalom tartalmát, hanem annak metaadatait (csomagméret, irány, érkezési idők) figyeli meg, és ezekből próbálja azonosítani a meglátogatott weboldalt. A probléma tipikusan egy felügyelt osztályozási feladat, ahol minden weboldal egy önálló osztályt képvisel, a mintákat pedig a weboldal-látogatások forgalmi lenyomatai alkotják. Zárt világú (closed-world) beállításban kizárólag előre ismert osztályok léteznek, nyílt világban (open-world) viszont megjelenik egy aggregált ``Other'' kategória is, amely az ismeretlen webhelyeket foglalja magában. A zero-shot beállítás esetén a modell kiértékelése olyan forgalmon történik, amely eltérő környezetből származik (pl. baseline adaton történő betanítás után obfs4 forgalmon), így a tesztadatok jellemzői eltérnek a tanító adatokétól.
 
-A domain shift jelensége miatt a baseline-on tanult modellek obfs4
-forgalmon romolhatnak, ezért a kiértékelési keretben külön szerepet kap
-a baseline/obfs4 összevetés és a zero-shot beállítás.
+A tanítási és tesztelési adatok eloszlásának eltérése (eloszlás-eltolódás, domain shift) azt jelenti, hogy ugyanazon webhelyek forgalmi statisztikái megváltoznak a baseline és az obfs4 környezet között (pl. a csomagok időköz- és méretstatisztikái eltolódnak). Mivel ez a jelenség az adott környezetben betanított modellek teljesítményének jelentős degradációjához vezethet új környezetben, a kiértékelési keretrendszerben kiemelt szerepet kap a baseline és az obfs4 forgalom összevetése, valamint a zero-shot teljesítmény mérése.
 
-A WF megoldások két fő irányba sorolhatók. Az egyik a kézzel tervezett,
-aggregált jellemzők használata, ahol egy kapcsolatot jellemző statisztikák
-(csomagszámok, bájtstatisztikák, időköz- és méretstatisztikák, időtartam,
-irányváltások) kerülnek a modell bemenetére. A másik a mélytanulási
-megközelítés, amely a jellemzőteret maga tanulja, például beágyazásokon
-alapuló osztályozással\cite{sirinam2018}. A jelen munka mindkét irányt
-vizsgálja: a Random Forest a statisztikus jellemzők robusztus baseline-ja,
-míg a Triplet MLP
-beágyazást tanul, amelyre KNN osztályozás épül.
+A WF támadások vizsgálata alapvetően két fő irányra bontható. Az egyik a kézzel tervezett (hand-crafted), aggregált jellemzők használata, ahol egy-egy kapcsolatot leíró statisztikák (pl. csomagszámok, bájtstatisztikák, időtartam, irányváltások) kerülnek a modell bemenetére. A másik a mélytanulási megközelítés, amely a reprezentációt közvetlenül az adatokból tanulja meg \cite{sirinam2018}. Jelen munka mindkét irányt alkalmazza: a Random Forest egy robusztus, jól értelmezhető klasszikus algoritmusként szolgál, míg a Triplet MLP egy tanult beágyazási térben végzi a KNN-alapú osztályozást.
 
-A kiértékeléshez a pontosság és a macro-F1 a fő metrikák, mert több
-osztály esetén a teljesítmény kiegyensúlyozott megítélését adják.
-Nyílt világban külön fontos az ``Other'' osztály recall értéke is,
-hiszen ez mutatja meg, hogy az ismeretlen forgalom mennyire válik el a
-zárt világú osztályoktól. Ezek a fogalmak adják a további fejezetek
-értékelési keretét.
+A modellek teljesítményének elsődleges mérőszámai a pontosság (accuracy) és a macro-F1 érték, mivel többosztályos problémák esetén ezek biztosítják a teljesítmény kiegyensúlyozott megítélését. Nyílt világú beállításnál kiemelt fontosságú az ``Other'' osztály visszahívása (recall) is, hiszen ez mutatja meg, hogy a modell milyen hatékonysággal képes az ismeretlen forgalmat elkülöníteni a már ismert, zárt világú osztályoktól.
+
+\subsection{Laboratóriumi környezet és eszközök}
+A mérések és a kiértékelési pipeline egyetlen, kontrollált
+laboratóriumi környezetben futott, hogy a Tor és a pluggable transport
+viselkedését ne befolyásolja külső zaj. Az alábbi paraméterek szükségesek
+ahhoz, hogy a környezet mások számára is reprodukálható legyen:
+\begin{itemize}
+    \item \textbf{Operációs rendszer és kernel:} Linux Mint 22.2 (Zara), kernel 6.14.0-37-generic.
+    \item \textbf{Hardver:} Intel Core i5-5200U (2 mag / 4 szál), 7.7 GiB RAM, lemez: 1 TB WDC WD10JPVX + 1 TB WDC WD1003FZEX, interfész: enp3s0.
+    \item \textbf{Tor/obfs4 verziók:} Tor 0.4.8.10, obfs4proxy 0.0.14.
+    \item \textbf{Böngésző és automatizálás:} Chromium 145.0.7632.116 + ChromeDriver 145.0.7632.116, Selenium alapú headless vezérlés.
+    \item \textbf{Capture eszköz:} tcpdump 4.99.4 (libpcap 1.10.4).
+    \item \textbf{Tor konfiguráció:} TOR\_WF\_INTERFACE=enp3s0, TOR\_WF\_GUARD\_IP=109.110.170.208, TOR\_WF\_CAPTURE\_DURATION=15s, TOR\_WF\_WARMUP\_DURATION=3s, SOCKS (helyi proxy) 127.0.0.1:9050, ControlPort (vezérlő port) 127.0.0.1:9051.
+\end{itemize}
 
 \subsection{A munka állapota, készültségi foka a félév elején}
 \label{sec:munka-allap-kesz}
 
-A félév elején nem állt rendelkezésre átadott kód, adatgyűjtés vagy
-korábbi mérési eredmény, és a témában korábban nem végeztem önálló
-kutatást. A kiindulási alapot a feladatkiírás és a munkaterv adta,
-valamint az egyetemi kurzusokból szerzett alapismereteim (gépi tanulás,
-hálózati forgalom menedzsment). Ennek megfelelően a munka nulláról
-indult, a mérési infrastruktúra, a feldolgozási pipeline és a
-kiértékelési keretrendszer felépítésével.
+A laboratóriumi munka megkezdésekor nem állt rendelkezésre korábbi forráskód, rögzített adathalmaz vagy előzetes mérési eredmény. A projekt kiindulási alapját kizárólag a feladatkiírás, az egyeztetett munkaterv, valamint az előzetes egyetemi tanulmányok során elsajátított elméleti ismeretek (gépi tanulás, hálózati forgalom menedzsment) képezték. Ennek megfelelően a megvalósítás az alapoktól indult: az első fázis a mérési infrastruktúra, az adatfeldolgozási lánc (pipeline), valamint a kiértékelési keretrendszer teljeskörű kialakítását foglalta magában.
 
-\newpage
 %==================================================================
 \section{Az elvégzett munka és az eredmények ismertetése}
 \label{sec:az-elvegzett-munka}
 
 
 \subsection{Áttekintés}
-A beszámoló a Tor hálózaton végzett weboldal ujjlenyomat-készítés (Website
-Fingerprinting, WF) feladatát mutatja be, két eltérő modellcsalád
-összehasonlításával: klasszikus gépi tanulás (Random Forest) és
-mélytanulás (Triplet MLP + KNN). A vizsgálat a zárt világú (baseline, obfs4),
-a zero-shot és a nyílt világú (open-world) forgatókönyvekben méri a
-teljesítményt. A végső értékelés a futtatott Python pipeline által számolt
-metrikákon és a generált ábrákon alapul. A Random Forest erős baseline és
-obfs4 teljesítményt ad, míg a Triplet MLP a zero-shot beállításokban
-kedvezőbb általánosítást mutat. A dokumentum részletesen bemutatja az
-adatgyűjtési és reprodukálhatósági lépéseket is, hogy a pipeline
-végponttól végpontig újrafuttatható legyen.
+
+Jelen beszámoló a Tor hálózaton végzett weboldal-ujjlenyomat-készítés (WF) támadás átfogó vizsgálatát mutatja be, két eltérő modellcsalád összehasonlításával: egy klasszikus gépi tanulási algoritmus (Random Forest, RF) és egy mélytanulás-alapú architektúra (Triplet MLP + KNN, DL) bevonásával. A modellek teljesítményének mérése zárt világú (closed-world) és nyílt világú (open-world) osztályozási feladatokon, valamint domainek közötti (zero-shot) forgatókönyvek alapján történik, mind normál Tor (baseline), mind forgalom-elfedő (obfs4) környezetben. 
+
+Az eredmények alapján a Random Forest algoritmus magasabb osztályozási pontosságot ér el a megegyező környezetben tanított és tesztelt (baseline és obfs4) esetekben, míg a Triplet MLP robusztusabbnak bizonyul, és jobban általánosít a zero-shot kiértékelés során. A dokumentum részletesen tárgyalja a szimulált adatgyűjtés folyamatát és az automatizált adatfeldolgozási lánc lépéseit is, ezáltal biztosítva az eredmények teljes reprodukálhatóságát.
 
 \subsection{Célkitűzések és hozzájárulások}
-A projekt célja egy reprodukálható WF pipeline kialakítása és két
-modellcsalád objektív összehasonlítása a Tor forgalomban jelentkező
-domain shift és ismeretlen forgalom kezelésére. Ennek keretében:
+A projekt elsődleges célja egy reprodukálható WF adatfeldolgozási lánc (pipeline) kialakítása, valamint két eltérő modellcsalád objektív összehasonlítása volt. A kiértékelés kiemelt hangsúlyt fektet a Tor forgalomban jelentkező eloszlás-eltolódásra (domain shift), azaz a tanítási és tesztelési adatok statisztikai eltérésére, illetve az ismeretlen forgalom (nyílt világú beállítás) kezelésére. A jellemzőkiválasztás (feature selection) során két stratégia került meghatározásra: a \textit{shared} beállítás esetén a teljes kiértékelés során egyetlen, fix top-10 jellemzőlista kerül alkalmazásra, míg az \textit{optimized} megközelítés környezetenként (pl. baseline, obfs4, nyílt világ) külön határozza meg a leginformatívabb top-10 jellemzőt. 
+
+A munka legfőbb hozzájárulásai a következők:
 \begin{itemize}
-    \item a PCAP állományoktól a kiértékelési metrikákig egy végig automatizált feldolgozási láncot raktam össze,
-    \item aggregált folyamjellemzőket definiáltam és egységes 21-dimenziós feature teret alkalmaztam,
-    \item \textit{shared} és \textit{optimized} top-10 feature track-eket vezettem be,
-    \item egységes ábragenerálást biztosítottam a kiértékelési JSON-okból,
-    \item az open-world ``Other'' osztály kezelését és a zero-shot beállításokat külön mérési szálként kezeltem.
+    \item Egy teljesen automatizált feldolgozási lánc implementálása, amely a nyers PCAP állományok feldolgozásától a kiértékelési metrikák kiszámításáig terjed.
+    \item Aggregált folyamjellemzők (flow features) definiálása és egy egységes, 21 dimenziós jellemzőtér kialakítása.
+    \item Két eltérő top-10 jellemzőkiválasztási stratégia (\textit{shared}, \textit{optimized}) implementálása és összehasonlítása.
+    \item Egységes és automatizált vizualizációs modul (ábragenerálás) létrehozása a kiértékelés során keletkező JSON eredményfájlok alapján.
+    \item A nyílt világú ``Other'' osztály kezelésének, valamint a zero-shot általánosítási képességnek az elkülönített, önálló mérési forgatókönyvként történő kiértékelése.
 \end{itemize}
 
-\subsection{Adatok és forgatókönyvek}
-A mérés három adatdoménen történik: baseline Tor forgalom, obfs4 Tor
-forgalom, valamint az open-world ``Other'' kategória. A fő
-forgatókönyvek:
+\subsection{Adatok és beállítások}
+
+A kiértékelés három fő forgalmi tartományon (domain) történik: normál Tor forgalom (baseline), forgalom-elfedő modullal (pluggable transport) generált forgalom (obfs4), valamint a nyílt világú ismeretlen forgalom (``Other'' kategória). Az egyes vizsgálati forgatókönyvek (scenariók) az adatkörnyezet és a kiértékelési mód kombinációjából épülnek fel. A fő beállítások az alábbiak:
 \begin{itemize}
-    \item \textbf{Baseline (closed-world):} standard Tor böngészés.
-    \item \textbf{Obfs4 (closed-world):} obfs4 pluggable transport által elfedett forgalom.
-    \item \textbf{Zero-shot:} baseline-on tanított modellek tesztelése obfs4 forgalmon.
-    \item \textbf{Open-world:} ``Other'' kategória hozzáadása az ismeretlen oldalak modellezésére.
+    \item \textbf{Baseline (zárt világú):} Normál Tor forgalom, kizárólag előre ismert osztályokkal (weboldalakkal).
+    \item \textbf{Obfs4 (zárt világú):} Obfs4 protokoll által elfedett forgalom, kizárólag előre ismert osztályokkal.
+    \item \textbf{Zero-shot:} Baseline forgalmon betanított modellek tesztelése obfs4 forgalmon (a domainek közötti általánosítási képesség vizsgálata).
+    \item \textbf{Nyílt világú (Open-world):} Az ``Other'' kategória bevonása az ismeretlen weboldalak modellezésére.
 \end{itemize}
-A zárt világú osztályokat rétegzett 80\%/20\% tanító/teszt felosztással
-értékelem. Az open-world ``Other'' osztályt ezzel szemben 50\%--50\%
-arányban bontom tanító/teszt részre, mert itt a cél nem az adott
-``Other'' webhelyek pontos felismerése, hanem az ismeretlen forgalomra
-való általánosítás. A nagyobb ``Other'' teszt rész valósághűbb
-``ismeretlen'' mintaállományt ad, csökkenti a recall becslés zaját, és
-akkor is értelmezhető méretű tesztet hagy, ha az ``Other'' mintaszám
-kisebb.
+
+Az elemzéshez rögzített adatkészlet főbb paraméterei:
+\begin{itemize}
+    \item \textbf{Monitorozott oldalak száma:} 36 zárt világú (ismert) célpont.
+    \item \textbf{Mintaszám célpontonként:} Baseline környezetben 30--34 minta/webhely (összesen 1123 PCAP); obfs4 környezetben 29--30 minta/webhely (összesen 1050 PCAP); az ``Other'' kategóriában 2--5 minta/webhely (összesen 64 PCAP).
+    \item \textbf{``Other'' kategória összetétele:} 20 különböző, a zárt világú halmazban nem szereplő (ismeretlen) webhely.
+    \item \textbf{Adatgyűjtési paraméterek:} 3 másodperc bemelegítési (warmup) fázis, amelyet 15 másodperc aktív rögzítés (capture) követett.
+\end{itemize}
+
+A zárt világú osztályok esetén a kiértékelés rétegzett (stratified) 80\%/20\% arányú tanító/teszt felosztással történik. A nyílt világú ``Other'' osztály esetében ezzel szemben 50\%/50\%-os arányú a szétválasztás, mivel itt nem a konkrét webhelyek osztályozása a cél, hanem az ismeretlen forgalom megbízható felismerése (általánosítás). A megnövelt arányú teszthalmaz valósághűbb ismeretlen mintaállományt biztosít, csökkenti a visszahívás (recall) becslésének statisztikai zaját, és alacsonyabb összmintaszám esetén is robusztusabb kiértékelést tesz lehetővé.
 
 \subsection{Adatgyűjtés és előfeldolgozás}
-Az adatgyűjtés automatizált headless böngészéssel és \texttt{tcpdump}-pal
-történik, aktív Tor SOCKS proxy és ControlPort mellett. A SOCKS proxy a
-Tor hálózatra irányítja a böngésző forgalmát, míg a ControlPort a Tor
-példány vezérlését teszi lehetővé (pl. új áramkör kérése,
-állapotlekérdezés). A zárt világú baseline/obfs4 forgalmat a
-\texttt{scripts/collection/collector.py} (futtató:
-\texttt{run\_collector.sh}) gyűjti, míg az open-world ``Other'' adatokat a
-\texttt{server\_collect\_other.py} szkript (futtató:
-\texttt{run\_server\_collect\_other.sh}) állítja elő és a
-\texttt{tor\_dataset/other\_tor/} könyvtárba menti. A gyűjtés környezetét
-opcionálisan környezeti változók (pl. \texttt{TOR\_WF\_PCAP\_DIR},
-\texttt{TOR\_WF\_INTERFACE}, \texttt{TOR\_WF\_GUARD\_IP},
-\texttt{TOR\_WF\_CAPTURE\_DURATION}, \texttt{TOR\_WF\_WARMUP\_DURATION})
-szabályozzák. Itt a \texttt{TOR\_WF\_INTERFACE} adja meg a \texttt{tcpdump}
-által figyelt hálózati interfészt (pl. \texttt{eth0} vagy \texttt{wlan0}),
-a \texttt{TOR\_WF\_WARMUP\_DURATION} pedig a tényleges mérés előtti
-bemelegítési időt másodpercben, amely a Tor/circuit stabilizálását
-szolgálja.
+Az adatgyűjtés automatizált, grafikus felület nélküli (headless) böngésző és a \texttt{tcpdump} csomagrögzítő eszköz segítségével történik, aktív Tor SOCKS proxy és ControlPort kapcsolat alkalmazása mellett. A SOCKS proxy a böngésző teljes forgalmát a Tor hálózatba irányítja, míg a ControlPort a helyi Tor példány vezérlését (pl. új hálózati áramkörök -- \textit{circuit} -- felépítésének kikényszerítése, állapotlekérdezés) biztosítja. A baseline, az obfs4 és az ``Other'' adathalmazok egymástól elkülönített mérési fázisokból származnak.
+
+Az adatgyűjtő keretrendszer rugalmasan paraméterezhető (pl. célkönyvtár, vizsgált hálózati interfész, rögzítési és bemelegítési időablakok megadása). A bemelegítési (warmup) fázis alkalmazása azért kritikus fontosságú, mert ez biztosítja a Tor hálózati útvonalak stabilizálódását még a tényleges csomagrögzítés (capture) megkezdése előtt. A rendszer reprodukálásához szükséges részletes konfigurációs és futtatási utasításokat a mellékelt \texttt{README} dokumentáció tartalmazza.
 
 \subsection{Feldolgozási pipeline és jellemzők}
-A pipeline három lépésből áll. \textbf{(1)} A PCAP fájlokból kiolvasom az
-egyes csomagokat, és csomagonkénti idősorokat készítek (mikor jött a
-csomag, mekkora volt, milyen irányban haladt). \textbf{(2)} Ezekből az
-idősorokból egy-egy kapcsolatot összefoglaló, aggregált jellemzőket
-számolok. Ilyenek például az összes be- és kimenő csomagszám, a be- és
-kimenő bájtok összege, a csomagok közti érkezési idők statisztikái
-(átlag, szórás, kvantilisek), a kapcsolat időtartama, illetve az
-irányváltások száma. \textbf{(3)} A jellemzőkön tanítom és értékelem a
-modelleket. Az alap 21 jellemzőből minden futásban top-10 készletet
-választok, így a modellek összehasonlítása egységes dimenziószámon
-történik. A jellemzők főbb csoportjait a
-\ref{tab:feature_groups} táblázat foglalja össze.
+
+Az adatfeldolgozási lánc három fő lépésből áll. \textbf{(1)} A nyers PCAP fájlok feldolgozása során megtörténik a hálózati csomagok kinyerése, majd ezekből csomagonkénti idősorok (érkezési idő, csomagméret, forgalom iránya) generálása. \textbf{(2)} Ezen idősorok alapján egy-egy hálózati kapcsolatot leíró, aggregált folyamjellemzők (flow features) kiszámítására kerül sor. Ilyenek például a be- és kimenő csomagok és bájtok összesített száma, a csomagok közötti érkezési idők (inter-arrival times) statisztikai mutatói (átlag, szórás, kvantilisek), a kapcsolat teljes időtartama, valamint az irányváltások száma. \textbf{(3)} A gépi tanulási modellek betanítása és kiértékelése ezen a kinyert jellemzőtéren történik. A 21 dimenziós alap jellemzőtérből a kiértékelés során minden futás alkalmával a leginformatívabb top-10 jellemző kerül kiválasztásra, így biztosítva a modellek teljesítményének egységes dimenziószámon történő összehasonlítását. A kinyert jellemzők főbb csoportjait és reprezentatív példáit a \ref{tab:feature_groups}. táblázat szemlélteti.
+
+\begin{figure}[tbp]
+    \centering
+    \begin{tikzpicture}[
+            node distance=0.9cm,
+            box/.style={draw, rounded corners, align=center, minimum width=3.2cm, minimum height=0.9cm, fill=gray!10},
+            arrow/.style={-{Stealth[length=2mm]}, thick}
+        ]
+            \node[box] (pcap) {PCAP fájlok};
+            \node[box, below=of pcap] (series) {Csomag-idősorok};
+            \node[box, below=of series] (features) {Aggregált\\jellemzők};
+            \node[box, below=of features] (models) {Modellek\\tanítása};
+            \node[box, below=of models] (metrics) {Metrikák\\és ábrák};
+            \draw[arrow] (pcap) -- (series);
+            \draw[arrow] (series) -- (features);
+            \draw[arrow] (features) -- (models);
+            \draw[arrow] (models) -- (metrics);
+        \end{tikzpicture}
+    \caption{A feldolgozási lánc fő lépései a nyers PCAP fájloktól az eredmények vizualizációjáig.}
+    \label{fig:pipeline_overview}
+\end{figure}
 
 \begin{table}[tbp]
-    \caption{Aggregált folyamjellemzők csoportjai és példák.}
+    \caption{Az aggregált folyamjellemzők főbb csoportjai és példái.}
     \vspace{2mm}
     \centering
-    \begin{tabular}{ll}
+    \begin{tabular}{p{4.5cm} p{10cm}}
         \toprule
         \textbf{Csoport} & \textbf{Jellemzők (példák)} \\ \midrule
-        Csomagszámok & total\_pkts, in\_pkts, out\_pkts \\
-        Bájtstatisztikák & total\_bytes, in\_bytes, out\_bytes, in/out ratio \\
-        Időköz-statisztikák & iat\_mean, iat\_std, iat\_median, iat\_p90 \\
-        Méretstatisztikák & size\_mean, size\_std, size\_median, size\_p90 \\
-        Időtartam és dinamika & duration, direction\_changes \\
+        Csomagszámok & pl. \texttt{total\_packets}, \texttt{in\_out\_packet\_ratio} \\
+        Bájtstatisztikák & pl. \texttt{total\_bytes}, \texttt{incoming\_bytes} \\
+        Időköz-statisztikák & pl. \texttt{mean\_inter\_arrival}, \texttt{p90\_inter\_arrival} \\
+        Méretstatisztikák (összes) & pl. \texttt{max\_packet\_size}, \texttt{mean\_packet\_size} \\
+        Méretstatisztikák (irány) & pl. \texttt{incoming\_mean\_packet\_size}, \texttt{outgoing\_std\_packet\_size} \\
+        Időtartam és dinamika & pl. \texttt{duration}, \texttt{direction\_changes} \\
         \bottomrule
     \end{tabular}
     \label{tab:feature_groups}
 \end{table}
 
 \subsection{Modellek és kiértékelés}
-\textbf{Random Forest.} 300 döntési fából álló modell, stabilizált top-10
-jellemzőkiválasztással és három véletlen maggal (42, 52, 62). A három mag
-segítségével a tanító/teszt felosztást és a modell tanítását háromszor
-ismétlem, majd átlagot és szórást számolok.\\
-\textbf{Triplet MLP + KNN.} A Triplet MLP 32 dimenziós beágyazást tanul. A
-Triplet Margin Loss arra kényszeríti a modellt, hogy az azonos weboldalhoz
-tartozó minták beágyazása közel legyen, míg a különböző weboldalaké távol.
-A beágyazásokon $k=5$ KNN osztályozást végzek.\\
-\textbf{Feature track-ek.} \textit{shared} track-ben egy közös top-10
-készletet választok ki a mutual information alapján. \textit{optimized}
-track-ben forgatókönyvenként külön top-10 készlet készül (RF: több
-futásból stabilizált fontossági rangsor, DL: mutual information).\\
-\textbf{Mélytanulási beállítások.} A Triplet MLP 30 epochon tanul
-standardizált bemeneten, BatchNorm és Dropout rétegekkel, hogy csökkentse
-a túltanulást.
+
+\textbf{Random Forest (RF).} A klasszikus gépi tanulási modell 300 döntési fát alkalmaz. A stabilizált top-10 jellemzőkiválasztás mellett, a robusztus kiértékelés érdekében a betanítás és tesztelés három különböző véletlen adatfelosztással (random seed) történik. A modell teljesítményének statisztikai megbízhatóságát a három független futás eredményeiből számított átlag és szórás biztosítja.
+
+\textbf{Triplet MLP + KNN (DL).} A mélytanulási architektúra egy többrétegű perceptronból (MLP) áll, amely egy 32 dimenziós beágyazási teret (embedding space) tanul. A hálózat optimalizálása Triplet Margin Loss hibafüggvénnyel történik, amely arra kényszeríti a modellt, hogy az azonos osztályba (weboldalhoz) tartozó minták távolsága a beágyazási térben minimális, míg a különböző osztályoké maximális legyen. A végső osztályozás az így kinyert beágyazásokon egy $k=5$ paraméterű k-legközelebbi szomszéd (KNN) algoritmussal történik.
+
+\textbf{Jellemzőkiválasztási módok.} A kiértékelés során kétféle stratégia kerül alkalmazásra. A \textit{shared} beállítás esetén minden vizsgálati forgatókönyv ugyanazt a kölcsönös információ (mutual information) alapján meghatározott globális top-10 listát használja. Az \textit{optimized} beállítás ezzel szemben forgatókönyvenként (pl. baseline, obfs4) dedikált top-10 jellemzőkészletet állít elő; ehhez az RF több futásból stabilizált fontossági rangsort, a DL modell pedig mutual information metrikát alkalmaz.
 
 \subsection{Kiértékelési metrikák}
-A teljesítményt pontossággal és macro-F1 értékkel mérem. A pontosság a
-helyes predikciók aránya, a macro-F1 pedig az osztályonként számolt
-F1-értékek átlaga:
+
+A modellek teljesítményének mérése elsősorban az osztályozási pontosság (accuracy) és a macro-F1 metrikák alapján történik. A pontosság a helyesen besorolt minták arányát mutatja a teljes adathalmazon, míg a macro-F1 az egyes osztályokon külön-külön kiszámított F1-pontszámok számtani átlaga:
 \begin{equation}
     \mathrm{Acc} = \frac{1}{N} \sum_{i=1}^{N} \mathbf{1}[\hat{y}_i = y_i], \quad
-    \mathrm{MacroF1} = \frac{1}{C} \sum_{c=1}^{C} \mathrm{F1}_c.
+    \mathrm{MacroF1} = \frac{1}{C} \sum_{c=1}^{C} \mathrm{F1}_c,
 \end{equation}
-Open-world esetben külön vizsgálom az ``Other'' osztály recall értékét is,
-mivel ez mutatja, hogy az ismeretlen forgalmat mennyire képes a modell
-leválasztani.
+ahol $N$ az összes minta száma, $C$ az osztályok száma, $y_i$ és $\hat{y}_i$ pedig a valós, illetve a modell által prediktált címke.
+
+Nyílt világú (open-world) beállítás esetén külön kiértékelésre kerül az ``Other'' kategória visszahívási (recall) értéke is. Ennek vizsgálata azért kritikus, mert ez a metrika számszerűsíti, hogy az alkalmazott modell milyen hatékonysággal képes az ismeretlen forgalmat leválasztani az előre ismert, zárt világú osztályokról.
 
 \subsection{Ábrák és vizuális összegzés}
-A \texttt{generate\_all\_figures.py} szkript a mentett metrikákból
-generálja a végső ábrákat, ezért az ábrák és a táblázatok ugyanabból a
-kiértékelési kimenetből készülnek. Az ábrák célja, hogy a fő trendeket
-gyorsan összegezze, majd részletesebb bontást adjon forgatókönyv, feature
-track és osztályszintű viselkedés szerint.
+Az ábrák a mentett metrikákból automatikusan készülnek, ezért az ábrák
+és a táblázatok ugyanabból a kiértékelési kimenetből készülnek. Az ábrák
+célja, hogy a fő trendeket gyorsan összegezze, majd részletesebb bontást
+adjon beállítás, jellemzőkiválasztási mód és osztályszintű viselkedés
+szerint.
+A zárt világú összegzést a \ref{fig:closed_world_summary}. ábra mutatja,
+míg a beállításonkénti macro-F1 és pontosság változását a
+\ref{fig:macro_f1_all}. és \ref{fig:accuracy_all}. ábrák összesítik. A
+\textit{shared} és \textit{optimized} beállítások különbségeit a
+\ref{fig:shared_vs_optimized_delta}. ábra emeli ki, a nyílt világú
+beállítások közti eltéréseket pedig a \ref{fig:open_world_focus}.
+ábra foglalja össze. A jellemzőkiválasztás hatását és stabilitását a
+\ref{fig:feature_importance_shared}., \ref{fig:feature_importance_separate}.
+és \ref{fig:feature_stability_rf}. ábrák szemléltetik. Az osztályszintű
+viselkedést a \ref{fig:confusion_matrices_pair}. konfúziós mátrixai, az
+ismeretlen forgalom elkülönítését pedig a \ref{fig:other_recall_open_world}.
+ábra jelzi.
 
 \begin{figure}[tbp]
     \centering
@@ -394,28 +336,28 @@ track és osztályszintű viselkedés szerint.
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.92\linewidth]{../figures/02_macro_f1_all_scenarios.pdf}
-    \caption{Macro-F1 alakulása minden forgatókönyvben, zárt és nyílt világú esetekben.}
+    \caption{Macro-F1 alakulása minden beállításban, zárt és nyílt világú esetekben.}
     \label{fig:macro_f1_all}
 \end{figure}
 
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.92\linewidth]{../figures/10_accuracy_all_scenarios.pdf}
-    \caption{Pontosság alakulása minden forgatókönyvben, zárt és nyílt világú esetekben.}
+    \caption{Pontosság alakulása minden beállításban, zárt és nyílt világú esetekben.}
     \label{fig:accuracy_all}
 \end{figure}
 
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.92\linewidth]{../figures/03_shared_vs_optimized_delta.pdf}
-    \caption{A \textit{shared} és \textit{optimized} track-ek közti különbségek (delta) pontosságban és macro-F1-ben.}
+    \caption{A \textit{shared} és \textit{optimized} beállítások közti különbségek (delta) pontosságban és macro-F1-ben.}
     \label{fig:shared_vs_optimized_delta}
 \end{figure}
 
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.92\linewidth]{../figures/04_open_world_focus.pdf}
-    \caption{Nyílt világú forgatókönyvek összehasonlítása.}
+    \caption{Nyílt világú beállítások összehasonlítása.}
     \label{fig:open_world_focus}
 \end{figure}
 
@@ -429,7 +371,7 @@ track és osztályszintű viselkedés szerint.
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.92\linewidth]{../figures/06_feature_importance_separate.pdf}
-    \caption{Forgatókönyvenként optimalizált top-10 jellemzők összehasonlítása.}
+    \caption{Beállításonként optimalizált top-10 jellemzők összehasonlítása.}
     \label{fig:feature_importance_separate}
 \end{figure}
 
@@ -455,46 +397,38 @@ track és osztályszintű viselkedés szerint.
         \caption{Recall-normalizált változatok.}
         \label{fig:confusion_matrices_recall}
     \end{subfigure}
-    \caption{Konfúziós mátrixok a főbb forgatókönyvekben (shared track, seed=42).}
+    \caption{Konfúziós mátrixok a főbb beállításokban (shared beállítás, seed=42).}
     \label{fig:confusion_matrices_pair}
 \end{figure}
 
 \begin{figure}[tbp]
     \centering
     \includegraphics[width=0.85\linewidth]{../figures/09_other_recall_open_world.pdf}
-    \caption{Az ``Other'' osztály recall értékei az open-world forgatókönyvekben.}
+    \caption{Az ``Other'' osztály recall értékei a nyílt világú beállításokban.}
     \label{fig:other_recall_open_world}
 \end{figure}
 
 \FloatBarrier
 
 \subsection{Kísérleti beállítások}
-A tanítás és kiértékelés rétegzett tanító/teszt felosztással történik. A
-zárt világú osztályoknál 80\%/20\% arányt használok, míg az open-world
-``Other'' osztályt 50\%--50\% arányban bontom az ismeretlen forgalomra
-való általánosítás hangsúlyozására. A stabilitást három véletlen mag
-biztosítja (42, 52, 62). Az eredményeket átlag $\pm$ szórás formában
-közlöm. A metrikák a pontosság (accuracy) és a macro-F1. A zero-shot
-beállításban a baseline adatokon tanított modelleket obfs4 teszt adatokon
-értékelem. A táblázatok a \textit{shared} track eredményeit mutatják.
+A tanítás és kiértékelés minden esetben rétegzett (stratified) tanító/teszt adatfelosztással történik. A zárt világú osztályoknál ez a felosztás 80\%/20\% arányú, míg a nyílt világú ``Other'' osztály esetén 50\%/50\%-os arány kerül alkalmazásra, ami az ismeretlen forgalomra való általánosítás robusztusabb mérését szolgálja. Az eredmények statisztikai stabilitását három független, véletlenszerű adatfelosztás (random seed) alkalmazása biztosítja. A modellek teljesítményének mérése pontosság (accuracy) és macro-F1 metrikákkal történik, a jelentett értékek pedig az ismételt futások átlagát és szórását mutatják (átlag $\pm$ szórás). A zero-shot kiértékelés során a betanítás a baseline adatokon, míg a tesztelés a normál Tor forgalomtól eltérő, obfs4 adatokon történik. Ezen forgatókönyvek \textit{shared} jellemzőkiválasztási beállítással elért eredményeit a \ref{tab:results_closed_world}. és \ref{tab:results_open_world}. táblázatok foglalják össze.
 
 \subsection{Reprodukálhatóság és futtatás}
-A pipeline fő lépései az alábbi parancsokkal futtathatók:
-\begin{itemize}
-    \item \texttt{python src/extract\_all\_features.py}
-    \item \texttt{python src/evaluate\_all\_rf.py}
-    \item \texttt{python src/evaluate\_all\_dl.py}
-    \item \texttt{python src/generate\_all\_figures.py}
-\end{itemize}
+
+Mivel az adatfeldolgozási lánc elméleti lépéseit a korábbi szakaszok már tárgyalták, ez a rész a szoftveres reprodukálhatóságot biztosító elemekre szorítkozik. A teljes futtatási környezet, a Python függőségek (dependencies), valamint a projekt könyvtárszerkezetének részletes leírása a mellékelt \texttt{README} dokumentációban található. A leadott laboratóriumi anyagok magukban foglalják a teljes forráskódot, a rögzített PCAP állományokat, a kinyert jellemzőket tartalmazó fájlokat, valamint a kiértékelési metrikákat és a vizualizációkat. Ennek köszönhetően a bemutatott mérések és ábragenerálási folyamatok külső beavatkozás nélkül, teljes egészében újrafuttathatók.
 
 \subsection{Eredmények}
+
+A zárt világú kiértékelések eredményeit a \ref{tab:results_closed_world}. táblázat, a nyílt világú beállítások (Open-World) mérőszámait pedig a \ref{tab:results_open_world}. táblázat összesíti. A dokumentumban később bemutatásra kerülő vizualizációk (\ref{fig:closed_world_summary}., \ref{fig:macro_f1_all}. és \ref{fig:accuracy_all}. ábrák) numerikus alapját teljes egészében ezek a mérések adják.
+
 \begin{table}[tbp]
-    \caption{Zárt világú (Standard) forgatókönyvek eredményei.}
+    \caption{Zárt világú (Standard) beállítások eredményei.}
+    \label{tab:results_closed_world}
     \vspace{2mm}
     \centering
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Forgatókönyv} & \textbf{RF Acc.} & \textbf{RF Macro-F1} & \textbf{DL Acc.} & \textbf{DL Macro-F1} \\ \midrule
+        \textbf{Beállítás} & \textbf{RF Acc.} & \textbf{RF Macro-F1} & \textbf{DL Acc.} & \textbf{DL Macro-F1} \\ \midrule
         Baseline & 80.44$\pm$0.96 & 79.76$\pm$0.99 & 61.19$\pm$2.22 & 60.23$\pm$2.47 \\
         Obfs4 & 73.33$\pm$1.78 & 71.88$\pm$1.57 & 50.64$\pm$2.59 & 49.48$\pm$2.70 \\
         Zero-Shot & 15.08$\pm$1.37 & 10.83$\pm$1.57 & 23.01$\pm$2.59 & 18.54$\pm$2.64 \\
@@ -503,12 +437,13 @@ A pipeline fő lépései az alábbi parancsokkal futtathatók:
 \end{table}
 
 \begin{table}[tbp]
-    \caption{Nyílt világú (Open-World) forgatókönyvek eredményei.}
+    \caption{Nyílt világú (Open-World) beállítások eredményei.}
+    \label{tab:results_open_world}
     \vspace{2mm}
     \centering
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Forgatókönyv} & \textbf{RF Acc.} & \textbf{RF Macro-F1} & \textbf{DL Acc.} & \textbf{DL Macro-F1} \\ \midrule
+        \textbf{Beállítás} & \textbf{RF Acc.} & \textbf{RF Macro-F1} & \textbf{DL Acc.} & \textbf{DL Macro-F1} \\ \midrule
         OW-Baseline & 80.93$\pm$0.84 & 79.11$\pm$0.68 & 62.00$\pm$1.32 & 60.37$\pm$0.76 \\
         OW-Obfs4 & 74.10$\pm$1.59 & 71.03$\pm$1.65 & 48.90$\pm$2.58 & 48.46$\pm$1.78 \\
         OW-Zero-Shot & 22.73$\pm$1.79 & 10.41$\pm$1.00 & 27.27$\pm$1.79 & 18.42$\pm$0.41 \\
@@ -517,68 +452,29 @@ A pipeline fő lépései az alábbi parancsokkal futtathatók:
 \end{table}
 
 \subsection{Elemzés és megvitatás}
-A Random Forest zárt világú baseline és obfs4 környezetben egyértelműen
-magasabb pontosságot és macro-F1-t ér el, ami a kézzel tervezett
-aggregált jellemzők hatékony kihasználását jelzi (lásd
-\ref{fig:closed_world_summary} és \ref{fig:accuracy_all}). A zero-shot
-beállításban mindkét modell teljesítménye drasztikusan romlik,
-különösen open-world esetben, ami a domain shift egyik legfontosabb
-gyakorlati kihívását mutatja (lásd \ref{fig:macro_f1_all} és
-\ref{fig:open_world_focus}). A Triplet MLP ugyanakkor stabilabb
-zero-shot értékeket ad (Standard Zero-Shot: DL 23.01\% vs. RF 15.08\%),
-ami a beágyazások általánosíthatóságára utal. Az \textit{optimized}
-track-ek több forgatókönyvben javítást hoznak, de a javulás nem
-egyenletes, ezért a \textit{shared} beállítás jó kompromisszumot ad a
-konszisztencia és teljesítmény között (lásd
-\ref{fig:shared_vs_optimized_delta}). A stabil top-10 lista azt
-sugallja, hogy a leginformatívabb aggregált jellemzők robusztusak a
-tanító/teszt felosztás változására (lásd
-\ref{fig:feature_stability_rf}). Az open-world forgatókönyvekben a
-recall-normalizált konfúziós mátrixok jól kiemelik, hogy az ``Other''
-osztályt a modellek gyakran sikeresen külön választják a zárt világú
-osztályoktól, ugyanakkor ez nem feltétlenül jelent magas precíziót
-(lásd \ref{fig:confusion_matrices_recall} és
-\ref{fig:other_recall_open_world}).
+A kapott eredmények alapján a Random Forest algoritmus a zárt világú baseline és obfs4 beállításokban egyértelműen magasabb pontosságot és macro-F1 értéket ér el, ami a kézzel tervezett (hand-crafted) aggregált jellemzők hatékony reprezentációs képességét igazolja (lásd a \ref{fig:closed_world_summary}. és \ref{fig:accuracy_all}. ábrát, valamint a \ref{tab:results_closed_world}. táblázatot). A zero-shot forgatókönyv esetén mindkét modell teljesítménye drasztikus degradációt szenved el, különösen a nyílt világú beállításoknál. Ez a jelenség a baseline és az obfs4 forgalom közötti eloszlás-eltolódás (domain shift) erőteljes gyakorlati hatására mutat rá (lásd a \ref{fig:macro_f1_all}. és \ref{fig:open_world_focus}. ábrát, valamint a \ref{tab:results_open_world}. táblázatot). A Triplet MLP ugyanakkor számottevően stabilabb zero-shot teljesítményt nyújt (Zárt világú Zero-Shot: DL 23,01\% vs. RF 15,08\%), ami a tanult beágyazási tér robusztusabb általánosítási képességére utal. 
+
+Bár az \textit{optimized} jellemzőkiválasztási beállítás több esetben kismértékű javulást eredményez, ez az előny nem konzisztens. Emiatt a \textit{shared} beállítás optimális kompromisszumot biztosít a modellek összehasonlíthatósága és a prediktív teljesítmény között (lásd az \ref{fig:shared_vs_optimized_delta}. ábrát). A top-10 lista stabilitása azt bizonyítja, hogy a leginformatívabb aggregált jellemzők robusztusak a tanító- és teszthalmaz véletlenszerű felosztásával szemben (lásd a \ref{fig:feature_stability_rf}. ábrát). A nyílt világú beállításokban a visszahívásra (recall) normalizált konfúziós mátrixok jól szemléltetik, hogy a modellek az ``Other'' kategóriát többnyire sikeresen különítik el a zárt világú osztályoktól, ugyanakkor ez a magas felismerési arány gyakran a precízió (precision) rovására történik (lásd a \ref{fig:confusion_matrices_recall}. és \ref{fig:other_recall_open_world}. ábrát).
 
 \subsection{Korlátok}
+A mérési módszertan és a kiértékelés az alábbi korlátokkal rendelkezik:
 \begin{itemize}
-    \item A vizsgálat aggregált folyamjellemzőkre épül, ami részben elfedheti a finom időbeli mintázatokat.
-    \item Az open-world ``Other'' osztály sokféle weboldal forgalmát fogja össze, ezért a modell
-    nehezebben választja el a zárt világú osztályoktól, ami csökkentheti a precíziós mutatókat.
-    \item A top-10 jellemzők statikus kiválasztása miatt a ritkább, de informatív mintázatok elveszhetnek.
+    \item A vizsgálat kizárólag aggregált folyamjellemzőkre épül, ami az eredeti csomag-idősorok finom dinamikai mintázatainak elvesztésével járhat.
+    \item Mivel a nyílt világú ``Other'' osztály rendkívül heterogén (ismeretlen weboldalak sokaságának forgalmát aggregálja), a modellek számára komoly kihívást jelent ennek éles határvonalú elkülönítése a prediktálható, zárt világú osztályoktól, ami törvényszerűen a precíziós mutatók csökkenését eredményezi.
+    \item A radikális dimenziócsökkentés (kizárólag a top-10 jellemző statikus megtartása) következtében a ritkábban előforduló, ám egy-egy osztály esetében lokálisan informatív mintázatok prediktív ereje elveszhet.
 \end{itemize}
 
 \subsection{Következtetések és jövőbeli munka}
-A projekt igazolja, hogy a klasszikus és mélytanulási modellek eltérő
-erősségekkel rendelkeznek a Tor WF feladatban. A Random Forest magas
-baseline teljesítményt ad, míg a Triplet MLP zero-shot helyzetekben jobb
-általánosítást mutat. A jövőben a drift-robosztus tanítás (az időben
-változó forgalmi eloszláshoz igazított tréning, pl. időablakos
-validálás vagy domain-invariáns reprezentációk) és az adaptív
-újratanulás (drift detektálás után periodikus vagy online frissítés
-friss adatokból) lehet indokolt. Emellett a finomabb idősoros jellemzők
-integrálása is ígéretes (csomag-idősor, burst-mintázatok, n-gram vagy
-embedding alapú leírás), mert ezek érzékenyebben ragadják meg a
-forgalom dinamikáját. Végül érdemes a modellfrissítés
-költség-hatékonyságát is vizsgálni: mennyi új adat és számítási idő
-szükséges adott teljesítmény-nyereséghez, és milyen frissítési
-gyakoriság adja a legjobb kompromisszumot.
+
+A projekt igazolja, hogy a klasszikus és a mélytanulás-alapú modellek eltérő erősségekkel rendelkeznek a Tor hálózaton végzett WF támadások vizsgálatában. Míg a Random Forest algoritmus a baseline környezetben magasabb osztályozási pontosságot ér el, addig a Triplet MLP architektúra a zero-shot forgatókönyvek során bizonyul robusztusabbnak, és jobban általánosít az ismeretlen környezetekre. Mivel a hálózati forgalom statisztikai eloszlása időben változik (concept drift), a jövőbeli kutatások során érdemes több időszakból és mindkét adatkörnyezetből (baseline, obfs4) kiterjedtebb tanítóadat-halmazt gyűjteni, majd a modelleket egy időben elkülönített (time-separated) teszthalmazon kiértékelni. Ezt a megközelítést kiegészítheti a modellek friss mintákon történő periodikus újratanítása, valamint a komplexebb idősoros jellemzők (nyers csomag-idősorok, burst-mintázatok, n-gram vagy reprezentáció-tanuláson alapuló leírások) bevonása. Végül indokolt a modellfrissítés költséghatékonyságának számszerűsítése is: vizsgálni kell, hogy mennyi új adat és számítási kapacitás szükséges egy adott teljesítménynövekedés eléréséhez, illetve milyen frissítési gyakoriság biztosítja az optimális kompromisszumot.
 
 \subsection{Összefoglalás}
 \label{sec:osszefoglalas}
 
-A félév során egy végponttól végpontig futtatható WF pipeline-t
-építettem, amely a PCAP állományoktól a metrikákig és ábrákig egységes
-feldolgozást biztosít. A kísérletekben a Random Forest erős baseline és
-obfs4 teljesítményt adott, míg a Triplet MLP a zero-shot beállításokban
-stabilabb általánosítást mutatott. Az open-world vizsgálatok rávilágítottak
-arra, hogy az ``Other'' osztály leválasztása lehetséges, de a precízió
-korlátos marad. A legfontosabb tanulság, hogy a domain shift kezelése
-kulcsfontosságú, ezért a következő lépésekben drift-robosztus tréning és
-finomabb idősoros jellemzők bevezetése indokolt.
+A laboratóriumi munka során egy teljes mértékben reprodukálható WF adatfeldolgozási lánc (pipeline) került kialakításra, amely a nyers PCAP állományok kinyerésétől a kiértékelési metrikák kiszámításáig és az eredmények vizualizációjáig biztosít egy egységes, automatizált keretrendszert. A végrehajtott kísérletek rámutattak, hogy a Random Forest algoritmus a baseline és az obfs4 környezetekben magasabb osztályozási pontosságot ér el, míg a Triplet MLP architektúra a zero-shot beállítások esetén robusztusabb általánosítási képességgel rendelkezik. A nyílt világú vizsgálatok igazolták, hogy az ismeretlen forgalmat aggregáló ``Other'' osztály leválasztása lehetséges, azonban ennek precíziója jelenleg korlátos. A mérések legfőbb tanulsága, hogy a baseline és az obfs4 forgalom statisztikai eloszlása szignifikánsan eltér (domain shift). Ennek feloldása érdekében a jövőbeli kutatások fókuszába a heterogén környezetekből származó adatokon betanított modellek, valamint a mélyebb, idősoros forgalmi mintázatok vizsgálata kell, hogy kerüljön.
 
 \newpage
- 
+
 %==================================================================
 \section{Irodalom, és csatlakozó dokumentumok jegyzéke}
 \label{sec:irod-es-csatl}
@@ -603,10 +499,22 @@ finomabb idősoros jellemzők bevezetése indokolt.
 \subsection{A csatlakozó dokumentumok jegyzéke}
 \label{sec:csat-irod}
 
-A csatlakozó anyagok a projekt könyvtárában találhatók (forráskód,
-gyűjtőszkriptek, ábrák és mérési kimenetek).
+A projekt reprodukálásához szükséges teljes forráskód, az adatgyűjtési környezet és a dokumentáció elérhető a publikus GitHub repozitóriumban:
+\begin{itemize}
+    \item[] \textbf{Pálos Ferenc: \textit{Tor Website Fingerprinting Pipeline}} \\
+    Elérhető: \url{https://github.com/palosferi/onlab}
+\end{itemize}
 
-\end{document} 
+A beadott csatlakozó anyagok a projekt lokális könyvtárában az alábbi struktúra szerint találhatók:
+\begin{itemize}
+    \item \texttt{src/} -- A feldolgozási és kiértékelési pipeline implementációja.
+    \item \texttt{scripts/collection/} -- Az automatizált adatgyűjtést végző szkriptek.
+    \item \texttt{figures/} -- A kiértékelés során keletkezett nyers JSON metrikák és a generált ábrák.
+    \item \texttt{tor\_dataset/} -- A mérések alapjául szolgáló nyers PCAP állományok.
+    \item \texttt{irasbeli\_beszamolo/figs/} -- A beszámoló fordításához szükséges lokális ábrák.
+\end{itemize}
+
+\end{document}
 
 %%% Local Variables: 
 %%% mode: latex 
