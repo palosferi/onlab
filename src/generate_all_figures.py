@@ -24,14 +24,22 @@ FIGURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fig
 RF_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_rf.json")
 DL_METRICS_PATH = os.path.join(FIGURES_DIR, "metrics_dl.json")
 TOP_FEATURES_PATH = os.path.join(FIGURES_DIR, "selected_top10_features.json")
-FEATURE_STABILITY_PATH = os.path.join(FIGURES_DIR, "feature_stability_rf.json")
-FEATURE_STABILITY_FIG_PATH = os.path.join(
-    FIGURES_DIR, "feature_stability_for_figures.json"
-)
+
 RF_N_ESTIMATORS = 300
 TOP_K_FEATURES = 10
 
 os.makedirs(FIGURES_DIR, exist_ok=True)
+
+# Set global font sizes (approx. 2x larger)
+plt.rcParams.update({
+    'font.size': 20,
+    'axes.labelsize': 22,
+    'axes.titlesize': 24,
+    'xtick.labelsize': 18,
+    'ytick.labelsize': 18,
+    'legend.fontsize': 18,
+    'figure.titlesize': 26
+})
 
 
 def load_metrics(metrics_path):
@@ -150,11 +158,6 @@ def select_top_features(X_base, y_base, X_obfs, y_obfs, X_other):
         n_estimators=RF_N_ESTIMATORS,
         out_path=TOP_FEATURES_PATH,
     )
-    ranking_df.to_json(
-        os.path.join(FIGURES_DIR, "feature_stability_for_figures.json"),
-        orient="records",
-        indent=2,
-    )
     return top_features
 
 
@@ -165,10 +168,12 @@ def _plot_grouped_bars(ax, labels, left_vals, right_vals, left_name, right_name,
     rects1 = ax.bar(x - width / 2, left_vals, width, label=left_name, color="#2980b9")
     rects2 = ax.bar(x + width / 2, right_vals, width, label=right_name, color="#27ae60")
 
-    ax.set_ylabel(y_label, fontsize=12)
-    ax.set_title(title, fontsize=13, pad=10)
+    if y_label:
+        ax.set_ylabel(y_label)
+    if title:
+        ax.set_title(title, pad=10)
     ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontsize=11)
+    ax.set_xticklabels(labels)
     ax.set_ylim(0, 100)
     ax.grid(axis="y", linestyle="--", alpha=0.7)
 
@@ -177,13 +182,13 @@ def _plot_grouped_bars(ax, labels, left_vals, right_vals, left_name, right_name,
         if np.isnan(height):
             continue
         ax.annotate(
-            f"{height:.2f}%",
+            f"{height:.1f}%",
             xy=(rect.get_x() + rect.get_width() / 2, height),
-            xytext=(0, 3),
+            xytext=(0, 5),
             textcoords="offset points",
             ha="center",
             va="bottom",
-            fontsize=9,
+            fontsize=16,
         )
 
 
@@ -196,7 +201,7 @@ def plot_final_bar_chart():
     rf_f1 = load_scenario_metric(RF_METRICS_PATH, scenario_keys, "macro_f1")
     dl_f1 = load_scenario_metric(DL_METRICS_PATH, scenario_keys, "macro_f1")
 
-    fig, axes = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(20, 8), sharey=True)
     _plot_grouped_bars(
         axes[0],
         labels,
@@ -204,8 +209,8 @@ def plot_final_bar_chart():
         dl_acc,
         "Random Forest",
         "Triplet MLP",
-        "Closed-World Accuracy",
-        "Score (%)",
+        "",
+        "Pontosság (%)",
     )
     _plot_grouped_bars(
         axes[1],
@@ -214,12 +219,10 @@ def plot_final_bar_chart():
         dl_f1,
         "Random Forest",
         "Triplet MLP",
-        "Closed-World Macro-F1",
+        "",
         "",
     )
-    axes[0].legend(fontsize=10)
-    fig.suptitle("Website Fingerprinting Performance Summary", fontsize=14)
-
+    axes[0].legend()
     plt.tight_layout()
     plt.savefig(
         os.path.join(FIGURES_DIR, "01_closed_world_summary.pdf"),
@@ -228,82 +231,6 @@ def plot_final_bar_chart():
     )
     plt.close()
     print("Generated: 01_closed_world_summary.pdf")
-
-
-def plot_all_scenarios_macro_f1_chart():
-    scenario_pairs = [
-        ("baseline", "Baseline"),
-        ("obfs4", "Obfs4"),
-        ("zero_shot", "Zero-Shot"),
-        ("open_world_baseline", "OW-Baseline"),
-        ("open_world_obfs4", "OW-Obfs4"),
-        ("open_world_zero_shot", "OW-Zero-Shot"),
-    ]
-    scenario_keys = [k for k, _ in scenario_pairs]
-    labels = [lbl for _, lbl in scenario_pairs]
-
-    rf_f1 = load_scenario_metric(RF_METRICS_PATH, scenario_keys, "macro_f1")
-    dl_f1 = load_scenario_metric(DL_METRICS_PATH, scenario_keys, "macro_f1")
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    _plot_grouped_bars(
-        ax,
-        labels,
-        rf_f1,
-        dl_f1,
-        "Random Forest",
-        "Triplet MLP",
-        "Macro-F1 Across Closed and Open-World Scenarios",
-        "Macro-F1 (%)",
-    )
-    ax.legend(fontsize=10)
-    ax.tick_params(axis="x", rotation=15)
-    plt.tight_layout()
-    plt.savefig(
-        os.path.join(FIGURES_DIR, "02_macro_f1_all_scenarios.pdf"),
-        dpi=300,
-        bbox_inches="tight",
-    )
-    plt.close()
-    print("Generated: 02_macro_f1_all_scenarios.pdf")
-
-
-def plot_all_scenarios_accuracy_chart():
-    scenario_pairs = [
-        ("baseline", "Baseline"),
-        ("obfs4", "Obfs4"),
-        ("zero_shot", "Zero-Shot"),
-        ("open_world_baseline", "OW-Baseline"),
-        ("open_world_obfs4", "OW-Obfs4"),
-        ("open_world_zero_shot", "OW-Zero-Shot"),
-    ]
-    scenario_keys = [k for k, _ in scenario_pairs]
-    labels = [lbl for _, lbl in scenario_pairs]
-
-    rf_acc = load_scenario_metric(RF_METRICS_PATH, scenario_keys, "accuracy")
-    dl_acc = load_scenario_metric(DL_METRICS_PATH, scenario_keys, "accuracy")
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    _plot_grouped_bars(
-        ax,
-        labels,
-        rf_acc,
-        dl_acc,
-        "Random Forest",
-        "Triplet MLP",
-        "Accuracy Across Closed and Open-World Scenarios",
-        "Accuracy (%)",
-    )
-    ax.legend(fontsize=10)
-    ax.tick_params(axis="x", rotation=15)
-    plt.tight_layout()
-    plt.savefig(
-        os.path.join(FIGURES_DIR, "10_accuracy_all_scenarios.pdf"),
-        dpi=300,
-        bbox_inches="tight",
-    )
-    plt.close()
-    print("Generated: 10_accuracy_all_scenarios.pdf")
 
 
 def plot_shared_vs_optimized_delta_chart():
@@ -333,30 +260,26 @@ def plot_shared_vs_optimized_delta_chart():
     dl_acc_delta = dl_acc_opt - dl_acc_shared
     dl_f1_delta = dl_f1_opt - dl_f1_shared
 
-    fig, axes = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(18, 12), sharex=True)
     x = np.arange(len(labels))
     width = 0.38
 
-    axes[0].bar(x - width / 2, rf_acc_delta, width, label="Accuracy Delta", color="#2e86de")
-    axes[0].bar(x + width / 2, rf_f1_delta, width, label="Macro-F1 Delta", color="#17a589")
+    axes[0].bar(x - width / 2, rf_acc_delta, width, label="Pontosság különbség", color="#2e86de")
+    axes[0].bar(x + width / 2, rf_f1_delta, width, label="Macro-F1 különbség", color="#17a589")
     axes[0].axhline(0, color="black", linewidth=1)
-    axes[0].set_title("RF: Optimized - Shared Track Delta", fontsize=13)
-    axes[0].set_ylabel("Delta (percentage points)")
+    axes[0].set_ylabel("Különbség (százalékpont)")
     axes[0].grid(axis="y", linestyle="--", alpha=0.7)
     axes[0].legend()
 
-    axes[1].bar(x - width / 2, dl_acc_delta, width, label="Accuracy Delta", color="#5dade2")
-    axes[1].bar(x + width / 2, dl_f1_delta, width, label="Macro-F1 Delta", color="#48c9b0")
+    axes[1].bar(x - width / 2, dl_acc_delta, width, label="Pontosság különbség", color="#5dade2")
+    axes[1].bar(x + width / 2, dl_f1_delta, width, label="Macro-F1 különbség", color="#48c9b0")
     axes[1].axhline(0, color="black", linewidth=1)
-    axes[1].set_title("DL: Optimized - Shared Track Delta", fontsize=13)
-    axes[1].set_ylabel("Delta (percentage points)")
-    axes[1].set_xlabel("Scenario")
+    axes[1].set_ylabel("Különbség (százalékpont)")
     axes[1].set_xticks(x)
     axes[1].set_xticklabels(labels, rotation=15)
     axes[1].grid(axis="y", linestyle="--", alpha=0.7)
     axes[1].legend()
 
-    fig.suptitle("Shared vs Optimized Feature Track Improvements", fontsize=14)
     plt.tight_layout()
     plt.savefig(
         os.path.join(FIGURES_DIR, "03_shared_vs_optimized_delta.pdf"),
@@ -381,7 +304,7 @@ def plot_open_world_focus_chart():
     rf_f1 = load_scenario_metric(RF_METRICS_PATH, scenario_keys, "macro_f1")
     dl_f1 = load_scenario_metric(DL_METRICS_PATH, scenario_keys, "macro_f1")
 
-    fig, axes = plt.subplots(1, 2, figsize=(16, 6), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(20, 8), sharey=True)
     _plot_grouped_bars(
         axes[0],
         labels,
@@ -389,8 +312,8 @@ def plot_open_world_focus_chart():
         dl_acc,
         "Random Forest",
         "Triplet MLP",
-        "Open-World Accuracy",
-        "Score (%)",
+        "",
+        "Pontosság (%)",
     )
     _plot_grouped_bars(
         axes[1],
@@ -399,11 +322,10 @@ def plot_open_world_focus_chart():
         dl_f1,
         "Random Forest",
         "Triplet MLP",
-        "Open-World Macro-F1",
+        "",
         "",
     )
-    axes[0].legend(fontsize=10)
-    fig.suptitle("Open-World Performance Focus", fontsize=14)
+    axes[0].legend()
     plt.tight_layout()
     plt.savefig(
         os.path.join(FIGURES_DIR, "04_open_world_focus.pdf"),
@@ -434,8 +356,6 @@ def plot_feature_importance(
     imp_base = get_feature_importance(X_base, y_base)
     imp_obfs = get_feature_importance(X_obfs, y_obfs)
 
-    # Keep the locked top-10 set for fair side-by-side comparison,
-    # but order each panel independently to reveal scenario-specific ranking shifts.
     plot_base = pd.DataFrame(
         {
             "feature": top_features,
@@ -449,7 +369,7 @@ def plot_feature_importance(
         }
     ).sort_values("importance", ascending=True)
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharex=False, sharey=False)
+    fig, axes = plt.subplots(1, 2, figsize=(22, 10), sharex=False, sharey=False)
 
     sns.barplot(
         data=plot_base,
@@ -458,9 +378,8 @@ def plot_feature_importance(
         color="#2980b9",
         ax=axes[0],
     )
-    axes[0].set_title("Baseline (Top-10 Locked Set)", fontsize=13)
-    axes[0].set_xlabel("Relative Importance")
-    axes[0].set_ylabel("Engineered Features")
+    axes[0].set_xlabel("Relatív fontosság")
+    axes[0].set_ylabel("Kinyert jellemzők")
 
     sns.barplot(
         data=plot_obfs,
@@ -469,11 +388,9 @@ def plot_feature_importance(
         color="#e67e22",
         ax=axes[1],
     )
-    axes[1].set_title("Obfs4 (Top-10 Locked Set)", fontsize=13)
-    axes[1].set_xlabel("Relative Importance")
-    axes[1].set_ylabel("Engineered Features")
+    axes[1].set_xlabel("Relatív fontosság")
+    axes[1].set_ylabel("Kinyert jellemzők")
 
-    fig.suptitle("Random Forest Feature Importance (Scenario-Specific Ordering)", fontsize=14)
     plt.tight_layout()
     plt.savefig(
         os.path.join(FIGURES_DIR, "05_feature_importance_shared.pdf"),
@@ -482,20 +399,6 @@ def plot_feature_importance(
     )
     plt.close()
 
-    side_by_side_table = pd.DataFrame(
-        {
-            "feature": top_features,
-            "baseline_importance": imp_base[top_features].values,
-            "obfs4_importance": imp_obfs[top_features].values,
-        }
-    )
-    side_by_side_table.to_json(
-        os.path.join(FIGURES_DIR, "02_top10_features_rf.json"),
-        orient="records",
-        indent=2,
-    )
-
-    # Also export fully separate top-10 rankings from the full feature pool.
     imp_base_full = get_feature_importance(
         X_base_full if X_base_full is not None else X_base,
         y_base,
@@ -506,25 +409,7 @@ def plot_feature_importance(
     )
     top_base = imp_base_full.sort_values(ascending=False).head(10)
     top_obfs = imp_obfs_full.sort_values(ascending=False).head(10)
-    separate_payload = {
-        "baseline_top10": [
-            {"rank": i + 1, "feature": feat, "importance": float(val)}
-            for i, (feat, val) in enumerate(top_base.items())
-        ],
-        "obfs4_top10": [
-            {"rank": i + 1, "feature": feat, "importance": float(val)}
-            for i, (feat, val) in enumerate(top_obfs.items())
-        ],
-        "overlap_features": sorted(list(set(top_base.index) & set(top_obfs.index))),
-    }
-    with open(
-        os.path.join(FIGURES_DIR, "02_top10_features_rf_separate.json"),
-        "w",
-        encoding="utf-8",
-    ) as f:
-        json.dump(separate_payload, f, indent=2)
 
-    # Visualize the independent top-10 lists side-by-side.
     top_base_df = (
         pd.DataFrame(
             {
@@ -546,7 +431,7 @@ def plot_feature_importance(
         .reset_index(drop=True)
     )
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharex=False, sharey=False)
+    fig, axes = plt.subplots(1, 2, figsize=(22, 10), sharex=False, sharey=False)
     sns.barplot(
         data=top_base_df,
         x="importance",
@@ -554,9 +439,8 @@ def plot_feature_importance(
         color="#2471a3",
         ax=axes[0],
     )
-    axes[0].set_title("Baseline Independent Top-10", fontsize=13)
-    axes[0].set_xlabel("Relative Importance")
-    axes[0].set_ylabel("Features")
+    axes[0].set_xlabel("Relatív fontosság")
+    axes[0].set_ylabel("Kinyert jellemzők")
 
     sns.barplot(
         data=top_obfs_df,
@@ -565,11 +449,9 @@ def plot_feature_importance(
         color="#ca6f1e",
         ax=axes[1],
     )
-    axes[1].set_title("Obfs4 Independent Top-10", fontsize=13)
-    axes[1].set_xlabel("Relative Importance")
-    axes[1].set_ylabel("Features")
+    axes[1].set_xlabel("Relatív fontosság")
+    axes[1].set_ylabel("Kinyert jellemzők")
 
-    fig.suptitle("Random Forest Feature Importance (Independent Top-10 Lists)", fontsize=14)
     plt.tight_layout()
     plt.savefig(
         os.path.join(FIGURES_DIR, "06_feature_importance_separate.pdf"),
@@ -577,107 +459,7 @@ def plot_feature_importance(
         bbox_inches="tight",
     )
     plt.close()
-
     print("Generated: 05_feature_importance_shared.pdf (+ 06_feature_importance_separate.pdf)")
-
-
-def plot_feature_stability_chart():
-    stability_path = None
-    if os.path.exists(FEATURE_STABILITY_FIG_PATH):
-        stability_path = FEATURE_STABILITY_FIG_PATH
-    elif os.path.exists(FEATURE_STABILITY_PATH):
-        stability_path = FEATURE_STABILITY_PATH
-
-    if not stability_path:
-        print("Skipping feature stability chart: no feature stability data found.")
-        return
-
-    with open(stability_path, "r", encoding="utf-8") as f:
-        payload = json.load(f)
-
-    if isinstance(payload, dict) and "ranking" in payload:
-        ranking = payload["ranking"]
-    else:
-        ranking = payload
-
-    if not ranking:
-        print("Skipping feature stability chart: empty payload.")
-        return
-
-    df = pd.DataFrame(ranking)
-    df = df.sort_values("importance_mean", ascending=False).head(10)
-    df = df.sort_values("importance_mean", ascending=True)
-
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.barh(
-        df["feature"],
-        df["importance_mean"],
-        xerr=df["importance_std"],
-        color="#2c3e50",
-        alpha=0.85,
-    )
-    ax.set_xlabel("Mean Feature Importance")
-    ax.set_ylabel("Feature")
-    ax.set_title("Random Forest Feature Stability (Top-10)")
-    ax.grid(axis="x", linestyle="--", alpha=0.6)
-    plt.tight_layout()
-    plt.savefig(
-        os.path.join(FIGURES_DIR, "11_feature_stability_rf.pdf"),
-        dpi=300,
-        bbox_inches="tight",
-    )
-    plt.close()
-    print("Generated: 11_feature_stability_rf.pdf")
-
-
-def plot_confusion_matrices_from_metrics():
-    confusions = load_primary_confusions(RF_METRICS_PATH)
-    if not confusions:
-        print("Skipping confusion matrices: no persisted confusion payload found.")
-        return
-
-    if all(k in confusions for k in ["open_world_baseline", "open_world_obfs4", "open_world_zero_shot"]):
-        scenario_keys = ["open_world_baseline", "open_world_obfs4", "open_world_zero_shot"]
-        titles = ["1. Open-World Baseline", "2. Open-World Obfs4", "3. Open-World Zero-Shot"]
-        cmaps = ["Blues", "Oranges", "Reds"]
-    else:
-        scenario_keys = ["baseline", "obfs4", "zero_shot"]
-        titles = ["1. Baseline", "2. Obfs4", "3. Zero-Shot"]
-        cmaps = ["Blues", "Oranges", "Reds"]
-
-    fig, axes = plt.subplots(1, 3, figsize=(24, 7))
-
-    for ax, scenario_key, title, cmap in zip(axes, scenario_keys, titles, cmaps):
-        payload = confusions.get(scenario_key)
-        if not payload:
-            ax.axis("off")
-            continue
-
-        labels = payload.get("labels", [])
-        matrix = np.array(payload.get("matrix", []))
-        sns.heatmap(
-            matrix,
-            cmap=cmap,
-            cbar=False,
-            xticklabels=labels,
-            yticklabels=labels,
-            ax=ax,
-        )
-        ax.set_title(title, fontsize=14)
-
-    for ax in axes:
-        ax.set_ylabel("True Website")
-        ax.set_xlabel("Predicted Website")
-        ax.tick_params(axis="x", rotation=90)
-
-    plt.tight_layout()
-    plt.savefig(
-        os.path.join(FIGURES_DIR, "07_confusion_matrices.pdf"),
-        dpi=300,
-        bbox_inches="tight",
-    )
-    plt.close()
-    print("Generated: 07_confusion_matrices.pdf")
 
 
 def plot_confusion_matrices_recall():
@@ -688,20 +470,14 @@ def plot_confusion_matrices_recall():
 
     if all(k in confusions for k in ["open_world_baseline", "open_world_obfs4", "open_world_zero_shot"]):
         scenario_keys = ["open_world_baseline", "open_world_obfs4", "open_world_zero_shot"]
-        titles = [
-            "1. Open-World Baseline (Recall)",
-            "2. Open-World Obfs4 (Recall)",
-            "3. Open-World Zero-Shot (Recall)",
-        ]
         cmaps = ["Blues", "Oranges", "Reds"]
     else:
         scenario_keys = ["baseline", "obfs4", "zero_shot"]
-        titles = ["1. Baseline (Recall)", "2. Obfs4 (Recall)", "3. Zero-Shot (Recall)"]
         cmaps = ["Blues", "Oranges", "Reds"]
 
-    fig, axes = plt.subplots(1, 3, figsize=(24, 7))
+    fig, axes = plt.subplots(1, 3, figsize=(32, 10))
 
-    for ax, scenario_key, title, cmap in zip(axes, scenario_keys, titles, cmaps):
+    for ax, scenario_key, cmap in zip(axes, scenario_keys, cmaps):
         payload = confusions.get(scenario_key)
         if not payload:
             ax.axis("off")
@@ -722,12 +498,12 @@ def plot_confusion_matrices_recall():
             yticklabels=labels,
             ax=ax,
         )
-        ax.set_title(title, fontsize=14)
-
+        
     for ax in axes:
-        ax.set_ylabel("True Website")
-        ax.set_xlabel("Predicted Website")
+        ax.set_ylabel("Valós webhely")
         ax.tick_params(axis="x", rotation=90)
+        
+    fig.supxlabel("Prediktált webhely", fontsize=28)
 
     plt.tight_layout()
     plt.savefig(
@@ -755,7 +531,7 @@ def plot_other_recall_open_world():
         print("Skipping other recall chart: no 'other' class found in metrics.")
         return
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(14, 8))
     _plot_grouped_bars(
         ax,
         labels,
@@ -763,10 +539,10 @@ def plot_other_recall_open_world():
         dl_vals,
         "Random Forest",
         "Triplet MLP",
-        "Other Class Recall (Open-World)",
-        "Recall (%)",
+        "",
+        "Visszahívás (%)",
     )
-    ax.legend(fontsize=10)
+    ax.legend()
     plt.tight_layout()
     plt.savefig(
         os.path.join(FIGURES_DIR, "09_other_recall_open_world.pdf"),
@@ -780,8 +556,6 @@ def plot_other_recall_open_world():
 def main():
     print("Generating all final figures for the report...")
     plot_final_bar_chart()
-    plot_all_scenarios_macro_f1_chart()
-    plot_all_scenarios_accuracy_chart()
     plot_shared_vs_optimized_delta_chart()
     plot_open_world_focus_chart()
 
@@ -818,9 +592,6 @@ def main():
     else:
         print("Skipping feature importance: missing extracted features.")
 
-    plot_feature_stability_chart()
-
-    plot_confusion_matrices_from_metrics()
     plot_confusion_matrices_recall()
     plot_other_recall_open_world()
 
