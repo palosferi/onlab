@@ -21,7 +21,7 @@ cd "$PROJECT_ROOT"
 source venv/bin/activate
 
 if [[ -z "${TOR_WF_PCAP_DIR:-}" ]]; then
-	TOR_WF_PCAP_DIR="$PROJECT_ROOT/data/pcaps/other_tor"
+	TOR_WF_PCAP_DIR="$PROJECT_ROOT/tor_dataset/other_tor"
 	export TOR_WF_PCAP_DIR
 fi
 

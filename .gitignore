@@ -28,6 +28,7 @@ dist/
 
 # Local datasets and generated data artifacts
 tor_dataset/
+tor_dataset_release_2026-06-01/
 
 # Generated figures (keep curated figures manually if needed)
 figures/*.png
@@ -38,7 +39,9 @@ figures/*.svg
 figures/*.eps
 
 # Logs and local outputs
+logs/
 *.log
+*.jsonl
 
 # LaTeX build artifacts (keep .tex and generated .pdf)
 *.aux

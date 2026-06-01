@@ -47,10 +47,14 @@ class TripletDataset(Dataset):
         anchor = self.X[index]
         anchor_label = self.y[index]
 
-        positive_index = index
-        while positive_index == index:
-            positive_index = np.random.choice(self.label_to_indices[anchor_label])
-        positive = self.X[positive_index]
+        positive_indices = self.label_to_indices[anchor_label]
+        if len(positive_indices) == 1:
+            positive = anchor
+        else:
+            positive_index = index
+            while positive_index == index:
+                positive_index = np.random.choice(positive_indices)
+            positive = self.X[positive_index]
 
         negative_label = np.random.choice(list(self.labels_set - {anchor_label}))
         negative_index = np.random.choice(self.label_to_indices[negative_label])

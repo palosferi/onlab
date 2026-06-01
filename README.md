@@ -7,13 +7,18 @@ This project investigates and compares classical Machine Learning (Random Forest
 * **Zero-shot setting:** Models trained purely on baseline traffic but tested against obfs4 traffic to measure domain generalization.
 * **Open-World Setting:** Introduces an "Other" category containing traffic from unmonitored websites to test the model's ability to handle unknown, real-world traffic.
 
+## Data Availability
+The underlying dataset consisting of 2,300 anonymized network traffic traces and their respective engineered features is publicly available on Zenodo:
+* **Dataset Repository:** [Zenodo Record 20493234](https://zenodo.org/records/20493234?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImQxMTQ4ZDUxLWNmN2QtNDY5ZS05OTczLTZjODFlYTY4OWYwOCIsImRhdGEiOnt9LCJyYW5kb20iOiI5MDdkMmIwYmYyNmE5NzIwZjlkMzQ2NzQ4NDg2MjU5NSJ9.QKqFF6V8eopaoBGEy8V2pVp4tq8eyAIEzPTbSW_Ch0AAewHHoVz_fMSj3uDic5G_era0gIZArKG0F1nEc9KjkQ)
+* **Citation Metadata:** Use this permanent link/DOI within the thesis methodology and bibliography when referencing the benchmark traffic profiles.
+
 ## Methodology
 The pipeline utilizes the following techniques for feature extraction and model training:
 * **Feature Representation:** Extracts 21 engineered aggregate flow features per traffic sample, but statically selects and trains on only the top 10 features.
 * **Feature Scope:** The 21 extracted features include total/incoming/outgoing packet counts, byte statistics, in/out ratios, inter-arrival time statistics (mean, std, median, 90th percentile), packet size statistics, duration, and direction changes.
 * **Data Splitting:** Employs a stratified train/test split to maintain class distributions.
 * **Random Forest Setup:** Utilizes 300 estimators and a stabilized top-10 feature selection process evaluated across multiple random seeds.
-* **Deep Learning Setup:** Employs a Triplet MLP model trained on the top 10 aggregate features using Triplet Margin Loss over 30 epochs (with standardization, BatchNorm, and Dropout). The resulting embeddings are then classified using a K-Nearest Neighbors ($k=5$) classifier.
+* **Deep Learning Setup:** Employs a Triplet MLP model trained on the top 10 aggregate features using Triplet Margin Loss over 30 epochs (with standardization, BatchNorm, and Dropout). The resulting embeddings are then classified using a K-Nearest Neighbors (k=5) classifier.
 
 ## Results Summary
 The models are evaluated using accuracy and macro-F1 metrics based on the shared features track.

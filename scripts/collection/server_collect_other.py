@@ -34,8 +34,15 @@ OTHER_SITES = {
     "other20": "https://www.ietf.org",
 }
 
-PCAP_DIR = os.getenv("TOR_WF_PCAP_DIR", os.path.join("data", "pcaps", "other_tor"))
-LOG_JSONL = os.getenv("TOR_WF_LOG_JSONL", os.path.join("logs", "collection_other_events.jsonl"))
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+PCAP_DIR = os.getenv(
+    "TOR_WF_PCAP_DIR",
+    os.path.join(REPO_ROOT, "tor_dataset", "other_tor"),
+)
+LOG_JSONL = os.getenv(
+    "TOR_WF_LOG_JSONL",
+    os.path.join(REPO_ROOT, "logs", "collection_other_events.jsonl"),
+)
 NETWORK_INTERFACE = os.getenv("TOR_WF_INTERFACE", "enp3s0")
 GUARD_IP = os.getenv("TOR_WF_GUARD_IP", "109.110.170.208")
 CAPTURE_DURATION = int(os.getenv("TOR_WF_CAPTURE_DURATION", "15"))

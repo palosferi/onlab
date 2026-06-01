@@ -1,4 +1,5 @@
 import glob
+import ipaddress
 import json
 import os
 
@@ -16,9 +17,15 @@ FEATURE_SCHEMA_VERSION = "v2_direction_configurable"
 
 def is_local_source(ip_src):
     # Configurable via env so extraction remains portable across labs/hosts.
-    raw_prefixes = os.environ.get("LOCAL_IP_PREFIXES", "192.168.,10.,172.16.")
-    prefixes = [p.strip() for p in raw_prefixes.split(",") if p.strip()]
-    return any(ip_src.startswith(prefix) for prefix in prefixes)
+    raw_prefixes = os.environ.get("LOCAL_IP_PREFIXES", "auto").strip().lower()
+    if raw_prefixes and raw_prefixes != "auto":
+        prefixes = [p.strip() for p in raw_prefixes.split(",") if p.strip()]
+        return any(ip_src.startswith(prefix) for prefix in prefixes)
+
+    try:
+        return ipaddress.ip_address(ip_src).is_private
+    except ValueError:
+        return False
 
 
 def should_overwrite_outputs():
@@ -103,7 +110,7 @@ def main():
     metadata_path = os.path.join(OUTPUT_DIR, "_extraction_metadata.json")
     metadata = {
         "feature_schema_version": FEATURE_SCHEMA_VERSION,
-        "local_ip_prefixes": os.environ.get("LOCAL_IP_PREFIXES", "192.168.,10.,172.16."),
+        "local_ip_prefixes": os.environ.get("LOCAL_IP_PREFIXES", "auto"),
         "overwrite_mode": overwrite,
     }
     with open(metadata_path, "w", encoding="utf-8") as f:
