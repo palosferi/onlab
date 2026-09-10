@@ -169,6 +169,34 @@ Cron equivalent if systemd is not available:
 0 2 * * 3 /home/YOUR_USER/onlab/scripts/collection/run_round.sh --repeats 5
 ```
 
+## 5b. What a round does, and what protects it
+
+`run_round.sh` is not just the collector. Each round runs five steps, and the
+middle three exist because the series is unattended for thirteen weeks and the
+dangerous failure is silent degradation, not a crash.
+
+1. **`ensure_guard.sh`** verifies the pinned guard is still in the consensus. If
+   it has left, the pin is replaced automatically, the change is appended to
+   `~/tor_wf_runtime/baseline/guard_history.log`, and collection continues. A
+   recorded guard change is a covariate you can control for. A pin to a departed
+   relay leaves Tor stuck at 5 percent and costs every remaining week, which is
+   not recoverable. The spring t0 guard left the network exactly this way.
+2. **`preflight.py`** must pass or the round aborts rather than collecting junk.
+3. **`collect_round.py --resume`** collects. Resume also tops up sites whose
+   earlier captures were rejected, since quarantined captures are not counted,
+   so a site converges toward its full quota across reruns in the same week.
+4. **`round_health.py`** scores the round and writes the result into
+   `round_meta.json`. It fails the round when the usable fraction drops below 55
+   percent or fewer than 20 sites reach 3 usable captures. The verdict is
+   appended to `logs/rounds.log`, so the weekly check is one line.
+5. **`backup_round.sh`** archives manifests, metadata and feature CSVs offsite
+   via rclone. About 8 MB per round, so roughly 110 MB for the whole study.
+   PCAPs are excluded by default at 1 to 2 GB per round; set
+   `TOR_WF_BACKUP_PCAPS=1` to include them.
+
+Thirteen weeks of irreplaceable measurements on a single laptop is the largest
+risk to the thesis and the one the collection code cannot otherwise reduce.
+
 ## 6. What lands on disk
 
 ```
@@ -198,7 +226,8 @@ python src/drift_shift.py   --arm baseline            # model-free shift test
 ## 8. Weekly check, two minutes
 
 ```bash
-tail -3 logs/rounds.log
+tail -3 logs/rounds.log          # each line carries a healthy / NEEDS ATTENTION verdict
+python src/round_health.py --round latest
 python - <<'EOF'
 import csv, glob, collections
 for m in sorted(glob.glob("tor_dataset/longitudinal/*/manifest.csv"))[-2:]:
