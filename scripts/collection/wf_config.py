@@ -264,27 +264,48 @@ def host_metadata():
 
 
 # Interstitials that produce a perfectly valid PCAP containing none of the
-# target site's traffic.  Counting these as real samples is the single easiest
-# way to fabricate drift that is not there.
-BLOCK_PATTERNS = [
+# target site's traffic.  Counting these as real samples is the easiest way to
+# fabricate drift that is not there.  Rejecting real pages is just as bad, so
+# the two signals are kept separate and the body scan is deliberately narrow.
+#
+# The document title is decisive: a challenge page replaces it entirely.
+TITLE_BLOCK_PATTERNS = [
     r"just a moment",
     r"attention required",
+    r"access denied",
+    r"are you a robot",
+    r"verify you are human",
+    r"security check",
     r"checking your browser",
-    r"cloudflare",
+    r"^403\b",
+    r"\b403 forbidden\b",
+    r"\b429\b",
+    r"too many requests",
+    r"bot verification",
+    r"pardon our interruption",
+]
+_TITLE_BLOCK_RE = re.compile("|".join(TITLE_BLOCK_PATTERNS), re.IGNORECASE)
+
+# Body phrases only consulted for pages small enough to be an interstitial.
+# Bare "cloudflare" and "blocked" are NOT here on purpose: plenty of real pages
+# load Cloudflare scripts or use the word, and matching them threw away a
+# 1.4 MB Guardian front page in the first test round.
+BODY_BLOCK_PATTERNS = [
+    r"checking your browser",
+    r"enable javascript and cookies to continue",
     r"captcha",
     r"are you a robot",
-    r"unusual traffic",
-    r"access denied",
-    r"403 forbidden",
-    r"429 too many requests",
-    r"blocked",
+    r"unusual traffic from your computer",
     r"verify you are human",
-    r"enable javascript and cookies",
+    r"ray id",
+    r"cf-error-details",
 ]
-_BLOCK_RE = re.compile("|".join(BLOCK_PATTERNS), re.IGNORECASE)
+_BODY_BLOCK_RE = re.compile("|".join(BODY_BLOCK_PATTERNS), re.IGNORECASE)
 
 MIN_PAGE_SOURCE_BYTES = env_int("TOR_WF_MIN_PAGE_BYTES", 2000)
 MIN_PCAP_BYTES = env_int("TOR_WF_MIN_PCAP_BYTES", 5000)
+# Above this, a page is too large to be a challenge interstitial.
+INTERSTITIAL_MAX_BYTES = env_int("TOR_WF_INTERSTITIAL_MAX_BYTES", 60000)
 
 
 def classify_page(driver, expected_host):
@@ -321,10 +342,12 @@ def classify_page(driver, expected_host):
         except Exception:
             pass
 
-        probe = (title + " " + source[:4000]).lower()
-        if _BLOCK_RE.search(probe):
+        if _TITLE_BLOCK_RE.search(title):
             result["status"] = "blocked"
-            result["detail"] = "interstitial or challenge page detected"
+            result["detail"] = f"challenge page title: {title[:80]!r}"
+        elif len(source) < INTERSTITIAL_MAX_BYTES and _BODY_BLOCK_RE.search(source[:6000]):
+            result["status"] = "blocked"
+            result["detail"] = f"challenge phrase in a {len(source)} byte page"
         elif len(source) < MIN_PAGE_SOURCE_BYTES:
             result["status"] = "empty"
             result["detail"] = f"page source only {len(source)} bytes"

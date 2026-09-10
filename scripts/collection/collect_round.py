@@ -39,6 +39,7 @@ MANIFEST_FIELDS = [
     "status",
     "detail",
     "final_url_host",
+    "title",
     "title_hash",
     "page_bytes",
     "ready_state",
@@ -193,7 +194,8 @@ def capture_one(item, arm, interface, out_dir, browser_version, tor_version):
 
     ok, size = cfg.pcap_ok(final_pcap)
     row["pcap_bytes"] = size
-    for key in ("final_url_host", "title_hash", "page_bytes", "ready_state", "load_time_ms"):
+    for key in ("final_url_host", "title", "title_hash", "page_bytes",
+                "ready_state", "load_time_ms"):
         if page.get(key) is not None:
             row[key] = page.get(key)
 
