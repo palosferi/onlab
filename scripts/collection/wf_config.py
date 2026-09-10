@@ -117,6 +117,7 @@ class Arm:
         self.control_port = control_port
         self.enabled = enabled
         self.peer_ip = None
+        self.peer_ips = []
         self.guard_fingerprint = None
         self.guard_nickname = None
 
@@ -140,6 +141,53 @@ def configured_arms():
         ),
     ]
     return [a for a in arms if a.enabled]
+
+
+def parse_bridge_address(line):
+    """Extract the host from a Bridge line, IPv4 or bracketed IPv6."""
+    m = re.search(r"\[([0-9A-Fa-f:]+)\]:(\d+)", line)
+    if m:
+        return m.group(1)
+    m = re.search(r"\b(\d{1,3}(?:\.\d{1,3}){3}):(\d+)\b", line)
+    if m:
+        return m.group(1)
+    return None
+
+
+def live_peers(process_name):
+    """Remote addresses this process currently has sockets to.
+
+    Reads `ss` rather than config, because Tor's actual bridge address is not
+    always the one written in the torrc.
+    """
+    out = []
+    try:
+        r = subprocess.run(["ss", "-tnp"], capture_output=True, text=True, timeout=10)
+    except Exception:
+        return out
+    for line in r.stdout.splitlines():
+        if process_name not in line:
+            continue
+        # Peer address is the second-to-last whitespace field before users:(...)
+        m = re.search(r"\s(\[[0-9A-Fa-f:]+\]|\d{1,3}(?:\.\d{1,3}){3}):(\d+)\s+users:", line)
+        if not m:
+            continue
+        host = m.group(1).strip("[]")
+        if host.startswith("127.") or host == "::1":
+            continue
+        if host not in out:
+            out.append(host)
+    return out
+
+
+def capture_filter(peer_ips):
+    """pcap filter covering every address this arm might use."""
+    if not peer_ips:
+        raise ValueError("no peer addresses to filter on")
+    if len(peer_ips) == 1:
+        return ["tcp", "and", "host", peer_ips[0]]
+    inner = " or ".join(f"host {ip}" for ip in peer_ips)
+    return ["tcp", "and", "(", *inner.split(" "), ")"]
 
 
 def detect_interface():
@@ -180,18 +228,30 @@ def resolve_peer_ip(controller, arm):
             bridges = controller.get_conf("Bridge", multiple=True) or []
         except Exception:
             bridges = []
+        addrs = []
         for line in bridges:
-            m = re.search(r"(\d{1,3}(?:\.\d{1,3}){3}):(\d+)", line)
-            if m:
-                arm.peer_ip = m.group(1)
-                fp = re.search(r"\b([0-9A-Fa-f]{40})\b", line)
-                arm.guard_fingerprint = fp.group(1).upper() if fp else None
-                arm.guard_nickname = "obfs4-bridge"
-                return arm.peer_ip
-        raise RuntimeError(
-            f"No Bridge line found on control port {arm.control_port}. "
-            "Is this Tor instance actually configured with UseBridges 1?"
-        )
+            addr = parse_bridge_address(line)
+            if addr:
+                addrs.append(addr)
+                if not arm.guard_fingerprint:
+                    fp = re.search(r"\b([0-9A-Fa-f]{40})\b", line)
+                    arm.guard_fingerprint = fp.group(1).upper() if fp else None
+        # A bridge often has both an IPv4 and an IPv6 address, and Tor silently
+        # falls back to the other one when the first stops answering. Only the
+        # configured address is in the torrc, so the live sockets are consulted
+        # too: a filter on the wrong family captures nothing at all.
+        for live in live_peers("obfs4proxy"):
+            if live not in addrs:
+                addrs.append(live)
+        if not addrs:
+            raise RuntimeError(
+                f"No usable Bridge address on control port {arm.control_port}. "
+                "Is this Tor instance actually configured with UseBridges 1?"
+            )
+        arm.guard_nickname = "obfs4-bridge"
+        arm.peer_ips = addrs
+        arm.peer_ip = addrs[0]
+        return arm.peer_ip
 
     # Baseline arm: first hop of any built circuit is the guard.
     circuits = [c for c in controller.get_circuits() if c.status == "BUILT" and c.path]
@@ -206,6 +266,7 @@ def resolve_peer_ip(controller, arm):
     status = controller.get_network_status(fingerprint)
     arm.guard_nickname = status.nickname
     arm.peer_ip = status.address
+    arm.peer_ips = [status.address]
     return arm.peer_ip
 
 

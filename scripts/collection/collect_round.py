@@ -147,8 +147,8 @@ def capture_one(item, arm, interface, out_dir, browser_version, tor_version):
     )
 
     tcpdump = subprocess.Popen(
-        cfg.tcpdump_argv(["-i", interface, "-w", tmp_pcap, "-U",
-                          "tcp", "and", "host", arm.peer_ip]),
+        cfg.tcpdump_argv(["-i", interface, "-w", tmp_pcap, "-U"]
+                         + cfg.capture_filter(arm.peer_ips or [arm.peer_ip])),
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
     )
