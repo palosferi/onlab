@@ -1,6 +1,6 @@
 {
   "arm": "baseline",
-  "generated_at": "2026-09-10T11:42:34.744373",
+  "generated_at": "2026-09-10T11:46:25.934321",
   "frozen_features": [
     "total_bytes",
     "incoming_bytes",

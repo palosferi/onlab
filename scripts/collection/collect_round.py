@@ -243,6 +243,16 @@ def main():
 
     print(f"=== round {rid} | interface {interface} | arms {[a.name for a in arms]} ===")
 
+    if args.dry_run:
+        total = len(site_map) * args.repeats * len(arms)
+        print(f"    dry run: {total} captures would be queued "
+              f"({len(site_map)} sites x {args.repeats} repeats x {len(arms)} arms)")
+        print(f"    estimated duration: {total * 37 / 3600:.1f} h")
+        for arm in arms:
+            print(f"    {arm.name}: socks {arm.socks_port}, control {arm.control_port}, "
+                  f"output {cfg.round_dir(rid, arm.name)}")
+        return
+
     controllers = {}
     tor_versions = {}
     for arm in arms:
@@ -274,11 +284,6 @@ def main():
     random.Random(rid).shuffle(work)
     print(f"    {len(work)} captures queued "
           f"({len(site_map)} sites x {args.repeats} repeats x {len(arms)} arms)")
-
-    if args.dry_run:
-        for item in work[:10]:
-            print("   ", item)
-        return
 
     arm_by_name = {a.name: a for a in arms}
     for arm in arms:
