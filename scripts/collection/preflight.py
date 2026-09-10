@@ -46,23 +46,25 @@ def check_python_packages():
 
 def check_binaries():
     missing = [b for b in ("tcpdump", "ip") if not cfg.have(b)]
-    chrome = next((b for b in ("google-chrome", "chromium", "chromium-browser") if cfg.have(b)), None)
-    driver = cfg.have("chromedriver")
+    chrome = cfg.browser_binary()
+    driver = cfg.chromedriver_binary()
     if missing:
         return FAIL, f"missing binaries: {', '.join(missing)}"
     if not chrome:
         return FAIL, "no chrome/chromium binary found"
     if not driver:
         return WARN, f"{chrome} found, chromedriver not on PATH (Selenium Manager may fetch it)"
-    return PASS, f"{chrome} + chromedriver + tcpdump"
+    return PASS, f"{chrome} + {driver} + tcpdump"
 
 
 def check_sudo():
     r = subprocess.run(["sudo", "-n", "tcpdump", "--version"],
                        capture_output=True, text=True, timeout=10)
     if r.returncode != 0:
-        return FAIL, ("passwordless sudo for tcpdump not available. Add to sudoers: "
-                      f"{os.getenv('USER', 'user')} ALL=(root) NOPASSWD: /usr/bin/tcpdump, /usr/bin/pkill, /usr/bin/mv, /usr/bin/chown")
+        td = shutil.which("tcpdump") or "/usr/sbin/tcpdump"
+        return FAIL, ("passwordless sudo for tcpdump not available. Add to sudoers "
+                      f"(visudo): {os.getenv('USER', 'user')} ALL=(root) NOPASSWD: "
+                      f"{td}, /usr/bin/pkill, /bin/mv, /bin/chown")
     return PASS, "sudo -n tcpdump works"
 
 
@@ -90,7 +92,11 @@ def check_capture():
     except subprocess.TimeoutExpired:
         p.kill()
     ok = os.path.exists(tmp) and os.path.getsize(tmp) > 0
-    subprocess.run(["sudo", "-n", "rm", "-f", tmp], check=False)
+    subprocess.run(["sudo", "-n", "chown", f"{os.getuid()}:{os.getgid()}", tmp], check=False)
+    try:
+        os.remove(tmp)
+    except OSError:
+        pass
     if not ok:
         return FAIL, f"tcpdump produced no data on {iface} (AppArmor or SELinux may block writes to /tmp)"
     return PASS, f"tcpdump captured on {iface}"

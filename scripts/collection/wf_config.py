@@ -353,6 +353,29 @@ def pcap_ok(path):
     return size >= MIN_PCAP_BYTES, size
 
 
+def browser_binary():
+    """Path to the Chrome-family browser, or None to let Selenium decide.
+
+    The collection host runs Chromium rather than Google Chrome, and Selenium
+    will not find it by itself.
+    """
+    override = os.getenv("TOR_WF_BROWSER_BINARY")
+    if override:
+        return override
+    for candidate in ("google-chrome", "google-chrome-stable", "chromium", "chromium-browser"):
+        path = shutil.which(candidate)
+        if path:
+            return path
+    return None
+
+
+def chromedriver_binary():
+    override = os.getenv("TOR_WF_CHROMEDRIVER")
+    if override:
+        return override
+    return shutil.which("chromedriver")
+
+
 def have(binary):
     return shutil.which(binary) is not None
 

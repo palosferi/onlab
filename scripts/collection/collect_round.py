@@ -55,8 +55,12 @@ MANIFEST_FIELDS = [
 def build_driver(socks_port):
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.chrome.service import Service
 
     opts = Options()
+    binary = cfg.browser_binary()
+    if binary:
+        opts.binary_location = binary
     opts.add_argument("--headless=new")
     opts.add_argument("--no-sandbox")
     opts.add_argument("--disable-dev-shm-usage")
@@ -72,7 +76,11 @@ def build_driver(socks_port):
     # Page load strategy is deliberately left at Selenium's default ("normal"),
     # matching the spring collector: get() returns on the load event and the
     # warmup plus capture sleep runs after it.
-    driver = webdriver.Chrome(options=opts)
+    # Use the system chromedriver when present so Selenium Manager does not
+    # try to fetch one over the network mid-round.
+    driver_path = cfg.chromedriver_binary()
+    service = Service(executable_path=driver_path) if driver_path else None
+    driver = webdriver.Chrome(options=opts, service=service) if service else webdriver.Chrome(options=opts)
     driver.set_page_load_timeout(cfg.env_int("TOR_WF_PAGE_TIMEOUT", 90))
     return driver
 
