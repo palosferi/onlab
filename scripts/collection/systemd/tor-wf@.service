@@ -1,0 +1,18 @@
+[Unit]
+Description=Tor WF collection instance (%i)
+Documentation=file://%h/onlab/docs/LONGITUDINAL_SETUP.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# The generated torrc sets RunAsDaemon 1, so tor forks and writes its own
+# PID file.
+Type=forking
+PIDFile=%h/tor_wf_runtime/%i/tor.pid
+ExecStart=/usr/bin/tor -f %h/tor_wf_runtime/%i/torrc
+# A Tor that dies mid-study silently costs a week of data, so restart it.
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=default.target

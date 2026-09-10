@@ -80,14 +80,25 @@ captures, so a killed round can be finished later the same week.
 
 ## 5. Weekly schedule
 
+Three user units: one timer, one round service, and one Tor instance service
+per arm so both instances come back after a reboot.
+
 ```bash
 mkdir -p ~/.config/systemd/user
 cp scripts/collection/systemd/tor-wf-round.* ~/.config/systemd/user/
+sed "s|%h|$HOME|g; s|%i|baseline|g" scripts/collection/systemd/tor-wf@.service \
+	> ~/.config/systemd/user/tor-wf-baseline.service
+sed "s|%h|$HOME|g; s|%i|obfs4|g" scripts/collection/systemd/tor-wf@.service \
+	> ~/.config/systemd/user/tor-wf-obfs4.service
 systemctl --user daemon-reload
+systemctl --user enable tor-wf-baseline.service tor-wf-obfs4.service
 systemctl --user enable --now tor-wf-round.timer
-sudo loginctl enable-linger "$USER"     # timers run without an active login
+loginctl enable-linger "$USER"          # timers run without an active login
 systemctl --user list-timers tor-wf-round.timer
 ```
+
+Without linger the timer only runs while you are logged in, which for a study
+that fires at 02:00 means it never runs at all.
 
 The timer fires at a fixed weekday and a fixed time of day on purpose. News
 sites change through the day, so holding time-of-day constant keeps week-to-week

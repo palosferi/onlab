@@ -84,6 +84,9 @@ címkézett minták száma, mert a valóságban ez az, amit a támadónak elő k
   változása nem választható szét teljesen. A heti körök egymáshoz képest
   viszont már azonos útvonalon készülnek, így a drift-görbe meredekségét ez
   nem torzítja.
+- **Az obfs4 ág viszont pontosan a t0 útvonalán fut:** ugyanaz a híd
+  (109.110.170.208:29323), amelyen a tavaszi obfs4 mérések készültek. Ez az ág
+  tehát tisztább összehasonlítást enged a t0-val, mint a baseline.
 - **Jellemzők:** a tavaszi kinyerő kód változatlan újrafelhasználásával, hogy
   egy szeptemberi jellemző ugyanazt jelentse, mint egy márciusi. A
   jellemzőkiválasztás kizárólag a t0-n történik és a teljes idősoron rögzített
