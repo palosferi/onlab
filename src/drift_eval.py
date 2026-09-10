@@ -165,6 +165,59 @@ def score(model, X, y):
     }
 
 
+def decay_trend(rows):
+    """Fit accuracy against weeks elapsed and report whether the slope is real.
+
+    A decay curve drawn through three or four noisy points invites
+    over-reading. This gives the slope in accuracy points per week with a
+    confidence interval, so the thesis can state whether a decline is
+    statistically supported rather than merely visible.
+    """
+    points = [(r["weeks_since_train"], r["accuracy"]) for r in rows
+              if r.get("weeks_since_train") is not None]
+    if len(points) < 3:
+        return {"note": f"need at least 3 time points to fit a trend, have {len(points)}"}
+
+    xs = np.array([p[0] for p in points], dtype=float)
+    ys = np.array([p[1] for p in points], dtype=float)
+    n = len(xs)
+    slope, intercept = np.polyfit(xs, ys, 1)
+    pred = slope * xs + intercept
+    resid = ys - pred
+    ss_res = float(np.sum(resid ** 2))
+    ss_tot = float(np.sum((ys - ys.mean()) ** 2))
+    r2 = 1 - ss_res / ss_tot if ss_tot > 0 else float("nan")
+
+    sxx = float(np.sum((xs - xs.mean()) ** 2))
+    slope = float(slope)
+    if n > 2 and sxx > 0:
+        from scipy import stats as _st
+
+        se = float(np.sqrt(ss_res / (n - 2) / sxx))
+        tcrit = float(_st.t.ppf(0.975, n - 2))
+        ci = [float(slope - tcrit * se), float(slope + tcrit * se)]
+        if se > 0:
+            t_stat = slope / se
+            p_value = float(2 * (1 - _st.t.cdf(abs(t_stat), n - 2)))
+        else:
+            # An exact fit: the residuals are zero, so the slope is as well
+            # determined as it can be. Undefined is the wrong answer here.
+            p_value = 0.0 if slope != 0 else 1.0
+    else:
+        se, p_value, ci = float("nan"), float("nan"), [None, None]
+
+    has_p = p_value == p_value  # False only for NaN
+    return {
+        "points": int(n),
+        "slope_accuracy_points_per_week": round(slope, 4),
+        # Plain floats, not numpy scalars: this dict is written straight to JSON.
+        "slope_95ci": [None if c is None else round(float(c), 4) for c in ci],
+        "p_value": round(p_value, 6) if has_p else None,
+        "r_squared": round(float(r2), 4) if r2 == r2 else None,
+        "significant_at_0.05": bool(has_p and p_value < 0.05),
+    }
+
+
 def mean_std(runs, key):
     vals = [r[key] for r in runs]
     return round(float(np.mean(vals)), 2), round(float(np.std(vals)), 2)
@@ -339,6 +392,7 @@ def main():
         print("\n[!] Only one snapshot. Collect a round, then rerun for the decay curve.")
     else:
         payload["no_retrain"] = policy_no_retrain(snapshots, feats)
+        payload["decay_trend"] = decay_trend(payload["no_retrain"])
         payload["periodic_retrain"] = {
             f"every_{k}_rounds": policy_periodic_retrain(snapshots, feats, k)
             for k in (1, 2, 4) if len(snapshots) > k
@@ -362,6 +416,16 @@ def main():
             print(f"    {r['round']:14s} +{r['weeks_since_train']:>5} weeks  "
                   f"acc={r['accuracy']:6.2f}%  macroF1={r['macro_f1']:6.2f}%  "
                   f"groups={r['per_group_recall']}")
+    trend = payload.get("decay_trend") or {}
+    if trend.get("points"):
+        sig = "significant" if trend["significant_at_0.05"] else "NOT significant"
+        print(f"\n--- decay trend over {trend['points']} time points ---")
+        print(f"    slope: {trend['slope_accuracy_points_per_week']} accuracy points per week")
+        print(f"    95% CI: {trend['slope_95ci']}   p={trend['p_value']}   "
+              f"R2={trend['r_squared']}   ({sig})")
+    elif trend.get("note"):
+        print(f"\n--- decay trend: {trend['note']} ---")
+
     for label, block in (("periodic retraining", payload.get("periodic_retrain")),
                          ("sliding window", payload.get("sliding_window"))):
         if not block:

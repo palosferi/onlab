@@ -48,15 +48,24 @@ def resolve_rounds(selector):
     return [selector]
 
 
-def extract_arm(round_id, arm, overwrite=False):
-    pcap_dir = os.path.join(LONGITUDINAL_DIR, round_id, arm)
+def extract_arm(round_id, arm, overwrite=False, rejected=False):
+    """Extract one arm. With rejected=True, process the quarantine instead.
+
+    Quarantined captures are labelled failures: challenge pages, browser error
+    pages, empty responses. Their features are worth having separately, because
+    the spring t0 was collected without any validation and therefore probably
+    contains challenge traffic labelled as real sites. These give a labelled
+    set of what that traffic looks like, so the contamination can be estimated
+    rather than only acknowledged.
+    """
+    base = os.path.join(LONGITUDINAL_DIR, round_id, arm)
+    pcap_dir = os.path.join(base, "_rejected") if rejected else base
     if not os.path.isdir(pcap_dir):
         return 0, 0
-    out_dir = os.path.join(LONGITUDINAL_DIR, round_id, f"{arm}_features")
+    suffix = "_rejected_features" if rejected else "_features"
+    out_dir = os.path.join(LONGITUDINAL_DIR, round_id, f"{arm}{suffix}")
     os.makedirs(out_dir, exist_ok=True)
 
-    # Only top-level PCAPs are used. Anything the collector quarantined under
-    # _rejected/ stays out of the feature set by construction.
     pcaps = sorted(
         f for f in os.listdir(pcap_dir)
         if f.endswith(".pcap") and os.path.isfile(os.path.join(pcap_dir, f))
@@ -82,6 +91,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--round", default="latest")
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--include-rejected", action="store_true",
+                        help="also extract the quarantined captures into "
+                             "<arm>_rejected_features/")
     args = parser.parse_args()
 
     for round_id in resolve_rounds(args.round):
@@ -92,6 +104,11 @@ def main():
             if written or skipped:
                 summary[arm] = {"written": written, "skipped": skipped}
                 print(f"    {arm}: {written} written, {skipped} skipped")
+            if args.include_rejected:
+                rw, rs = extract_arm(round_id, arm, overwrite=args.overwrite, rejected=True)
+                if rw or rs:
+                    summary[f"{arm}_rejected"] = {"written": rw, "skipped": rs}
+                    print(f"    {arm} rejected: {rw} written, {rs} skipped")
         meta_path = os.path.join(LONGITUDINAL_DIR, round_id, "round_meta.json")
         meta = {}
         if os.path.exists(meta_path):
