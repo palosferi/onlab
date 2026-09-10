@@ -1,6 +1,6 @@
 {
   "arm": "baseline",
-  "generated_at": "2026-09-10T11:46:25.934321",
+  "generated_at": "2026-09-10T20:25:58.006416",
   "frozen_features": [
     "total_bytes",
     "incoming_bytes",
@@ -19,17 +19,93 @@
       "n": 1123,
       "classes": 36,
       "date": "2026-03-27"
+    },
+    {
+      "name": "2026-W37",
+      "n": 134,
+      "classes": 28,
+      "date": "2026-09-10"
     }
   ],
   "within_round_ceiling": [
     {
       "round": "t0-spring",
       "date": "2026-03-27",
-      "accuracy": 79.11,
-      "accuracy_std": 1.31,
-      "macro_f1": 78.44,
+      "accuracy": 79.26,
+      "accuracy_std": 2.22,
+      "macro_f1": 78.73,
       "n_samples": 1123
     }
   ],
-  "note": "Only t0 is present, so no drift can be measured yet. The within-round ceiling is the reference the first longitudinal round will be read against."
+  "no_retrain": [
+    {
+      "round": "2026-W37",
+      "weeks_since_train": 23.86,
+      "accuracy": 15.92,
+      "accuracy_std": 0.93,
+      "macro_f1": 10.81,
+      "macro_f1_std": 0.43,
+      "per_group_recall": {
+        "static": 5.0,
+        "news": 30.91,
+        "commerce_media": 2.22
+      },
+      "per_class_recall": {
+        "aliexpress": 20.0,
+        "aljazeera": 0.0,
+        "amazon": 0.0,
+        "archive": 0.0,
+        "bbc": 60.0,
+        "bme": 0.0,
+        "coursera": 0.0,
+        "debian": 0.0,
+        "duckduckgo": 0.0,
+        "ebay": 0.0,
+        "github": 40.0,
+        "hacker_news": 0.0,
+        "hvg": 0.0,
+        "hwsw": 0.0,
+        "index": 40.0,
+        "mit_ocw": 0.0,
+        "mozilla": 0.0,
+        "origo": 60.0,
+        "reddit": 0.0,
+        "soundcloud": 0.0,
+        "techcrunch": 80.0,
+        "telex": 0.0,
+        "theguardian": 60.0,
+        "twitch": 0.0,
+        "vimeo": 0.0,
+        "wikipedia": 0.0,
+        "wired": 40.0,
+        "wordpress": 0.0
+      },
+      "n_test": 134,
+      "train_samples_used": 1123
+    }
+  ],
+  "periodic_retrain": {
+    "every_1_rounds": [
+      {
+        "round": "2026-W37",
+        "weeks_since_train": 23.86,
+        "accuracy": 14.93,
+        "macro_f1": 10.88,
+        "train_samples_used": 1123,
+        "trained_through": "t0-spring",
+        "dropped_unknown_class_samples": 0
+      }
+    ]
+  },
+  "sliding_window": {
+    "window_1": [
+      {
+        "round": "2026-W37",
+        "accuracy": 14.93,
+        "macro_f1": 10.88,
+        "train_samples_used": 1123,
+        "window_rounds": 1
+      }
+    ]
+  }
 }

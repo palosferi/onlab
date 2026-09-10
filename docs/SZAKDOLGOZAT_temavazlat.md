@@ -108,6 +108,62 @@ címkézett minták száma, mert a valóságban ez az, amit a támadónak elő k
 
 ---
 
+## 3b. Az első mérési kör eredménye (2026-W37, szeptember 10.)
+
+A mérőlánc működik: az első longitudinális kör mindkét ágon lefutott, oldalanként
+öt ismétléssel, validált oldalbetöltésekkel. A tavaszi t0-hoz képest mért eltérés
+látványos, de **nem nevezhető driftnek**, és ennek kimondása fontosabb, mint maga
+a szám.
+
+| Mérés | Érték |
+|---|---|
+| t0-n belüli felső korlát (nincs drift) | 79,26% |
+| t0-modell a szeptemberi körön | 15,92% |
+| macro-F1 ugyanott | 10,81% |
+| átlagos KS-eltolódás 27 oldalon | 0,79 |
+
+A modellfüggetlen KS-teszt szerint az eltolódás **csoportonként gyakorlatilag
+azonos**: statikus 0,807, hírportál 0,791, kereskedelmi 0,773. Ha ez a webhelyek
+tartalmi változásából eredne, a hírportáloknak érdemben jobban kellett volna
+driftelniük a statikus oldalaknál. Az egyenletes eltolódás közös okra utal, ami
+minden oldalt egyformán érint: a hálózati útvonal megváltozására. Ezt két ismert
+tényező magyarázza:
+
+1. **Guard-csere.** A t0 minden mérése a `th4r` guardon ment át, ez a relay
+   azóta kikerült a consensusból, az új sorozat a `Sol` guardot használja. Az
+   aggregált jellemzők nagy része (csomagszám, bájtszám, csomagközi idők) közvetlenül
+   függ az útvonaltól.
+2. **A t0 nem volt validálva.** A tavaszi gyűjtő nem ellenőrizte, hogy az oldal
+   valóban betöltött-e, így a t0 nagy valószínűséggel tartalmaz Cloudflare
+   challenge-oldalakat a céloldalak címkéjével. A szeptemberi kör viszont
+   validált. A két halmaz tehát nem ugyanazt méri.
+
+**Ebből következik a legfontosabb módszertani állítás:** a t0 és az első új kör
+közötti lépés terhelt, a heti körök egymáshoz képest viszont azonos körülmények
+között készülnek, így a drift-görbe **meredeksége** W37-től kezdve tiszta. A
+dolgozat ezért a t0-t kiindulási referenciaként kezeli, nem a drift-görbe első
+pontjaként.
+
+**Javasolt kontrollkísérlet.** A guard-hatás egy olcsó méréssel elválasztható az
+időbeli hatástól: ugyanazon a napon, ugyanazon a céloldal-listán egy második kör
+egy *másik* guardon. Ha az így mért KS-eltolódás nagyságrendileg megegyezik a
+t0-hoz mért 0,79-cel, az bizonyítja, hogy a jelenség útvonal-eredetű és nem
+időbeli. Ez egy nap alatt elvégezhető.
+
+### Oldalak, amelyek kizárják a Tort
+
+A 36 céloldalból 9 nem adott használható mintát. Ez nem gyűjtési hiba, hanem
+önálló eredmény, és a heti elutasítási arány mérhető mennyiség:
+
+- **Cloudflare challenge:** w3c, stackoverflow, quora (,,Just a moment...''),
+  medium (,,Attention Required''), reuters (,,Access Denied'')
+- **HTTP 403:** imdb
+- **Betöltési hiba:** cnn, gnu, vimeo
+
+A zárt világú feladat így a gyakorlatban 36 helyett 27 osztályos. Mivel a
+tavaszi gyűjtő nem validált, elképzelhető, hogy ezek egy része már márciusban is
+blokkolt, csak akkor challenge-oldalként bekerült az adathalmazba.
+
 ## 4. Ütemterv
 
 | Időszak | Feladat |

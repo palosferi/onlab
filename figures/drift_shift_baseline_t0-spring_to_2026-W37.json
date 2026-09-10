@@ -1,0 +1,66 @@
+{
+  "arm": "baseline",
+  "reference": "t0-spring",
+  "target": "2026-W37",
+  "sites_compared": 27,
+  "mean_ks": 0.7903,
+  "group_mean_ks": {
+    "commerce_media": 0.7729,
+    "news": 0.7911,
+    "static": 0.8067
+  },
+  "most_shifted": [
+    {
+      "site": "mit_ocw",
+      "ks_mean": 0.9196,
+      "n_features_shifted": 18
+    },
+    {
+      "site": "aljazeera",
+      "ks_mean": 0.8851,
+      "n_features_shifted": 16
+    },
+    {
+      "site": "soundcloud",
+      "ks_mean": 0.863,
+      "n_features_shifted": 13
+    },
+    {
+      "site": "coursera",
+      "ks_mean": 0.8571,
+      "n_features_shifted": 18
+    },
+    {
+      "site": "wordpress",
+      "ks_mean": 0.8556,
+      "n_features_shifted": 15
+    }
+  ],
+  "least_shifted": [
+    {
+      "site": "archive",
+      "ks_mean": 0.7254,
+      "n_features_shifted": 10
+    },
+    {
+      "site": "amazon",
+      "ks_mean": 0.7192,
+      "n_features_shifted": 8
+    },
+    {
+      "site": "twitch",
+      "ks_mean": 0.7091,
+      "n_features_shifted": 9
+    },
+    {
+      "site": "index",
+      "ks_mean": 0.6995,
+      "n_features_shifted": 8
+    },
+    {
+      "site": "aliexpress",
+      "ks_mean": 0.6504,
+      "n_features_shifted": 3
+    }
+  ]
+}
