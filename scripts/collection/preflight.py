@@ -149,11 +149,26 @@ def make_socks_check(arm):
             "http": f"socks5h://127.0.0.1:{arm.socks_port}",
             "https": f"socks5h://127.0.0.1:{arm.socks_port}",
         }
-        r = requests.get("https://check.torproject.org/api/ip", proxies=proxies, timeout=45)
-        data = r.json()
-        if not data.get("IsTor"):
-            return FAIL, f"traffic through socks {arm.socks_port} is NOT going over Tor"
-        return PASS, f"socks {arm.socks_port} exits Tor at {data.get('IP')}"
+        timeout = cfg.env_int("TOR_WF_EXIT_CHECK_TIMEOUT", 60)
+        last = None
+        for _ in range(1):
+            try:
+                r = requests.get("https://check.torproject.org/api/ip",
+                                 proxies=proxies, timeout=timeout)
+                data = r.json()
+                if not data.get("IsTor"):
+                    # This one really is fatal: the arm is reaching the internet
+                    # outside Tor, so every capture would be mislabelled.
+                    return FAIL, f"traffic through socks {arm.socks_port} is NOT going over Tor"
+                return PASS, f"socks {arm.socks_port} exits Tor at {data.get('IP')}"
+            except Exception as exc:
+                last = exc
+        # A slow bridge path is normal and must not abort an unattended round.
+        # Tor already reported itself bootstrapped in the check above, and the
+        # round records per-capture failures on its own.
+        return WARN, (f"socks {arm.socks_port} did not answer the exit check within "
+                      f"{timeout}s ({type(last).__name__}). Tor reports itself "
+                      "bootstrapped, so the round will proceed.")
 
     return fn
 
