@@ -19,44 +19,101 @@ burst of collection. Three things in it break over a multi-month series:
 `collect_round.py` resolves the peer address from the running Tor process,
 validates every page load, and interleaves both arms inside one round.
 
-## 1. Two Tor instances
+## 1. Two Tor instances, no root required
 
 The obfs4 arm needs its own Tor, otherwise the two arms cannot be interleaved
-without reconfiguring Tor between captures.
+without reconfiguring Tor between captures. Tor runs fine as an unprivileged
+user with its own DataDirectory, so the system Tor is left alone:
 
 ```bash
-sudo tor-instance-create baseline
-sudo tor-instance-create obfs4
-sudo cp scripts/collection/torrc.baseline.example /etc/tor/instances/baseline/torrc
-sudo cp scripts/collection/torrc.obfs4.example    /etc/tor/instances/obfs4/torrc
-# edit the obfs4 torrc: paste a bridge line from https://bridges.torproject.org/
-sudo systemctl enable --now tor@baseline tor@obfs4
+scripts/collection/setup_tor_instances.sh
 ```
 
-Add yourself to the Tor control groups so stem can authenticate by cookie:
+This creates `~/tor_wf_runtime/{baseline,obfs4}`, each with its own torrc, data
+directory and log. Baseline listens on SOCKS 9060 and control 9061, obfs4 on
+9062 and 9063. Use `--status` to see what is running and `--stop` to stop them.
+
+### Guard pinning
+
+The baseline arm uses one fixed guard for the whole study, so a change in
+measured accuracy is drift and not a different route through the network. The
+guard is discovered on the first run, written to
+`~/tor_wf_runtime/baseline/pinned_guard.txt`, then pinned with `EntryNodes`.
+
+Two things make this fiddly, and the script handles both:
+
+- A Tor pinned to one guard from a cold start cannot bootstrap. It needs
+  microdescriptors before it can use the guard, and a circuit through the guard
+  to fetch them. So it bootstraps unrestricted first, then restarts pinned.
+- A pin to a relay that has left the consensus leaves Tor stuck at 5 percent,
+  unable to build any circuit at all. The script validates the pin against the
+  live consensus and discards it if the relay is gone.
+
+The spring t0 ran over guard `th4r` (27A06581, 57.129.38.230), which is no
+longer in the consensus. The new series uses a different guard and records it
+as a covariate rather than pretending the path is unchanged.
+
+A running instance does not pick up a rewritten torrc. If the script reports
+"already running" while you are changing the pin, restart that instance or the
+pin silently does nothing.
+
+## 1b. The obfs4 arm needs a bridge you control
+
+Do not build the obfs4 arm on a volunteer bridge. The spring t0 bridge stopped
+answering mid-study, and five replacements handed out by bridges.torproject.org
+were all unreachable within the same afternoon. This is a known issue: the Tor
+Project's own tracker carries "Stop BridgeDB from handing out offline bridges",
+because reachability data lags and stale entries stay in the pool. A study that
+must collect identically every week until December cannot rest on that.
+
+Run a private bridge instead, on any host with a public IP:
 
 ```bash
-sudo usermod -aG debian-tor "$USER"   # group name differs on Fedora: toranon
+scripts/collection/setup_obfs4_bridge.sh <public_ip> 9010
 ```
 
-Pin the guard in the baseline torrc and record the fingerprint. A guard change
-mid-study shifts latency for every site at once and is indistinguishable from
-drift in the results.
+It installs tor and obfs4proxy, writes a bridge torrc with
+`PublishServerDescriptor 0` and `BridgeDistribution none` so the bridge is never
+published or distributed, sets `AssumeReachable 1` because only the obfs4 port
+is exposed, and prints the finished bridge line.
 
-## 2. Passwordless sudo for capture
+Two things are easy to miss. On a cloud VM the provider's firewall is separate
+from the host's, so the obfs4 port must be opened in the security group too.
+And leave the source unrestricted: obfs4 is probe-resistant and ignores anyone
+without the certificate, so the certificate is the access control, not the
+firewall. Restricting the source to the collection host's address breaks the
+moment a residential IP rotates.
 
+Put the printed line in `~/tor_wf_runtime/obfs4/torrc` on the collection host,
+restart that instance, and set `TOR_WF_COLLECT_OBFS4=1`. Keep the line out of
+git: it lives outside the repository tree on both machines.
+
+## 2. Let tcpdump capture
+
+Run once as root:
+
+```bash
+sudo setcap cap_net_raw,cap_net_admin=eip "$(command -v tcpdump)"
 ```
-your_user ALL=(root) NOPASSWD: /usr/bin/tcpdump, /usr/bin/pkill, /usr/bin/mv, /usr/bin/chown, /usr/bin/rm
-```
 
-On Fedora and Ubuntu, SELinux or AppArmor may block tcpdump writing to `/tmp`.
-The preflight check catches this.
+This is the only step that needs root, and it is required: a weekly timer
+firing at 02:00 has nobody to answer a sudo password prompt. With capabilities
+set, tcpdump writes captures straight to their final path, so no privileged
+move or ownership fix happens at all.
+
+Passwordless sudo also works and preflight accepts it, but check that the path
+in your sudoers rule actually exists. A rule naming `/usr/sbin/tcpdump` on a
+system whose binary is `/usr/bin/tcpdump` silently matches nothing. Note that
+`tcpdump -D` succeeds without capture privileges, so it cannot be used to test
+this.
+
 
 ## 3. Configure and verify
 
 ```bash
 cp scripts/collection/.env.collection.example .env.collection
-$EDITOR .env.collection
+$EDITOR .env.collection      # ports 9060-9063 to match step 1
+set -a; . ./.env.collection; set +a
 python scripts/collection/preflight.py
 ```
 
@@ -162,7 +219,7 @@ Changing any of these makes rounds incomparable and costs the series:
 - the 36-site target list and the URLs in it
 - `TOR_WF_CAPTURE_DURATION` and `TOR_WF_WARMUP_DURATION`
 - the feature extraction code in `src/extract_all_features.py`
-- the pinned guard and the obfs4 bridge
+- the pinned guard, and the obfs4 bridge including its host and region
 - `TOR_WF_REMOTE_DNS`, which is off by default to match the spring t0
 - the capture host and its network, if at all avoidable
 
