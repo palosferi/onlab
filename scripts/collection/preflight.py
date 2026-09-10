@@ -58,14 +58,14 @@ def check_binaries():
 
 
 def check_sudo():
-    r = subprocess.run(["sudo", "-n", "tcpdump", "--version"],
-                       capture_output=True, text=True, timeout=10)
-    if r.returncode != 0:
-        td = shutil.which("tcpdump") or "/usr/sbin/tcpdump"
-        return FAIL, ("passwordless sudo for tcpdump not available. Add to sudoers "
-                      f"(visudo): {os.getenv('USER', 'user')} ALL=(root) NOPASSWD: "
-                      f"{td}, /usr/bin/pkill, /bin/mv, /bin/chown")
-    return PASS, "sudo -n tcpdump works"
+    mode = cfg.tcpdump_mode()
+    if mode == "direct":
+        return PASS, "tcpdump has cap_net_raw, no sudo needed (works unattended)"
+    if mode == "sudo":
+        return WARN, ("tcpdump runs only via passwordless sudo. That works, but "
+                      f"granting capabilities is cleaner: {cfg.setcap_hint()}")
+    return FAIL, ("tcpdump cannot capture: it lacks capabilities and passwordless "
+                  f"sudo does not cover it. Run once as root:\n           {cfg.setcap_hint()}")
 
 
 def check_interface():
@@ -81,7 +81,9 @@ def check_interface():
 def check_capture():
     iface = cfg.detect_interface()
     tmp = "/tmp/wf_preflight.pcap"
-    p = subprocess.Popen(["sudo", "-n", "tcpdump", "-i", iface, "-w", tmp, "-c", "1", "tcp"],
+    if cfg.tcpdump_mode() is None:
+        return FAIL, "skipped, tcpdump cannot capture at all (see the check above)"
+    p = subprocess.Popen(cfg.tcpdump_argv(["-i", iface, "-w", tmp, "-c", "1", "tcp"]),
                          stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     try:
         socket.create_connection(("1.1.1.1", 443), timeout=4).close()
@@ -92,14 +94,15 @@ def check_capture():
     except subprocess.TimeoutExpired:
         p.kill()
     ok = os.path.exists(tmp) and os.path.getsize(tmp) > 0
-    subprocess.run(["sudo", "-n", "chown", f"{os.getuid()}:{os.getgid()}", tmp], check=False)
+    if ok and cfg.tcpdump_mode() == "sudo":
+        subprocess.run(["sudo", "-n", "chown", f"{os.getuid()}:{os.getgid()}", tmp], check=False)
     try:
         os.remove(tmp)
     except OSError:
         pass
     if not ok:
-        return FAIL, f"tcpdump produced no data on {iface} (AppArmor or SELinux may block writes to /tmp)"
-    return PASS, f"tcpdump captured on {iface}"
+        return FAIL, f"tcpdump produced no data on {iface} (AppArmor may block writes to /tmp)"
+    return PASS, f"tcpdump captured on {iface} in {cfg.tcpdump_mode()} mode"
 
 
 def make_arm_check(arm):

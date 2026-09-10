@@ -18,10 +18,17 @@ BASELINE_CONTROL="${TOR_WF_BASELINE_CONTROL_PORT:-9061}"
 OBFS4_SOCKS="${TOR_WF_OBFS4_SOCKS_PORT:-9062}"
 OBFS4_CONTROL="${TOR_WF_OBFS4_CONTROL_PORT:-9063}"
 
-# The guard used for every baseline capture in the spring 2026 t0 collection.
-# Pinning it means the new series shares t0's network path, so a change in
-# measured accuracy is drift and not a different route through the network.
-PINNED_GUARD="${TOR_WF_PINNED_GUARD:-27A06581F1CE22D1BA4D160F6E7C7AABAC176242}"
+# The baseline arm uses one fixed guard for the whole study, so that a change
+# in measured accuracy is drift rather than a different route through the
+# network. The guard is discovered on first run and recorded; it is not
+# hardcoded, because relays leave the network.
+#
+# The spring t0 used guard 27A06581 (th4r, 57.129.38.230). That relay is no
+# longer in the consensus, so the new series necessarily runs over a different
+# guard. Record that as a covariate rather than pretending the path is identical.
+GUARD_RECORD="$RUNTIME_DIR/baseline/pinned_guard.txt"
+PINNED_GUARD="${TOR_WF_PINNED_GUARD:-}"
+PY_BIN="${TOR_WF_PYTHON:-$(command -v python3 || command -v python)}"
 
 TOR_BIN="$(command -v tor || echo /usr/bin/tor)"
 OBFS4_BIN="$(command -v obfs4proxy || echo /usr/bin/obfs4proxy)"
@@ -89,12 +96,27 @@ EOF
 
 echo "=== creating Tor instances under $RUNTIME_DIR ==="
 
-write_instance baseline "$BASELINE_SOCKS" "$BASELINE_CONTROL" "# Pin the same guard the spring t0 used.
-# If this relay leaves the network the instance stops working entirely, which
-# preflight will report. That is preferable to silently changing the path.
-EntryNodes $PINNED_GUARD
+baseline_torrc() {
+	local pin="$1"
+	if [ -n "$pin" ]; then
+		write_instance baseline "$BASELINE_SOCKS" "$BASELINE_CONTROL" "# Guard pinned for the whole study. Recorded in pinned_guard.txt.
+EntryNodes $pin
 StrictNodes 1
 GuardLifetime 180 days"
+	else
+		write_instance baseline "$BASELINE_SOCKS" "$BASELINE_CONTROL" "GuardLifetime 180 days"
+	fi
+}
+
+# Reuse a guard pinned by an earlier run, but only if it is still in the
+# current consensus. A pin to a departed relay makes Tor unable to build any
+# circuit at all, which is how the spring guard failed.
+if [ -z "$PINNED_GUARD" ] && [ -f "$GUARD_RECORD" ]; then
+	PINNED_GUARD="$(cut -d" " -f1 "$GUARD_RECORD")"
+	echo "  reusing recorded guard $PINNED_GUARD"
+fi
+
+baseline_torrc "$PINNED_GUARD"
 
 if [ -n "$BRIDGE_LINE" ]; then
 	write_instance obfs4 "$OBFS4_SOCKS" "$OBFS4_CONTROL" "UseBridges 1
@@ -102,39 +124,128 @@ ClientTransportPlugin obfs4 exec $OBFS4_BIN
 $BRIDGE_LINE"
 fi
 
-for name in baseline obfs4; do
-	dir="$RUNTIME_DIR/$name"
-	[ -f "$dir/torrc" ] || continue
-	pidfile="$dir/tor.pid"
+start_instance() {
+	local name="$1"
+	local dir="$RUNTIME_DIR/$name"
+	local pidfile="$dir/tor.pid"
 	if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
 		echo "  $name already running (pid $(cat "$pidfile"))"
-		continue
+		return 0
 	fi
-	echo "  starting $name..."
+	: >"$dir/tor.log"
 	"$TOR_BIN" -f "$dir/torrc" >"$dir/start.log" 2>&1 || {
 		echo "  FAILED to start $name, see $dir/start.log"
 		tail -5 "$dir/start.log"
-		continue
+		return 1
 	}
-done
+	return 0
+}
 
-echo "=== waiting for bootstrap (up to 120s) ==="
-for name in baseline obfs4; do
-	dir="$RUNTIME_DIR/$name"
-	[ -f "$dir/torrc" ] || continue
-	for _ in $(seq 1 60); do
+stop_instance() {
+	local pidfile="$RUNTIME_DIR/$1/tor.pid"
+	if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
+		kill "$(cat "$pidfile")"
+		sleep 3
+	fi
+}
+
+wait_bootstrap() {
+	local name="$1" limit="${2:-90}"
+	local dir="$RUNTIME_DIR/$name"
+	for _ in $(seq 1 "$limit"); do
 		if grep -q "Bootstrapped 100%" "$dir/tor.log" 2>/dev/null; then
 			echo "  $name: bootstrapped"
-			break
+			return 0
 		fi
 		sleep 2
 	done
-	grep -q "Bootstrapped 100%" "$dir/tor.log" 2>/dev/null ||
-		echo "  $name: NOT bootstrapped yet, check $dir/tor.log"
+	echo "  $name: NOT bootstrapped, last status:"
+	grep -oE "Bootstrapped [0-9]+%.*" "$dir/tor.log" 2>/dev/null | tail -1 | sed "s/^/      /"
+	return 1
+}
+
+# Ask a bootstrapped instance which relay it is actually using as its guard.
+discover_guard() {
+	"$PY_BIN" - "$BASELINE_CONTROL" <<'PYGUARD'
+import sys
+from stem.control import Controller
+port = int(sys.argv[1])
+with Controller.from_port(port=port) as c:
+    c.authenticate()
+    circuits = [x for x in c.get_circuits() if x.status == "BUILT" and x.path]
+    if not circuits:
+        c.new_circuit(await_build=True, timeout=90)
+        circuits = [x for x in c.get_circuits() if x.status == "BUILT" and x.path]
+    fp = circuits[0].path[0][0]
+    ns = c.get_network_status(fp, default=None)
+    print(fp, ns.nickname if ns else "?", ns.address if ns else "?")
+PYGUARD
+}
+
+# Verify a candidate pin is in the consensus the instance can actually see.
+guard_in_consensus() {
+	"$PY_BIN" - "$BASELINE_CONTROL" "$1" <<'PYCHECK'
+import sys
+from stem.control import Controller
+port, fp = int(sys.argv[1]), sys.argv[2].upper()
+with Controller.from_port(port=port) as c:
+    c.authenticate()
+    print("yes" if any(d.fingerprint == fp for d in c.get_network_statuses()) else "no")
+PYCHECK
+}
+
+BASELINE_DIR="$RUNTIME_DIR/baseline"
+
+# A fresh Tor pinned to a single guard cannot bootstrap: it needs
+# microdescriptors before it can use the guard, and a circuit through the guard
+# to fetch them. So bootstrap unrestricted first, then apply the pin.
+if [ -z "$PINNED_GUARD" ] || ! ls "$BASELINE_DIR"/data/cached-microdesc* >/dev/null 2>&1; then
+	echo "=== baseline: unrestricted bootstrap to prime the directory cache ==="
+	baseline_torrc ""
+	start_instance baseline && wait_bootstrap baseline 90
+
+	if [ -z "$PINNED_GUARD" ]; then
+		echo "  discovering which guard Tor selected..."
+		if GUARD_INFO="$(discover_guard 2>/dev/null)" && [ -n "$GUARD_INFO" ]; then
+			PINNED_GUARD="$(echo "$GUARD_INFO" | cut -d" " -f1)"
+			echo "$GUARD_INFO" >"$GUARD_RECORD"
+			echo "  selected guard: $GUARD_INFO"
+		else
+			echo "  WARNING: could not determine the guard; continuing unpinned."
+		fi
+	fi
+	stop_instance baseline
+fi
+
+if [ -n "$PINNED_GUARD" ]; then
+	if [ "$(guard_in_consensus "$PINNED_GUARD" 2>/dev/null || echo no)" = "no" ]; then
+		echo "  WARNING: guard $PINNED_GUARD is not in the current consensus."
+		echo "           Discarding the pin so Tor can still build circuits."
+		rm -f "$GUARD_RECORD"
+		PINNED_GUARD=""
+	fi
+fi
+baseline_torrc "$PINNED_GUARD"
+
+echo "=== starting instances ==="
+for name in baseline obfs4; do
+	[ -f "$RUNTIME_DIR/$name/torrc" ] || continue
+	start_instance "$name"
+done
+
+echo "=== waiting for bootstrap ==="
+for name in baseline obfs4; do
+	[ -f "$RUNTIME_DIR/$name/torrc" ] || continue
+	wait_bootstrap "$name" 90 || true
 done
 
 echo
 status
+echo
+if [ -f "$GUARD_RECORD" ]; then
+	echo "Baseline guard pinned for the study: $(cat "$GUARD_RECORD")"
+	echo "  (spring t0 used th4r/27A06581, which has since left the consensus)"
+fi
 echo
 echo "Add these to .env.collection:"
 echo "  TOR_WF_BASELINE_SOCKS_PORT=$BASELINE_SOCKS"

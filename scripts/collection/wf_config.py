@@ -353,6 +353,72 @@ def pcap_ok(path):
     return size >= MIN_PCAP_BYTES, size
 
 
+_tcpdump_mode = None
+
+
+def tcpdump_mode():
+    """How tcpdump can be run here: "direct", "sudo", or None if not at all.
+
+    "direct" means the binary carries cap_net_raw, so no sudo is involved and
+    the capture can be written straight to its final path. That is the only
+    mode that works for an unattended weekly timer: a sudo password prompt has
+    nobody to answer it at 02:00.
+    """
+    global _tcpdump_mode
+    if _tcpdump_mode is not None:
+        return _tcpdump_mode
+    override = os.getenv("TOR_WF_TCPDUMP_MODE")
+    if override in ("direct", "sudo"):
+        _tcpdump_mode = override
+        return _tcpdump_mode
+    td = shutil.which("tcpdump")
+    if td:
+        iface = detect_interface()
+        # "tcpdump -D" succeeds without capture privileges, so it proves
+        # nothing. The only reliable probe is opening a real capture socket.
+        for mode, prefix in (("direct", []), ("sudo", ["sudo", "-n"])):
+            if _can_capture(prefix + [td, "-i", iface, "-c", "1", "-w", os.devnull]):
+                _tcpdump_mode = mode
+                return _tcpdump_mode
+    _tcpdump_mode = None
+    return _tcpdump_mode
+
+
+def _can_capture(argv):
+    """True if this command opens a capture socket rather than being refused."""
+    try:
+        r = subprocess.run(argv, capture_output=True, timeout=4, text=True)
+    except subprocess.TimeoutExpired:
+        # Still waiting for a matching packet, so the socket opened fine.
+        return True
+    except Exception:
+        return False
+    err = (r.stderr or "").lower()
+    if "permitted" in err or "permission" in err or "password" in err:
+        return False
+    return r.returncode == 0
+
+
+def tcpdump_argv(args):
+    mode = tcpdump_mode()
+    td = shutil.which("tcpdump") or "tcpdump"
+    if mode == "sudo":
+        return ["sudo", "-n", td] + args
+    return [td] + args
+
+
+def pkill_tcpdump_argv():
+    """Kill a stuck tcpdump, with sudo only if the capture needed sudo."""
+    if tcpdump_mode() == "sudo":
+        return ["sudo", "-n", "pkill", "-x", "tcpdump"]
+    return ["pkill", "-x", "tcpdump"]
+
+
+def setcap_hint():
+    td = shutil.which("tcpdump") or "/usr/bin/tcpdump"
+    return f"sudo setcap cap_net_raw,cap_net_admin=eip {td}"
+
+
 def browser_binary():
     """Path to the Chrome-family browser, or None to let Selenium decide.
 

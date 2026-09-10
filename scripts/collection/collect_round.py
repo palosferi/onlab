@@ -120,6 +120,12 @@ def capture_one(item, arm, interface, out_dir, browser_version, tor_version):
     capture_seconds = cfg.env_int("TOR_WF_CAPTURE_DURATION", 15)
     warmup = cfg.env_int("TOR_WF_WARMUP_DURATION", 3)
 
+    direct = cfg.tcpdump_mode() == "direct"
+    if direct:
+        # tcpdump carries cap_net_raw, so it writes straight to the final path
+        # and no privileged move or ownership fix is needed afterwards.
+        tmp_pcap = final_pcap
+
     row = {f: "" for f in MANIFEST_FIELDS}
     row.update(
         {
@@ -140,8 +146,8 @@ def capture_one(item, arm, interface, out_dir, browser_version, tor_version):
     )
 
     tcpdump = subprocess.Popen(
-        ["sudo", "-n", "tcpdump", "-i", interface, "-w", tmp_pcap, "-U",
-         "tcp", "and", "host", arm.peer_ip],
+        cfg.tcpdump_argv(["-i", interface, "-w", tmp_pcap, "-U",
+                          "tcp", "and", "host", arm.peer_ip]),
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
     )
@@ -176,10 +182,10 @@ def capture_one(item, arm, interface, out_dir, browser_version, tor_version):
         tcpdump.terminate()
         tcpdump.wait(timeout=5)
     except Exception:
-        subprocess.run(["sudo", "-n", "pkill", "-x", "tcpdump"], check=False)
+        subprocess.run(cfg.pkill_tcpdump_argv(), check=False)
     time.sleep(1)
 
-    if os.path.exists(tmp_pcap):
+    if not direct and os.path.exists(tmp_pcap):
         subprocess.run(["sudo", "-n", "mv", tmp_pcap, final_pcap], check=False)
         subprocess.run(
             ["sudo", "-n", "chown", f"{os.getuid()}:{os.getgid()}", final_pcap], check=False
