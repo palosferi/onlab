@@ -302,6 +302,13 @@ BODY_BLOCK_PATTERNS = [
 ]
 _BODY_BLOCK_RE = re.compile("|".join(BODY_BLOCK_PATTERNS), re.IGNORECASE)
 
+# Chromium's own network error page is roughly 250 KB and takes the target
+# hostname as its title, so it looks like a large, correctly-addressed page.
+# Without this it passes validation and a failed load enters the dataset.
+_NETERROR_RE = re.compile(
+    r"id=\"main-frame-error\"|neterror|\bERR_[A-Z][A-Z_]{3,}\b"
+)
+
 MIN_PAGE_SOURCE_BYTES = env_int("TOR_WF_MIN_PAGE_BYTES", 2000)
 MIN_PCAP_BYTES = env_int("TOR_WF_MIN_PCAP_BYTES", 5000)
 # Above this, a page is too large to be a challenge interstitial.
@@ -342,7 +349,11 @@ def classify_page(driver, expected_host):
         except Exception:
             pass
 
-        if _TITLE_BLOCK_RE.search(title):
+        if _NETERROR_RE.search(source[:40000]):
+            m = re.search(r"\bERR_[A-Z][A-Z_]{3,}\b", source[:40000])
+            result["status"] = "load_error"
+            result["detail"] = f"browser error page ({m.group(0) if m else 'neterror'})"
+        elif _TITLE_BLOCK_RE.search(title):
             result["status"] = "blocked"
             result["detail"] = f"challenge page title: {title[:80]!r}"
         elif len(source) < INTERSTITIAL_MAX_BYTES and _BODY_BLOCK_RE.search(source[:6000]):
