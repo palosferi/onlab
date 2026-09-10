@@ -1,0 +1,125 @@
+# Szakdolgozat témavázlat
+
+**Hallgató:** Pálos Ferenc (U1OTPN), BSc 7. félév, Intelligens hálózatok szakirány
+**Konzulens:** Sonkoly Balázs
+**Dátum:** 2026. szeptember 10.
+
+**Munkacím:** A website fingerprinting támadások időbeli romlása a Tor hálózaton:
+longitudinális mérés és a modellfrissítés költséghatékonysága
+
+---
+
+## 1. Kiindulópont
+
+A 2025/26/2 félévben önálló laboratóriumot végeztem WF témában (konzulens:
+Ladóczki Bence). Elkészült egy automatizált adatgyűjtő és kiértékelő lánc,
+2237 PCAP-et rögzítettem 36 monitorozott és 20 ismeretlen webhelyről, és
+összehasonlítottam egy Random Forestet egy Triplet MLP + KNN modellel zárt
+világú, nyílt világú és zero-shot beállításban (baseline: 80,44%, obfs4:
+73,33%, zero-shot: 15,08% pontosság). Az adathalmaz és a kód nyilvános.
+
+Az önlab munkaterve eredetileg a concept drift vizsgálatát tűzte ki célul, de
+erre a féléves keret nem adott lehetőséget: a beszámoló a jelenséget a
+jövőbeli munkák között nevezi meg. A szakdolgozat ezt a kérdést viszi végig.
+
+**Fontos korlát, amit tisztán kell látni:** a tavaszi adathalmaz nem
+longitudinális. A baseline forgalom 2026. március 13-án és 26-27-én, az obfs4
+április 3-4-én, az open-world adat április 22-én készült. Ez tehát egyetlen
+időpont (t0), nem idősor. A drift-görbe minden további pontját mostantól kell
+gyűjteni. Ez az egyetlen olyan eleme a tervnek, ami nem pótolható később.
+
+---
+
+## 2. Kutatási kérdések
+
+**K1. Milyen ütemben romlik egy WF osztályozó pontossága, ahogy a tanító- és
+tesztadat közötti időbeli távolság nő?**
+A t0 és a december eleji utolsó kör között kb. 36 hét telik el, közben heti
+felbontású mérési pontokkal. A romlás mértékét a drift nélküli felső korláthoz
+(azonos körön belüli tanítás és tesztelés) mérem, mert enélkül nem
+megkülönböztethető, hogy a modell romlott-e, vagy eleve gyenge volt.
+
+**K2. Eltér-e a romlás üteme webhelytípusonként, és hogyan hat rá az obfs4?**
+A céloldal-lista eleve három csoportra oszlik: statikus, hírportál, valamint
+kereskedelmi és média oldalak. A hipotézis szerint a hírportálok gyorsabban
+driftelnek. Az obfs4 réteg saját eloszlás-eltolódást ad hozzá; a kérdés, hogy
+az időbeli és a protokoll-szintű eltolódás összeadódik-e vagy elfedi egymást.
+Ez a tavaszi adatból elvileg sem volt megválaszolható, mert ott a protokoll és
+az idő teljesen összekeveredett: minden baseline mérés március, minden obfs4
+mérés április. Az új gyűjtés ezért mindkét ágat ugyanazon a körön belül,
+váltogatva rögzíti.
+
+**K3. Milyen újratanítási stratégia tartja a támadó pontosságát adott szinten
+a legkisebb címkézési költséggel?**
+Összehasonlítandó: nincs újratanítás, periodikus újratanítás 1, 2 és 4 hetente,
+valamint csúszóablakos újratanítás. A költség mértékegysége a felhasznált
+címkézett minták száma, mert a valóságban ez az, amit a támadónak elő kell
+állítania.
+
+---
+
+## 3. Módszer és mérési elrendezés
+
+- **Adatgyűjtés:** heti egy kör, fix napon és fix napszakban, 36 céloldal,
+  körönként 5 ismétlés, két ágon (sima Tor és obfs4 híd). Kör = 360 mérés,
+  kb. 3,7 óra. A látogatási sorrend a kör azonosítójából származtatott
+  véletlen permutáció, így egy hálózati kiesés nem egyetlen webhely teljes
+  körét viszi el.
+- **Érvényesítés:** minden mérésnél rögzítem a végső URL-t, az oldalcímet, a
+  DOM méretét és a betöltési időt, és mintaillesztéssel kiszűröm a Cloudflare
+  és CAPTCHA interstitial oldalakat. Ezek nélkül egy blokkolt oldal tökéletes
+  PCAP-et ad, amiben a céloldal forgalma nincs benne, és ez nem létező driftet
+  gyárt. Az elutasított mérések nem törlődnek: a heti elutasítási arány maga is
+  eredmény, mert azt mutatja, hogy egy oldal mikortól zárja ki a Tor exit node-okat.
+- **Kovariánsok:** körönként rögzül a Tor verzió, a consensus időbélyege, a
+  guard ujjlenyomata, a böngésző verziója és a mérőgép adatai. A drift
+  magyarázatához ezek kellenek, különben egy Tor kiadás hatása
+  megkülönböztethetetlen a webhelyek változásától.
+- **Jellemzők:** a tavaszi kinyerő kód változatlan újrafelhasználásával, hogy
+  egy szeptemberi jellemző ugyanazt jelentse, mint egy márciusi. A
+  jellemzőkiválasztás kizárólag a t0-n történik és a teljes idősoron rögzített
+  marad, különben a jövőbeli adat beszivárog a modellbe, ami éppen az „új
+  adatot nem látó" stratégiát szépítené meg.
+- **Modellek:** első körben a tavaszi Random Forest, hogy az eredmények
+  visszavezethetők legyenek az önlabra. Októbertől egy erős, irodalmi
+  referencia-támadás is (k-fingerprinting vagy Deep Fingerprinting a nyers
+  irányszekvencián). Ez azért kell, mert a jelenlegi 21 aggregált jellemző az
+  önlab beszámolójában is a legfőbb korlátként szerepel, és e nélkül a
+  drift-eredmény azzal támadható, hogy nem a WF romlott, hanem a jellemzőkészlet
+  volt gyenge. Újragyűjtést nem igényel: a csomagszintű CSV-k már megvannak.
+
+---
+
+## 4. Ütemterv
+
+| Időszak | Feladat |
+|---|---|
+| szept. 8-13. (W37) | Mérőkörnyezet újraépítése, két Tor példány, előellenőrzés, 1. kör |
+| szept. 14 - dec. 6. | Heti körök folyamatosan, összesen kb. 12 mérési pont |
+| szeptember | Irodalom: Cherubin (USENIX 2022), Juarez, Rimmer, Sirinam, drift-irodalom |
+| október | Erős referencia-támadás implementálása, futtatás a teljes eddigi idősoron |
+| október vége | Első drift-görbe és köztes egyeztetés |
+| november | Újratanítási stratégiák kiértékelése, költséggörbe, dolgozatírás |
+| november vége | Nulladik verzió konzulensi véleményezésre |
+| december eleje | Javítás, végleges leadás |
+
+## 5. Kockázatok
+
+| Kockázat | Kezelés |
+|---|---|
+| Kimarad egy heti kör | `Persistent=true` systemd timer, `--resume`, heti kétperces ellenőrzés |
+| A guard rotálódik, üres PCAP-ek | A peer címe futásidőben a Tor vezérlőportjáról jön, üres mérés után újrafeloldás |
+| Egy webhely tartósan blokkolja a Tort | Az érvényesítés kiszűri, az arány külön eredményként jelenik meg |
+| A drift kicsi és nem szignifikáns | A KS-teszt alapú, modellfüggetlen eltolódás-mérés így is publikálható eredmény |
+| Elromlik a mérőgép | A mérőgép cseréje kovariánsként rögzítendő, nem elhallgatandó |
+
+## 6. Amiben a konzulens véleményét kérem
+
+1. Elég-e a mérés önmagában, vagy legyen benne javaslat is: drift-detektor
+   vagy újratanítási politika, amit a dolgozat kiértékel?
+2. A Random Forest mellé melyik erős referencia-támadás legyen? Deep
+   Fingerprinting vagy k-fingerprinting?
+3. Maradjon a headless Chrome SOCKS proxyn, vagy váltsak valódi Tor Browserre?
+   Az utóbbi hűbb a valósághoz, de elvágja az összehasonlíthatóságot a tavaszi
+   t0-val. Elképzelhető egy kisebb párhuzamos Tor Browser ág is.
+4. Jó-e a heti felbontás 36 oldalon, vagy inkább kevesebb oldal sűrűbben?

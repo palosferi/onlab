@@ -8,9 +8,40 @@ This document outlines the repository structure and provides step-by-step instru
 * `logs/` - Structured JSONL events and collection logs.
 * `scripts/` - Bash and Python scripts for server-side data collection.
 * `src/` - Core Python pipeline for feature extraction, model training, and evaluation.
+* `tor_dataset/longitudinal/` - Weekly drift-study rounds: PCAPs, per-round feature CSVs, `manifest.csv` and `round_meta.json`.
 * `tor_dataset/` - Raw PCAP files and extracted CSV features, organized by baseline, obfs4, and other. Alternatively, download the compiled archive directly from the [Zenodo Dataset Link](https://zenodo.org/records/20493234?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImQxMTQ4ZDUxLWNmN2QtNDY5ZS05OTczLTZjODFlYTY4OWYwOCIsImRhdGEiOnt9LCJyYW5kb20iOiI5MDdkMmIwYmYyNmE5NzIwZjlkMzQ2NzQ4NDg2MjU5NSJ9.QKqFF6V8eopaoBGEy8V2pVp4tq8eyAIEzPTbSW_Ch0AAewHHoVz_fMSj3uDic5G_era0gIZArKG0F1nEc9KjkQ).
 
-## 1. Data Collection
+## 0. Longitudinal Collection (concept drift study, 2026/27/1)
+
+The concept drift study runs its own collection loop, separate from the spring
+2026 scripts below. See `docs/LONGITUDINAL_SETUP.md` for the full host runbook
+and `docs/SZAKDOLGOZAT_temavazlat.md` for the research plan.
+
+```bash
+cp scripts/collection/.env.collection.example .env.collection   # edit it
+python scripts/collection/preflight.py                          # must pass first
+scripts/collection/run_round.sh --repeats 5                     # one round
+```
+
+* `scripts/collection/preflight.py` - checks packages, sudo, interface, live
+  capture, Tor bootstrap on both arms, real Tor exit through each SOCKS port,
+  disk space and t0 availability.
+* `scripts/collection/collect_round.py` - collects one round: both arms
+  interleaved, randomised visit order, page-load validation, per-round manifest.
+* `scripts/collection/run_round.sh` - locked runner for cron or systemd; runs
+  preflight, collects, extracts features, logs everything.
+* `scripts/collection/systemd/` - weekly timer units.
+
+Analysis:
+
+```bash
+python src/extract_round_features.py --round latest
+python src/drift_eval.py    --arm baseline    # decay curve and retraining policies
+python src/drift_figures.py --arm baseline    # decay, per-group, cost figures
+python src/drift_shift.py   --arm baseline    # model-free KS shift test
+```
+
+## 1. Data Collection (spring 2026, archived)
 Data collection uses automated headless browsers and `tcpdump`. A Tor SOCKS proxy and ControlPort must be active.
 
 **Standard Closed-World Collection:**

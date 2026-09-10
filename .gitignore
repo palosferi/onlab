@@ -26,9 +26,21 @@ build/
 dist/
 *.egg-info/
 
-# Local datasets and generated data artifacts
-tor_dataset/
+# Local datasets and generated data artifacts.
+# PCAPs and feature CSVs stay out of git, but the longitudinal provenance files
+# (manifest.csv, round_meta.json) are tracked: they are the record of what was
+# collected when, and they are small.
+tor_dataset/*
+!tor_dataset/longitudinal/
+tor_dataset/longitudinal/*
+!tor_dataset/longitudinal/*/
+tor_dataset/longitudinal/*/*
+!tor_dataset/longitudinal/*/manifest.csv
+!tor_dataset/longitudinal/*/round_meta.json
 tor_dataset_release_2026-06-01/
+
+# Collection host configuration (may contain a bridge line)
+.env.collection
 
 # Generated figures (keep curated figures manually if needed)
 figures/*.png
@@ -62,3 +74,6 @@ logs/
 coverage.xml
 htmlcov/
 *.cover
+
+# Leftover from a failed git migration
+.git.BROKEN-migration/

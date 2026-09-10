@@ -1,0 +1,12 @@
+[Unit]
+Description=Tor WF longitudinal collection round
+After=network-online.target tor@baseline.service tor@obfs4.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/onlab
+ExecStart=%h/onlab/scripts/collection/run_round.sh
+# A full round is 36 sites x 5 repeats x 2 arms, roughly 4 hours.
+TimeoutStartSec=8h
+Nice=10

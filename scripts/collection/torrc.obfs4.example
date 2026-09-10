@@ -1,0 +1,17 @@
+# obfs4 arm: Tor over an obfs4 bridge, on its own ports so that both arms can
+# run inside the same round without reconfiguring Tor.
+# Install as /etc/tor/instances/obfs4/torrc  (Debian: tor-instance-create obfs4)
+
+SocksPort 9052
+ControlPort 9053
+CookieAuthentication 1
+CookieAuthFileGroupReadable 1
+DataDirectory /var/lib/tor-instances/obfs4
+
+UseBridges 1
+ClientTransportPlugin obfs4 exec /usr/bin/obfs4proxy
+
+# Use the same bridge for the whole study.  Changing bridges mid-series shifts
+# latency and path, which is indistinguishable from drift in the results.
+# Get one from https://bridges.torproject.org/ and paste the full line:
+# Bridge obfs4 <IP>:<PORT> <FINGERPRINT> cert=<CERT> iat-mode=0

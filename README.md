@@ -7,6 +7,15 @@ This project investigates and compares classical Machine Learning (Random Forest
 * **Zero-shot setting:** Models trained purely on baseline traffic but tested against obfs4 traffic to measure domain generalization.
 * **Open-World Setting:** Introduces an "Other" category containing traffic from unmonitored websites to test the model's ability to handle unknown, real-world traffic.
 
+## Continuation: concept drift (2026/27/1)
+
+This repository now also hosts the BSc thesis work that continues the project:
+measuring how fast website fingerprinting accuracy decays over time, and what
+retraining policy holds a target accuracy at the lowest labelling cost. The
+spring 2026 collection serves as the time origin. See
+`docs/SZAKDOLGOZAT_temavazlat.md` for the plan and
+`docs/LONGITUDINAL_SETUP.md` for the collection runbook.
+
 ## Data Availability
 The underlying dataset consisting of 2,300 anonymized network traffic traces and their respective engineered features is publicly available on Zenodo:
 * **Dataset Repository:** [Zenodo Record 20493234](https://zenodo.org/records/20493234?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImQxMTQ4ZDUxLWNmN2QtNDY5ZS05OTczLTZjODFlYTY4OWYwOCIsImRhdGEiOnt9LCJyYW5kb20iOiI5MDdkMmIwYmYyNmE5NzIwZjlkMzQ2NzQ4NDg2MjU5NSJ9.QKqFF6V8eopaoBGEy8V2pVp4tq8eyAIEzPTbSW_Ch0AAewHHoVz_fMSj3uDic5G_era0gIZArKG0F1nEc9KjkQ)

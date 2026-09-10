@@ -1,0 +1,16 @@
+[Unit]
+Description=Weekly Tor WF longitudinal collection round
+
+[Timer]
+# Fixed weekday and fixed time of day, deliberately.  News sites change
+# through the day, so holding time-of-day constant keeps week-to-week
+# differences attributable to drift rather than to diurnal variation.
+# No RandomizedDelaySec for the same reason.
+OnCalendar=Wed *-*-* 02:00:00
+# Catch up after a reboot or a machine that was off at the scheduled time:
+# a missed round is an unrecoverable hole in the series.
+Persistent=true
+Unit=tor-wf-round.service
+
+[Install]
+WantedBy=timers.target

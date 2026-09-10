@@ -1,0 +1,35 @@
+{
+  "arm": "baseline",
+  "generated_at": "2026-09-10T11:42:34.744373",
+  "frozen_features": [
+    "total_bytes",
+    "incoming_bytes",
+    "outgoing_bytes",
+    "in_out_byte_ratio",
+    "total_packets",
+    "direction_changes",
+    "outgoing_packets",
+    "incoming_packets",
+    "mean_inter_arrival",
+    "in_out_packet_ratio"
+  ],
+  "snapshots": [
+    {
+      "name": "t0-spring",
+      "n": 1123,
+      "classes": 36,
+      "date": "2026-03-27"
+    }
+  ],
+  "within_round_ceiling": [
+    {
+      "round": "t0-spring",
+      "date": "2026-03-27",
+      "accuracy": 79.11,
+      "accuracy_std": 1.31,
+      "macro_f1": 78.44,
+      "n_samples": 1123
+    }
+  ],
+  "note": "Only t0 is present, so no drift can be measured yet. The within-round ceiling is the reference the first longitudinal round will be read against."
+}

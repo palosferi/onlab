@@ -1,0 +1,17 @@
+# Baseline arm: plain Tor, no bridge.
+# Install as /etc/tor/instances/baseline/torrc  (Debian: tor-instance-create baseline)
+
+SocksPort 9050
+ControlPort 9051
+CookieAuthentication 1
+CookieAuthFileGroupReadable 1
+DataDirectory /var/lib/tor-instances/baseline
+
+# Pinning the guard keeps the tcpdump filter stable and removes guard choice as
+# a source of week-to-week variance.  Replace with a fingerprint of a fast,
+# stable guard, and record any change in the round metadata.
+# EntryNodes <GUARD_FINGERPRINT>
+# StrictNodes 1
+
+# Long guard lifetime: a guard rotation mid-study is a confound.
+GuardLifetime 180 days
