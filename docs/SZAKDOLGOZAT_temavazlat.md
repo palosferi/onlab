@@ -75,6 +75,15 @@ címkézett minták száma, mert a valóságban ez az, amit a támadónak elő k
   guard ujjlenyomata, a böngésző verziója és a mérőgép adatai. A drift
   magyarázatához ezek kellenek, különben egy Tor kiadás hatása
   megkülönböztethetetlen a webhelyek változásától.
+- **Egy elkerülhetetlen eltérés a t0-hoz képest:** a tavaszi mérések mind a
+  `th4r` guardon (27A06581, 57.129.38.230) mentek keresztül, ez a relay
+  azonban időközben kikerült a consensusból. Az új sorozat ezért szükségszerűen
+  másik guardot használ (`Sol`, 51.81.93.109), amit a mérés kezdetén rögzítek
+  és a félév végéig változatlanul tartok. Ez valós, nem eltüntethető kovariáns:
+  a t0 és az első új kör között a hálózati útvonal megváltozása és a webhelyek
+  változása nem választható szét teljesen. A heti körök egymáshoz képest
+  viszont már azonos útvonalon készülnek, így a drift-görbe meredekségét ez
+  nem torzítja.
 - **Jellemzők:** a tavaszi kinyerő kód változatlan újrafelhasználásával, hogy
   egy szeptemberi jellemző ugyanazt jelentse, mint egy márciusi. A
   jellemzőkiválasztás kizárólag a t0-n történik és a teljes idősoron rögzített
