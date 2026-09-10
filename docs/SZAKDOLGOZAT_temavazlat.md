@@ -84,9 +84,15 @@ címkézett minták száma, mert a valóságban ez az, amit a támadónak elő k
   változása nem választható szét teljesen. A heti körök egymáshoz képest
   viszont már azonos útvonalon készülnek, így a drift-görbe meredekségét ez
   nem torzítja.
-- **Az obfs4 ág viszont pontosan a t0 útvonalán fut:** ugyanaz a híd
-  (109.110.170.208:29323), amelyen a tavaszi obfs4 mérések készültek. Ez az ág
-  tehát tisztább összehasonlítást enged a t0-val, mint a baseline.
+- **Az obfs4 ág saját, privát hídon fut.** A tavaszi obfs4 mérések hídja
+  (109.110.170.208) időközben elérhetetlenné vált, és a bridges.torproject.org
+  által kiadott öt csere-híd egyike sem válaszolt. A Tor Project saját
+  hibajegye szerint a BridgeDB rendszeresen ad ki offline hidakat, mert a
+  elérhetőségi adatai késnek. Egy 13 hetes sorozat nem építhető erre.
+  Ezért egy saját, nem publikált obfs4 hidat üzemeltetek (Azure, Poland
+  Central, `BridgeDistribution none`, `PublishServerDescriptor 0`), amelyhez
+  csak a mérőgép csatlakozik. Így az obfs4 útvonal a félév végéig változatlan.
+  A híd helye és Tor verziója kovariánsként rögzítendő.
 - **Jellemzők:** a tavaszi kinyerő kód változatlan újrafelhasználásával, hogy
   egy szeptemberi jellemző ugyanazt jelentse, mint egy márciusi. A
   jellemzőkiválasztás kizárólag a t0-n történik és a teljes idősoron rögzített
