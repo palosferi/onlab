@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 from glob import glob
 
 import numpy as np
@@ -36,6 +37,20 @@ FEATURE_NAMES = [
 LOGGER = logging.getLogger(__name__)
 
 
+TIMESTAMP_RE = re.compile(r"_(?P<date>\d{8})_(?P<time>\d{6})$")
+
+
+def parse_trace_timestamp(file_path):
+    """Capture time from a {site}_{YYYYMMDD}_{HHMMSS}.csv name, or NaT."""
+    base = os.path.splitext(os.path.basename(file_path))[0]
+    match = TIMESTAMP_RE.search(base)
+    if not match:
+        return pd.NaT
+    return pd.to_datetime(
+        match.group("date") + match.group("time"), format="%Y%m%d%H%M%S"
+    )
+
+
 def parse_site_name(file_path):
     base = os.path.splitext(os.path.basename(file_path))[0]
     parts = base.rsplit("_", 2)
@@ -47,9 +62,10 @@ def extract_aggregated_features(
     force_label=None,
     fail_on_high_skip=True,
     max_skip_ratio=0.05,
+    return_timestamps=False,
 ):
-    X, y = [], []
-    csv_files = glob(os.path.join(directory, "*.csv"))
+    X, y, stamps = [], [], []
+    csv_files = sorted(glob(os.path.join(directory, "*.csv")))
     skipped = []
 
     for file_path in csv_files:
@@ -90,6 +106,7 @@ def extract_aggregated_features(
             ]
             X.append(features)
             y.append(site_name)
+            stamps.append(parse_trace_timestamp(file_path))
         except Exception as exc:
             skipped.append((file_path, str(exc)))
 
@@ -108,7 +125,10 @@ def extract_aggregated_features(
             "Please inspect malformed CSV inputs."
         )
 
-    return pd.DataFrame(X, columns=FEATURE_NAMES), np.array(y)
+    features_df = pd.DataFrame(X, columns=FEATURE_NAMES)
+    if return_timestamps:
+        return features_df, np.array(y), np.array(stamps, dtype="datetime64[ns]")
+    return features_df, np.array(y)
 
 
 def select_stable_top_features(

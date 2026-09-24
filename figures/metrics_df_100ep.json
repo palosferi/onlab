@@ -1,0 +1,37 @@
+{
+  "config": {
+    "mode": "direction",
+    "length": 5000,
+    "epochs": 100,
+    "seed": 42,
+    "test_size": 0.2,
+    "global_split": false,
+    "scenarios": "baseline,obfs4,zero_shot",
+    "out": "figures/metrics_df_100ep.json"
+  },
+  "scenarios": {
+    "closed_world_baseline": {
+      "scenario": "closed_world_baseline",
+      "n_train": 903,
+      "n_test": 220,
+      "n_classes": 36,
+      "accuracy": 0.8681818181818182,
+      "macro_f1": 0.8734689058218471
+    },
+    "closed_world_obfs4": {
+      "scenario": "closed_world_obfs4",
+      "n_train": 834,
+      "n_test": 216,
+      "n_classes": 36,
+      "accuracy": 0.7037037037037037,
+      "macro_f1": 0.6823980924858118
+    },
+    "zero_shot": {
+      "scenario": "zero_shot",
+      "n_test": 1050,
+      "n_classes": 36,
+      "accuracy": 0.18285714285714286,
+      "macro_f1": 0.11880389815942156
+    }
+  }
+}

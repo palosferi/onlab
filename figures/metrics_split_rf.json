@@ -1,0 +1,69 @@
+{
+  "config": {
+    "seed": 42,
+    "n_estimators": 300,
+    "test_size": 0.2,
+    "top_k": 10,
+    "out": "/home/palos/Documents/uni/6/onlab/figures/metrics_split_rf.json"
+  },
+  "arms": {
+    "baseline": {
+      "n_traces": 1123,
+      "n_classes": 36,
+      "top_features": [
+        "total_bytes",
+        "in_out_byte_ratio",
+        "outgoing_bytes",
+        "incoming_bytes",
+        "total_packets",
+        "outgoing_packets",
+        "direction_changes",
+        "in_out_packet_ratio",
+        "mean_inter_arrival",
+        "incoming_packets"
+      ],
+      "random_split": {
+        "accuracy": 0.7822222222222223,
+        "macro_f1": 0.7673842361342361,
+        "n_train": 898,
+        "n_test": 225
+      },
+      "chronological_split": {
+        "accuracy": 0.7863636363636364,
+        "macro_f1": 0.7730189926268358,
+        "n_train": 903,
+        "n_test": 220
+      },
+      "accuracy_inflation": -0.004141414141414113
+    },
+    "obfs4": {
+      "n_traces": 1050,
+      "n_classes": 36,
+      "top_features": [
+        "total_bytes",
+        "in_out_byte_ratio",
+        "incoming_bytes",
+        "outgoing_bytes",
+        "mean_packet_size",
+        "total_packets",
+        "direction_changes",
+        "outgoing_packets",
+        "mean_inter_arrival",
+        "incoming_packets"
+      ],
+      "random_split": {
+        "accuracy": 0.7238095238095238,
+        "macro_f1": 0.71483238983239,
+        "n_train": 840,
+        "n_test": 210
+      },
+      "chronological_split": {
+        "accuracy": 0.7546296296296297,
+        "macro_f1": 0.7543726471422552,
+        "n_train": 834,
+        "n_test": 216
+      },
+      "accuracy_inflation": -0.03082010582010586
+    }
+  }
+}

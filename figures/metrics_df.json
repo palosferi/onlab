@@ -1,0 +1,150 @@
+{
+  "config": {
+    "mode": "direction",
+    "length": 5000,
+    "epochs": 30,
+    "seed": 42,
+    "test_size": 0.2,
+    "global_split": false,
+    "scenarios": "all",
+    "out": "/home/palos/Documents/uni/6/onlab/figures/metrics_df.json"
+  },
+  "scenarios": {
+    "closed_world_baseline": {
+      "scenario": "closed_world_baseline",
+      "n_train": 903,
+      "n_test": 220,
+      "n_classes": 36,
+      "accuracy": 0.7863636363636364,
+      "macro_f1": 0.7760579698079699
+    },
+    "closed_world_obfs4": {
+      "scenario": "closed_world_obfs4",
+      "n_train": 834,
+      "n_test": 216,
+      "n_classes": 36,
+      "accuracy": 0.39351851851851855,
+      "macro_f1": 0.3334888573472165
+    },
+    "zero_shot": {
+      "scenario": "zero_shot",
+      "n_test": 1050,
+      "n_classes": 36,
+      "accuracy": 0.11333333333333333,
+      "macro_f1": 0.06662831903048815
+    },
+    "open_world": {
+      "scenario": "open_world",
+      "n_train": 954,
+      "n_test": 233,
+      "n_monitored_classes": 36,
+      "n_monitored_traces": 1123,
+      "n_unmonitored_traces": 64,
+      "accuracy": 0.7510729613733905,
+      "tpr_at_zero_threshold": 0.740909090909091,
+      "fpr_at_zero_threshold": 0.07692307692307693,
+      "sweep": [
+        {
+          "threshold": 0.0,
+          "tpr": 0.740909090909091,
+          "fpr": 0.07692307692307693
+        },
+        {
+          "threshold": 0.05,
+          "tpr": 0.740909090909091,
+          "fpr": 0.07692307692307693
+        },
+        {
+          "threshold": 0.1,
+          "tpr": 0.740909090909091,
+          "fpr": 0.07692307692307693
+        },
+        {
+          "threshold": 0.15,
+          "tpr": 0.7363636363636363,
+          "fpr": 0.07692307692307693
+        },
+        {
+          "threshold": 0.2,
+          "tpr": 0.7363636363636363,
+          "fpr": 0.07692307692307693
+        },
+        {
+          "threshold": 0.25,
+          "tpr": 0.7363636363636363,
+          "fpr": 0.07692307692307693
+        },
+        {
+          "threshold": 0.3,
+          "tpr": 0.7363636363636363,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.35,
+          "tpr": 0.7181818181818181,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.4,
+          "tpr": 0.7045454545454546,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.45,
+          "tpr": 0.6681818181818182,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.5,
+          "tpr": 0.65,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.55,
+          "tpr": 0.6227272727272727,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.6,
+          "tpr": 0.5772727272727273,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.65,
+          "tpr": 0.5636363636363636,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.7,
+          "tpr": 0.5545454545454546,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.75,
+          "tpr": 0.5181818181818182,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.8,
+          "tpr": 0.4818181818181818,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.85,
+          "tpr": 0.4318181818181818,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.9,
+          "tpr": 0.35,
+          "fpr": 0.0
+        },
+        {
+          "threshold": 0.95,
+          "tpr": 0.21818181818181817,
+          "fpr": 0.0
+        }
+      ]
+    }
+  }
+}
