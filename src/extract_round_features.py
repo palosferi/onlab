@@ -23,7 +23,7 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 LONGITUDINAL_DIR = os.getenv(
     "TOR_WF_LONGITUDINAL_DIR", os.path.join(REPO_ROOT, "tor_dataset", "longitudinal")
 )
-ARMS = ("baseline", "obfs4")
+ARMS = ("baseline", "obfs4", "snowflake")
 
 
 def available_rounds():
