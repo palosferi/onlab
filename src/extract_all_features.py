@@ -4,7 +4,10 @@ import json
 import os
 
 import pandas as pd
-from scapy.all import IP, TCP, rdpcap
+import subprocess
+from functools import lru_cache
+
+from scapy.all import IP, TCP, UDP, IPv6, rdpcap
 
 # --- CONFIGURATION ---
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tor_dataset"))
@@ -15,6 +18,28 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "extracted_features")
 FEATURE_SCHEMA_VERSION = "v2_direction_configurable"
 
 
+@lru_cache(maxsize=1)
+def host_addresses():
+    """Addresses of the machine running extraction.
+
+    Private ranges cover the IPv4 LAN, but Snowflake here runs over the host's
+    global IPv6 address, which is not private, so without this every one of its
+    packets would be counted as incoming. Extraction runs on the capture host
+    (run_round.sh), so its own addresses are the right reference.
+    """
+    try:
+        out = subprocess.run(["ip", "-o", "addr"], capture_output=True, text=True,
+                             timeout=5).stdout
+    except Exception:
+        return frozenset()
+    addrs = set()
+    for line in out.splitlines():
+        fields = line.split()
+        if len(fields) > 3 and fields[2] in ("inet", "inet6"):
+            addrs.add(fields[3].split("/")[0])
+    return frozenset(addrs)
+
+
 def is_local_source(ip_src):
     # Configurable via env so extraction remains portable across labs/hosts.
     raw_prefixes = os.environ.get("LOCAL_IP_PREFIXES", "auto").strip().lower()
@@ -23,7 +48,7 @@ def is_local_source(ip_src):
         return any(ip_src.startswith(prefix) for prefix in prefixes)
 
     try:
-        return ipaddress.ip_address(ip_src).is_private
+        return ipaddress.ip_address(ip_src).is_private or ip_src in host_addresses()
     except ValueError:
         return False
 
@@ -49,7 +74,10 @@ def extract_features(pcap_path):
     last_ts = None
 
     for pkt in packets:
-        if not (pkt.haslayer(IP) and pkt.haslayer(TCP)):
+        # UDP and IPv6 are for the Snowflake arm; the TCP arms' capture filters
+        # never let either through, so their traces are unchanged.
+        ip_layer = IP if pkt.haslayer(IP) else IPv6 if pkt.haslayer(IPv6) else None
+        if ip_layer is None or not (pkt.haslayer(TCP) or pkt.haslayer(UDP)):
             continue
 
         timestamp = float(pkt.time)
@@ -57,7 +85,7 @@ def extract_features(pcap_path):
             first_ts = timestamp
 
         pkt_len = int(len(pkt))
-        direction_size = pkt_len if is_local_source(pkt[IP].src) else -pkt_len
+        direction_size = pkt_len if is_local_source(pkt[ip_layer].src) else -pkt_len
         inter_arrival = 0.0 if last_ts is None else max(0.0, timestamp - last_ts)
         time_offset = timestamp - first_ts
         last_ts = timestamp

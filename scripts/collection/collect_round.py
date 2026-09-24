@@ -146,9 +146,17 @@ def capture_one(item, arm, interface, out_dir, browser_version, tor_version):
         }
     )
 
+    if arm.name == "snowflake":
+        # The ICE agent rebinds when the volunteer proxy changes, so the port
+        # set is re-read before every capture and compared afterwards.
+        arm.udp_ports = cfg.snowflake_ports() or arm.udp_ports
+        row["peer_ip"] = "udp:" + ",".join(str(p) for p in arm.udp_ports)
+        capture_filter = cfg.capture_filter([], udp_ports=arm.udp_ports)
+    else:
+        capture_filter = cfg.capture_filter(arm.peer_ips or [arm.peer_ip])
+
     tcpdump = subprocess.Popen(
-        cfg.tcpdump_argv(["-i", interface, "-w", tmp_pcap, "-U"]
-                         + cfg.capture_filter(arm.peer_ips or [arm.peer_ip])),
+        cfg.tcpdump_argv(["-i", interface, "-w", tmp_pcap, "-U"] + capture_filter),
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
     )
@@ -201,6 +209,11 @@ def capture_one(item, arm, interface, out_dir, browser_version, tor_version):
 
     status = page.get("status", "ok")
     detail = page.get("detail", "")
+    if arm.name == "snowflake":
+        after = cfg.snowflake_ports()
+        if after and set(after) != set(arm.udp_ports):
+            # Traffic on ports bound mid-capture was not recorded.
+            detail = (detail + " " if detail else "") + "snowflake ports changed during capture"
     if status == "ok" and not ok:
         status = "empty_capture"
         detail = f"pcap only {size} bytes, guard filter may be stale"
@@ -242,6 +255,8 @@ def main():
     parser.add_argument("--sites", choices=["targets", "other", "all"], default="targets")
     parser.add_argument("--resume", action="store_true",
                         help="skip site/arm pairs that already have enough captures")
+    parser.add_argument("--only", default="",
+                        help="comma separated site names, for pilots (default: whole list)")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -249,13 +264,19 @@ def main():
     interface = cfg.detect_interface()
     arms = cfg.configured_arms()
     if not arms:
-        sys.exit("No arms enabled. Set TOR_WF_COLLECT_BASELINE or TOR_WF_COLLECT_OBFS4.")
+        sys.exit("No arms enabled. Set TOR_WF_COLLECT_BASELINE, _OBFS4 or _SNOWFLAKE.")
 
     site_map = {}
     if args.sites in ("targets", "all"):
         site_map.update(cfg.TARGET_SITES)
     if args.sites in ("other", "all"):
         site_map.update(cfg.OTHER_SITES)
+    if args.only:
+        wanted = [s.strip() for s in args.only.split(",") if s.strip()]
+        unknown = [s for s in wanted if s not in site_map]
+        if unknown:
+            sys.exit(f"Unknown site(s) for --only: {', '.join(unknown)}")
+        site_map = {s: site_map[s] for s in wanted}
 
     print(f"=== round {rid} | interface {interface} | arms {[a.name for a in arms]} ===")
 

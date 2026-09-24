@@ -105,7 +105,7 @@ def env_bool(name, default):
 
 
 class Arm:
-    """One traffic condition inside a round: plain Tor, or Tor over an obfs4 bridge.
+    """One traffic condition inside a round: plain Tor, obfs4, or Snowflake.
 
     Each arm needs its own Tor instance so that both can be captured inside the
     same round without reconfiguring Tor mid-collection.
@@ -120,6 +120,9 @@ class Arm:
         self.peer_ips = []
         self.guard_fingerprint = None
         self.guard_nickname = None
+        # Snowflake only: local UDP ports of the WebRTC sockets, see
+        # snowflake_ports().
+        self.udp_ports = []
 
     def __repr__(self):
         return f"<Arm {self.name} socks={self.socks_port} ctrl={self.control_port} peer={self.peer_ip}>"
@@ -138,6 +141,14 @@ def configured_arms():
             env_int("TOR_WF_OBFS4_SOCKS_PORT", 9052),
             env_int("TOR_WF_OBFS4_CONTROL_PORT", 9053),
             env_bool("TOR_WF_COLLECT_OBFS4", True),
+        ),
+        # Off by default so the weekly series keeps its two-arm shape until the
+        # Snowflake pilot has shown the arm is reliable.
+        Arm(
+            "snowflake",
+            env_int("TOR_WF_SNOWFLAKE_SOCKS_PORT", 9064),
+            env_int("TOR_WF_SNOWFLAKE_CONTROL_PORT", 9065),
+            env_bool("TOR_WF_COLLECT_SNOWFLAKE", False),
         ),
     ]
     return [a for a in arms if a.enabled]
@@ -180,8 +191,40 @@ def live_peers(process_name):
     return out
 
 
-def capture_filter(peer_ips):
+SNOWFLAKE_PT_PROCESS = os.getenv("TOR_WF_SNOWFLAKE_PT_PROCESS", "lyrebird")
+
+
+def snowflake_ports(process_name=SNOWFLAKE_PT_PROCESS):
+    """Local UDP ports of the Snowflake client's WebRTC sockets.
+
+    Snowflake has no fixed peer to filter on: the client reaches a volunteer
+    proxy over WebRTC, the proxy changes whenever it goes away, and the sockets
+    are unconnected, so `ss` shows no remote address at all. What is stable is
+    our own end, the handful of local ports the ICE agent bound. Filtering on
+    those keeps other UDP on the host (BitTorrent, DNS) out of the capture.
+    """
+    ports = []
+    try:
+        r = subprocess.run(["ss", "-uanp"], capture_output=True, text=True, timeout=10)
+    except Exception:
+        return ports
+    for line in r.stdout.splitlines():
+        if f'"{process_name}"' not in line:
+            continue
+        fields = line.split()
+        if len(fields) < 5:
+            continue
+        port = fields[3].rsplit(":", 1)[-1]
+        if port.isdigit() and int(port) not in ports:
+            ports.append(int(port))
+    return sorted(ports)
+
+
+def capture_filter(peer_ips, udp_ports=None):
     """pcap filter covering every address this arm might use."""
+    if udp_ports:
+        clause = " or ".join(f"port {p}" for p in udp_ports)
+        return ["udp", "and", "(", *clause.split(" "), ")"]
     if not peer_ips:
         raise ValueError("no peer addresses to filter on")
     if len(peer_ips) == 1:
@@ -222,6 +265,18 @@ def resolve_peer_ip(controller, arm):
     if override:
         arm.peer_ip = override
         return override
+
+    if arm.name == "snowflake":
+        arm.udp_ports = snowflake_ports()
+        if not arm.udp_ports:
+            raise RuntimeError(
+                f"No {SNOWFLAKE_PT_PROCESS} UDP sockets found for the Snowflake arm. "
+                "Is its Tor instance bootstrapped with a snowflake Bridge line?"
+            )
+        arm.guard_nickname = "snowflake"
+        arm.peer_ip = "udp:" + ",".join(str(p) for p in arm.udp_ports)
+        arm.peer_ips = []
+        return arm.peer_ip
 
     if arm.name == "obfs4":
         try:

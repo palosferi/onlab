@@ -57,6 +57,48 @@ PYCHECK
 case "$IN_CONSENSUS" in
 yes)
 	echo "[ensure_guard] pinned guard $PINNED still in the consensus"
+	# Listed is not the same as usable. When the guard republishes its
+	# descriptor (a relay restart is enough), a pinned instance restarted with a
+	# stale cache cannot build the circuits it needs to fetch the new one, and
+	# sits at 73% logging "Failed to find node for hop #1". W38 and W39 were lost
+	# to this. The fix is to lift the pin at runtime just long enough to load
+	# descriptors, then re-apply it. Same guard, so nothing to record.
+	USABLE="$("$PY_BIN" - "$CONTROL" "$PINNED" <<'PYWARM' 2>&1 | tail -1
+import sys, time
+from stem.control import Controller
+port, fp = int(sys.argv[1]), sys.argv[2].upper()
+
+def circuit_via_guard(c):
+    try:
+        cid = c.new_circuit(await_build=True, timeout=60)
+        return c.get_circuit(cid).path[0][0] == fp
+    except Exception:
+        return False
+
+with Controller.from_port(port=port) as c:
+    c.authenticate()
+    if circuit_via_guard(c):
+        print("ok")
+        sys.exit(0)
+    c.set_options({"StrictNodes": "0"})
+    c.reset_conf("EntryNodes")
+    for _ in range(90):
+        try:
+            c.get_microdescriptor(fp)
+            if "PROGRESS=100" in c.get_info("status/bootstrap-phase"):
+                break
+        except Exception:
+            pass
+        time.sleep(2)
+    c.set_options({"EntryNodes": fp, "StrictNodes": "1"})
+    print("repaired" if circuit_via_guard(c) else "unusable")
+PYWARM
+)"
+	case "$USABLE" in
+	ok) ;;
+	repaired) echo "[ensure_guard] pinned guard had a stale descriptor; reloaded, circuits build again" ;;
+	*) echo "[ensure_guard] WARNING: pinned guard is listed but no circuit builds through it ($USABLE)" ;;
+	esac
 	exit 0
 	;;
 unknown)
