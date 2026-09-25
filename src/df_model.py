@@ -64,11 +64,18 @@ class DFNet(nn.Module):
         return self.classifier(self.features(x))
 
 
+def validation_metrics(model, X_val, y_val, device="cpu"):
+    """Cross-entropy loss and accuracy on a held-out set."""
+    proba = predict_proba(model, X_val, device=device)
+    picked = np.clip(proba[np.arange(len(y_val)), np.asarray(y_val)], 1e-12, 1.0)
+    return float(-np.log(picked).mean()), float((proba.argmax(1) == y_val).mean())
+
+
 def train_df(
     X_train,
     y_train,
     n_classes,
-    epochs=30,
+    epochs=150,
     batch_size=128,
     lr=0.002,
     seed=42,
@@ -76,14 +83,28 @@ def train_df(
     verbose=True,
     X_val=None,
     y_val=None,
-    patience=20,
+    patience=30,
+    min_epochs=50,
+    threads=None,
 ):
-    """Train DF; with a validation set, stop early and keep the best epoch.
+    """Train DF, stopping on validation loss once past `min_epochs`.
 
-    The paper's fixed 30 epochs assumes 800+ traces per class. At ~30 per
-    class the model is still underfitting at 30 and overfitting by 100, so a
-    fixed count is wrong in both directions. Returns (model, best_epoch).
+    The paper's fixed 30 epochs assumes 800+ traces per class. At ~30 per class
+    the model is still underfitting at 30 and overfitting by 100, so a fixed
+    count is wrong in both directions.
+
+    Stopping watches validation *loss*, not accuracy, and never fires before
+    `min_epochs`. The validation set here holds two or three traces per class,
+    so a single trace moves accuracy by more than a percentage point: an early
+    accuracy spike is noise. Acting on one stopped an obfs4 run at epoch 35 with
+    training accuracy at 0.57 and still climbing, which produced a 28% result
+    where a converged run of the same code reached 73%.
+
+    Returns (model, info), where info carries the chosen epoch, where training
+    actually stopped, and the full per-epoch history.
     """
+    if threads:
+        torch.set_num_threads(threads)
     torch.manual_seed(seed)
     np.random.seed(seed)
 
@@ -101,7 +122,8 @@ def train_df(
     )
 
     use_val = X_val is not None and len(X_val) > 0
-    best_acc, best_epoch, best_state = -1.0, epochs, None
+    best_loss, best_acc, best_epoch, best_state = float("inf"), None, epochs, None
+    history, stopped_at, train_acc = [], epochs, 0.0
 
     for epoch in range(epochs):
         model.train()
@@ -118,33 +140,56 @@ def train_df(
             correct += (logits.argmax(1) == yb).sum().item()
             seen += len(yb)
 
-        if verbose and (epoch % 5 == 4 or epoch == epochs - 1):
+        train_loss = total_loss / max(seen, 1)
+        train_acc = correct / max(seen, 1)
+        row = {"epoch": epoch + 1, "train_loss": round(train_loss, 4),
+               "train_acc": round(train_acc, 4)}
+        stopped_at = epoch + 1
+        stop = False
+
+        if use_val:
+            val_loss, val_acc = validation_metrics(model, X_val, y_val, device)
+            row["val_loss"] = round(val_loss, 4)
+            row["val_acc"] = round(val_acc, 4)
+            if val_loss < best_loss:
+                best_loss, best_acc, best_epoch = val_loss, val_acc, epoch + 1
+                best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
+            elif epoch + 1 >= min_epochs and epoch + 1 - best_epoch >= patience:
+                stop = True
+
+        history.append(row)
+
+        if verbose and (epoch % 5 == 4 or epoch == epochs - 1 or stop):
+            extra = (f"  val loss {row['val_loss']:.4f}  val acc {row['val_acc']:.4f}"
+                     if use_val else "")
             print(
-                f"    epoch {epoch + 1:>2}/{epochs}  "
-                f"loss {total_loss / max(seen, 1):.4f}  "
-                f"train acc {correct / max(seen, 1):.4f}",
+                f"    epoch {epoch + 1:>3}/{epochs}  loss {train_loss:.4f}  "
+                f"train acc {train_acc:.4f}{extra}",
                 flush=True,
             )
 
-        if use_val:
-            val_acc = float(
-                (predict_proba(model, X_val, device=device).argmax(1) == y_val).mean()
-            )
-            if val_acc > best_acc:
-                best_acc, best_epoch = val_acc, epoch + 1
-                best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
-            elif epoch + 1 - best_epoch >= patience:
-                if verbose:
-                    print(
-                        f"    early stop at epoch {epoch + 1}, "
-                        f"best val acc {best_acc:.4f} at epoch {best_epoch}",
-                        flush=True,
-                    )
-                break
+        if stop:
+            if verbose:
+                print(
+                    f"    early stop at epoch {epoch + 1}; best val loss "
+                    f"{best_loss:.4f} at epoch {best_epoch}",
+                    flush=True,
+                )
+            break
 
     if best_state is not None:
         model.load_state_dict(best_state)
-    return model, best_epoch
+
+    info = {
+        "best_epoch": int(best_epoch),
+        "stopped_at": int(stopped_at),
+        "epoch_cap": int(epochs),
+        "best_val_loss": None if best_acc is None else round(best_loss, 4),
+        "best_val_acc": None if best_acc is None else round(best_acc, 4),
+        "final_train_acc": round(train_acc, 4),
+        "history": history,
+    }
+    return model, info
 
 
 @torch.no_grad()
