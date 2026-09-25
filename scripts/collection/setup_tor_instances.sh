@@ -1,14 +1,17 @@
 #!/bin/bash
-# Create the two Tor instances the drift study needs, without root.
+# Create the Tor instances the study needs, without root.
 #
 # Tor runs fine as an unprivileged user with its own DataDirectory, so the
-# system Tor is left untouched.  Two instances are needed because the baseline
-# and obfs4 arms have to be captured inside the same round, and one Tor cannot
-# be both bridged and unbridged at once.
+# system Tor is left untouched.  One instance per transport is needed because
+# every arm has to be captured inside the same round, and one Tor cannot be
+# unbridged, obfs4-bridged and Snowflake-bridged at once.
 #
 #   scripts/collection/setup_tor_instances.sh
 #   scripts/collection/setup_tor_instances.sh --status
 #   scripts/collection/setup_tor_instances.sh --stop
+#
+# The Snowflake arm needs lyrebird, which no distribution packages; run
+# scripts/collection/fetch_pt_bundle.sh first, or it is skipped.
 
 set -euo pipefail
 
@@ -17,6 +20,18 @@ BASELINE_SOCKS="${TOR_WF_BASELINE_SOCKS_PORT:-9060}"
 BASELINE_CONTROL="${TOR_WF_BASELINE_CONTROL_PORT:-9061}"
 OBFS4_SOCKS="${TOR_WF_OBFS4_SOCKS_PORT:-9062}"
 OBFS4_CONTROL="${TOR_WF_OBFS4_CONTROL_PORT:-9063}"
+SNOWFLAKE_SOCKS="${TOR_WF_SNOWFLAKE_SOCKS_PORT:-9064}"
+SNOWFLAKE_CONTROL="${TOR_WF_SNOWFLAKE_CONTROL_PORT:-9065}"
+
+ARMS="baseline obfs4 snowflake"
+
+control_port_of() {
+	case "$1" in
+	baseline) echo "$BASELINE_CONTROL" ;;
+	obfs4) echo "$OBFS4_CONTROL" ;;
+	snowflake) echo "$SNOWFLAKE_CONTROL" ;;
+	esac
+}
 
 # The baseline arm uses one fixed guard for the whole study, so that a change
 # in measured accuracy is drift rather than a different route through the
@@ -33,10 +48,33 @@ PY_BIN="${TOR_WF_PYTHON:-$(command -v python3 || command -v python)}"
 TOR_BIN="$(command -v tor || echo /usr/bin/tor)"
 OBFS4_BIN="$(command -v obfs4proxy || echo /usr/bin/obfs4proxy)"
 
+# lyrebird carries the Snowflake client and is not packaged by any distribution,
+# so it comes from the Expert Bundle that fetch_pt_bundle.sh unpacks.
+PT_DIR="$RUNTIME_DIR/pt"
+PT_CONFIG="${TOR_WF_PT_CONFIG:-$PT_DIR/tor/pluggable_transports/pt_config.json}"
+SNOWFLAKE_BIN="${TOR_WF_SNOWFLAKE_BIN:-}"
+if [ -z "$SNOWFLAKE_BIN" ]; then
+	if [ -x "$PT_DIR/tor/pluggable_transports/lyrebird" ]; then
+		SNOWFLAKE_BIN="$PT_DIR/tor/pluggable_transports/lyrebird"
+	else
+		SNOWFLAKE_BIN="$(command -v lyrebird || true)"
+	fi
+fi
+
+snowflake_bridges() {
+	"$PY_BIN" - "$PT_CONFIG" <<'PYSF'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as fh:
+    for line in json.load(fh).get("bridges", {}).get("snowflake", []):
+        print("Bridge " + line)
+PYSF
+}
+
 status() {
-	for pair in "baseline:$BASELINE_CONTROL" "obfs4:$OBFS4_CONTROL"; do
-		name="${pair%%:*}"
-		port="${pair##*:}"
+	for name in $ARMS; do
+		port="$(control_port_of "$name")"
 		pidfile="$RUNTIME_DIR/$name/tor.pid"
 		if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
 			echo "  $name: running (pid $(cat "$pidfile")), control port $port"
@@ -47,7 +85,7 @@ status() {
 }
 
 stop_all() {
-	for name in baseline obfs4; do
+	for name in $ARMS; do
 		pidfile="$RUNTIME_DIR/$name/tor.pid"
 		if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
 			kill "$(cat "$pidfile")"
@@ -122,6 +160,22 @@ if [ -n "$BRIDGE_LINE" ]; then
 	write_instance obfs4 "$OBFS4_SOCKS" "$OBFS4_CONTROL" "UseBridges 1
 ClientTransportPlugin obfs4 exec $OBFS4_BIN
 $BRIDGE_LINE"
+fi
+
+# Snowflake reaches the Tor network through short-lived volunteer WebRTC proxies
+# brokered on demand, so there is no bridge of our own to run and no address to
+# pin. The bridge lines are Tor Browser's own, taken from the bundle rather than
+# copied into this repository, so they stay in step with what real clients use.
+if [ -n "$SNOWFLAKE_BIN" ] && [ -f "$PT_CONFIG" ]; then
+	SNOWFLAKE_BRIDGES="$(snowflake_bridges)"
+fi
+if [ -n "${SNOWFLAKE_BRIDGES:-}" ]; then
+	write_instance snowflake "$SNOWFLAKE_SOCKS" "$SNOWFLAKE_CONTROL" "UseBridges 1
+ClientTransportPlugin snowflake exec $SNOWFLAKE_BIN
+$SNOWFLAKE_BRIDGES"
+else
+	echo "  skipping snowflake: no lyrebird or no bridge lines"
+	echo "    (run scripts/collection/fetch_pt_bundle.sh to provide both)"
 fi
 
 start_instance() {
@@ -228,13 +282,13 @@ fi
 baseline_torrc "$PINNED_GUARD"
 
 echo "=== starting instances ==="
-for name in baseline obfs4; do
+for name in $ARMS; do
 	[ -f "$RUNTIME_DIR/$name/torrc" ] || continue
 	start_instance "$name"
 done
 
 echo "=== waiting for bootstrap ==="
-for name in baseline obfs4; do
+for name in $ARMS; do
 	[ -f "$RUNTIME_DIR/$name/torrc" ] || continue
 	wait_bootstrap "$name" 90 || true
 done
@@ -252,3 +306,8 @@ echo "  TOR_WF_BASELINE_SOCKS_PORT=$BASELINE_SOCKS"
 echo "  TOR_WF_BASELINE_CONTROL_PORT=$BASELINE_CONTROL"
 echo "  TOR_WF_OBFS4_SOCKS_PORT=$OBFS4_SOCKS"
 echo "  TOR_WF_OBFS4_CONTROL_PORT=$OBFS4_CONTROL"
+if [ -f "$RUNTIME_DIR/snowflake/torrc" ]; then
+	echo "  TOR_WF_SNOWFLAKE_SOCKS_PORT=$SNOWFLAKE_SOCKS"
+	echo "  TOR_WF_SNOWFLAKE_CONTROL_PORT=$SNOWFLAKE_CONTROL"
+	echo "  TOR_WF_COLLECT_SNOWFLAKE=1   # off by default"
+fi

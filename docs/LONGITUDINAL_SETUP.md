@@ -88,6 +88,44 @@ Put the printed line in `~/tor_wf_runtime/obfs4/torrc` on the collection host,
 restart that instance, and set `TOR_WF_COLLECT_OBFS4=1`. Keep the line out of
 git: it lives outside the repository tree on both machines.
 
+## 1c. The Snowflake arm
+
+Snowflake is the opposite case: there is nothing to run and nothing to pin. The
+client asks a broker for a volunteer WebRTC proxy, uses it until it disappears,
+then asks for another. That churn cannot be removed, so it has to be reported —
+the proxy changes within a round, unlike the fixed guard and the private bridge.
+
+No distribution packages the Snowflake client. It lives inside lyrebird, the
+successor to obfs4proxy, which Tor ships in the Expert Bundle:
+
+```bash
+scripts/collection/fetch_pt_bundle.sh      # verifies the checksum, records the version
+scripts/collection/setup_tor_instances.sh  # picks lyrebird up and writes the third instance
+```
+
+The bridge lines come from the bundle's `pt_config.json`, so they are the ones
+Tor Browser itself uses rather than a copy that silently goes stale. Record the
+version in `~/tor_wf_runtime/pt/VERSION` as a covariate: a lyrebird update can
+change traffic shape without anything in this repository changing.
+
+Two consequences for the measurement, both from the pilot round:
+
+- **Pages load more slowly.** Median 17.6 s against 11.7 s for baseline and
+  7.0 s for obfs4, with the slowest tenth past 50 s. Budget roughly double the
+  collection time for this arm.
+- **Traces carry about four times as many packets** — median 10,745 against
+  2,815 — because WebRTC wraps the same bytes in far smaller datagrams, a median
+  of 371 bytes against 1,514. A fixed 5,000-packet window therefore sees only
+  about half of a Snowflake page load and nearly all of a baseline one, which
+  would confound "the transport hides more" with "the window ended sooner". Run
+  `python src/sequence_budget.py --round <id>` before fixing the window length,
+  and use one length for every arm so the comparison stays honest.
+
+Capture needs no peer address here, because there is none to know in advance:
+the filter uses the local UDP ports lyrebird has bound, re-read before every
+capture. A capture whose port set changed underneath it is flagged in the
+manifest rather than silently kept.
+
 ## 2. Let tcpdump capture
 
 Run once as root:
@@ -147,8 +185,11 @@ sed "s|%h|$HOME|g; s|%i|baseline|g" scripts/collection/systemd/tor-wf@.service \
 	> ~/.config/systemd/user/tor-wf-baseline.service
 sed "s|%h|$HOME|g; s|%i|obfs4|g" scripts/collection/systemd/tor-wf@.service \
 	> ~/.config/systemd/user/tor-wf-obfs4.service
+sed "s|%h|$HOME|g; s|%i|snowflake|g" scripts/collection/systemd/tor-wf@.service \
+	> ~/.config/systemd/user/tor-wf-snowflake.service
 systemctl --user daemon-reload
-systemctl --user enable tor-wf-baseline.service tor-wf-obfs4.service
+systemctl --user enable tor-wf-baseline.service tor-wf-obfs4.service \
+	tor-wf-snowflake.service
 systemctl --user enable --now tor-wf-round.timer
 loginctl enable-linger "$USER"          # timers run without an active login
 systemctl --user list-timers tor-wf-round.timer
