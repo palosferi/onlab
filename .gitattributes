@@ -1,0 +1,11 @@
+# Everything here runs on Linux hosts; a Windows checkout is only for editing.
+# Without eol=lf, a global core.autocrlf=true fills the working tree with CRLF,
+# and a shell script copied straight to the collection host fails to parse --
+# bash reads the carriage return as part of the token.
+* text=auto eol=lf
+
+*.pcap binary
+*.pdf binary
+*.eps binary
+*.png binary
+*.gz binary

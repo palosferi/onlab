@@ -9,6 +9,7 @@ collection glitch rather than the configuration error it is.
 """
 
 import os
+import shutil
 import subprocess
 import sys
 
@@ -42,17 +43,27 @@ def main():
         failures += not ok
         print(f"[{'ok  ' if ok else 'FAIL'}] parse {str(expected):40s} got {got}")
 
+    # tcpdump itself is the authority on whether an expression is valid, so the
+    # filter cases need it present. It is absent when editing on a workstation,
+    # which is not a failure: those cases are skipped and the parsing still runs.
+    have_tcpdump = shutil.which("tcpdump") is not None
+    if not have_tcpdump:
+        print("[skip] tcpdump not found, filter compilation not checked")
+
+    checked = 0
     for peers in FILTER_CASES:
         argv = cfg.capture_filter(peers)
-        # tcpdump itself is the authority on whether the expression is valid.
+        if not have_tcpdump:
+            continue
         r = subprocess.run(["tcpdump", "-d", "-y", "EN10MB"] + argv,
                            capture_output=True, text=True)
         ok = r.returncode == 0
         failures += not ok
+        checked += 1
         detail = "compiles" if ok else r.stderr.strip()[:60]
         print(f"[{'ok  ' if ok else 'FAIL'}] filter {' '.join(argv):58s} {detail}")
 
-    total = len(PARSE_CASES) + len(FILTER_CASES)
+    total = len(PARSE_CASES) + checked
     print(f"\n{total - failures}/{total} passed")
     return 1 if failures else 0
 
