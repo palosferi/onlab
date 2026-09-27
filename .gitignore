@@ -37,6 +37,12 @@ tor_dataset/longitudinal/*
 tor_dataset/longitudinal/*/*
 !tor_dataset/longitudinal/*/manifest.csv
 !tor_dataset/longitudinal/*/round_meta.json
+!tor_dataset/tb/
+tor_dataset/tb/*
+!tor_dataset/tb/*/
+tor_dataset/tb/*/*
+!tor_dataset/tb/*/manifest.csv
+!tor_dataset/tb/*/run_*.json
 tor_dataset_release_2026-06-01/
 
 # Collection host configuration (may contain a bridge line)

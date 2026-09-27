@@ -302,7 +302,7 @@ def print_table(scenarios):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--mode", default="direction", choices=["direction", "tiktok", "iat"])
+    p.add_argument("--mode", default="direction", choices=["direction", "cells", "tiktok", "iat"])
     p.add_argument("--length", type=int, default=SEQUENCE_LENGTH)
     p.add_argument(
         "--epochs", type=int, default=150, help="upper bound; early stopping picks the epoch"

@@ -28,6 +28,8 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from df_dataset import CELL_BYTES  # noqa: E402
+
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SPRING_DIR = os.path.join(REPO_ROOT, "tor_dataset", "extracted_features")
 LONGITUDINAL_DIR = os.path.join(REPO_ROOT, "tor_dataset", "longitudinal")
@@ -36,8 +38,8 @@ FIGURES_DIR = os.path.join(REPO_ROOT, "figures")
 DEFAULT_LENGTHS = (5000, 8000, 10000, 12000, 16000, 20000)
 
 
-def trace_stats(path):
-    """Per-trace shape: how many packets, how many bytes, how long."""
+def trace_stats(path, unit="packets"):
+    """Per-trace shape: how many units (packets or cells), how many bytes, how long."""
     try:
         df = pd.read_csv(path, usecols=["time_offset", "direction_size"])
     except Exception:
@@ -45,6 +47,13 @@ def trace_stats(path):
     if df.empty:
         return None
     sizes = df["direction_size"].to_numpy()
+    if unit == "cells":
+        # Same expansion as df_dataset's "cells" mode: one unit per cell's
+        # worth of bytes, ACKs dropped.
+        counts = np.rint(np.abs(sizes) / CELL_BYTES).astype(np.int64)
+        sizes = np.repeat(np.sign(sizes) * CELL_BYTES, counts)
+        if not len(sizes):
+            return None
     magnitude = np.abs(sizes)
     return {
         "packets": int(len(sizes)),
@@ -75,11 +84,11 @@ def coverage(traces, length):
     }
 
 
-def describe(label, directory, lengths):
+def describe(label, directory, lengths, unit="packets"):
     if not os.path.isdir(directory):
         return None
     files = sorted(f for f in os.listdir(directory) if f.endswith(".csv"))
-    traces = [s for s in (trace_stats(os.path.join(directory, f)) for f in files) if s]
+    traces = [s for s in (trace_stats(os.path.join(directory, f), unit) for f in files) if s]
     if not traces:
         return None
 
@@ -100,7 +109,7 @@ def describe(label, directory, lengths):
 
 
 def print_report(arms, lengths):
-    print(f"\n{'arm':28s} {'traces':>6s} {'pkts med':>9s} {'pkts p90':>9s} "
+    print(f"\n{'arm':28s} {'traces':>6s} {'len med':>9s} {'len p90':>9s} "
           f"{'bytes med':>11s} {'pkt size':>9s} {'dur s':>7s}")
     print("-" * 84)
     for a in arms:
@@ -108,7 +117,7 @@ def print_report(arms, lengths):
               f"{a['packets_p90']:>9d} {a['bytes_median']:>11d} "
               f"{a['median_packet_size']:>9.0f} {a['duration_s_median']:>7.1f}")
 
-    print("\nmedian % of each trace's BYTES inside the first N packets")
+    print("\nmedian % of each trace's BYTES inside the first N units")
     header = f"{'arm':28s}" + "".join(f"{n:>9d}" for n in lengths)
     print(header)
     print("-" * len(header))
@@ -116,7 +125,7 @@ def print_report(arms, lengths):
         row = "".join(f"{c['median_bytes_kept_pct']:>9.1f}" for c in a["coverage"])
         print(f"{a['arm']:28s}{row}")
 
-    print("\n% of traces that fit entirely inside the first N packets")
+    print("\n% of traces that fit entirely inside the first N units")
     print(header)
     print("-" * len(header))
     for a in arms:
@@ -133,17 +142,22 @@ def main():
         default=",".join(str(n) for n in DEFAULT_LENGTHS),
         help="candidate window lengths in packets",
     )
-    p.add_argument("--out", default=os.path.join(FIGURES_DIR, "sequence_budget.json"))
+    p.add_argument("--collection", default="", help="a Tor Browser collection under tor_dataset/tb/")
+    p.add_argument("--unit", choices=["packets", "cells"], default="packets",
+                   help="count the window in captured packets or in 514-byte cells")
+    p.add_argument("--out", default="")
     args = p.parse_args()
+    args.out = args.out or os.path.join(FIGURES_DIR, f"sequence_budget_{args.unit}.json")
 
-    if not args.spring and not args.round:
+    if not args.spring and not args.round and not args.collection:
         args.spring = True
     lengths = [int(n) for n in args.lengths.split(",") if n.strip()]
 
     arms = []
     if args.spring:
         for name in ("baseline", "obfs4", "other"):
-            got = describe(f"spring/{name}", os.path.join(SPRING_DIR, f"{name}_features"), lengths)
+            got = describe(f"spring/{name}", os.path.join(SPRING_DIR, f"{name}_features"), lengths,
+                           args.unit)
             if got:
                 arms.append(got)
     if args.round:
@@ -153,7 +167,19 @@ def main():
         for entry in sorted(os.listdir(round_dir)):
             if entry.endswith("_features") and not entry.endswith("_rejected_features"):
                 arm = entry[: -len("_features")]
-                got = describe(f"{args.round}/{arm}", os.path.join(round_dir, entry), lengths)
+                got = describe(f"{args.round}/{arm}", os.path.join(round_dir, entry), lengths,
+                               args.unit)
+                if got:
+                    arms.append(got)
+
+    if args.collection:
+        feat = os.path.join(REPO_ROOT, "tor_dataset", "tb", args.collection, "features")
+        if not os.path.isdir(feat):
+            sys.exit(f"No such collection features: {feat}")
+        for arm in sorted(os.listdir(feat)):
+            for kind in sorted(os.listdir(os.path.join(feat, arm))):
+                got = describe(f"{args.collection}/{arm}/{kind}", os.path.join(feat, arm, kind),
+                               lengths, args.unit)
                 if got:
                     arms.append(got)
 

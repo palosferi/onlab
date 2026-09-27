@@ -67,6 +67,26 @@ def check_tiktok_signs_timing():
     return np.allclose(seq, [0.5, -1.5])
 
 
+def check_cells_mode_counts_bytes():
+    # 1542 bytes out is three cells, a bare ACK is none, 1028 in is two.
+    df = pd.DataFrame(
+        {"direction_size": [1542, 66, -1028], "time_offset": [0.0, 0.1, 0.2],
+         "inter_arrival_time": [0.0, 0.1, 0.1]}
+    )
+    seq = _to_sequence(df, "cells", 8)
+    return list(seq) == [1, 1, 1, -1, -1, 0, 0, 0]
+
+
+def check_cells_mode_ignores_packetisation():
+    # The same 4112 bytes as one coalesced frame or as eight small datagrams
+    # must give the same sequence; that is the point of the mode.
+    one = pd.DataFrame({"direction_size": [-4112], "time_offset": [0.0],
+                        "inter_arrival_time": [0.0]})
+    many = pd.DataFrame({"direction_size": [-514] * 8, "time_offset": np.arange(8) * 0.01,
+                         "inter_arrival_time": [0.01] * 8})
+    return np.array_equal(_to_sequence(one, "cells", 16), _to_sequence(many, "cells", 16))
+
+
 def check_per_class_keeps_every_class():
     y = np.array(["a"] * 5 + ["b"] * 5)
     t = ts(*[f"2026-03-{d:02d}" for d in range(1, 6)] * 2)
@@ -119,6 +139,8 @@ CASES = [
     ("short trace is zero padded", check_padding),
     ("long trace is truncated", check_truncation),
     ("tiktok mode signs the arrival time", check_tiktok_signs_timing),
+    ("cells mode counts bytes, drops ACKs", check_cells_mode_counts_bytes),
+    ("cells mode ignores packetisation", check_cells_mode_ignores_packetisation),
     ("per-class split keeps every class", check_per_class_keeps_every_class),
     ("per-class split is time ordered", check_per_class_is_ordered),
     ("single-trace class stays in train", check_singleton_class_stays_in_train),

@@ -19,6 +19,9 @@ LOGGER = logging.getLogger(__name__)
 # the packet-count analogue; see SEQUENCE_LENGTH_NOTE in the thesis notes.
 SEQUENCE_LENGTH = 5000
 
+# Bytes per unit in "cells" mode: the size of one Tor cell.
+CELL_BYTES = 514
+
 FILENAME_RE = re.compile(r"^(?P<site>.+)_(?P<date>\d{8})_(?P<time>\d{6})$")
 
 
@@ -48,6 +51,17 @@ def _to_sequence(df, mode, length):
         seq = dirs * df["time_offset"].to_numpy(dtype=np.float32)
     elif mode == "iat":
         seq = dirs * df["inter_arrival_time"].to_numpy(dtype=np.float32)
+    elif mode == "cells":
+        # One entry per cell's worth of bytes, not per captured packet. A
+        # packet is not a stable unit here: the host coalesces segments (GRO)
+        # into frames of up to ~6 KB, and Snowflake's WebRTC framing splits the
+        # same payload into about four times as many datagrams as TCP does. In
+        # packets the Snowflake pilot traces were 4x longer than baseline; in
+        # cells the three transports agree within 15%. Pure ACKs round to zero
+        # cells and drop out, which is also what DF's cell sequences look like.
+        sizes = np.abs(df["direction_size"].to_numpy(dtype=np.float64))
+        counts = np.rint(sizes / CELL_BYTES).astype(np.int64)
+        seq = np.repeat(dirs, counts)
     else:
         raise ValueError(f"unknown sequence mode: {mode}")
 
