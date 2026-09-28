@@ -54,7 +54,9 @@ TB_DIR = os.path.expanduser(os.getenv("TOR_WF_TB_DIR", "~/tor_wf_runtime/tb/tor-
 GECKODRIVER = os.path.expanduser(os.getenv("TOR_WF_GECKODRIVER", "~/tor_wf_runtime/tb/geckodriver"))
 TB_ROOT = os.getenv("TOR_WF_TB_OUT", os.path.join(cfg.REPO_ROOT, "tor_dataset", "tb"))
 
-PAGE_TIMEOUT = cfg.env_int("TOR_WF_PAGE_TIMEOUT", 90)
+# One timeout for every arm, so no transport is censored earlier than another;
+# 120 s covers the slow Snowflake loads the pilot saw (60-75 s).
+PAGE_TIMEOUT = cfg.env_int("TOR_WF_TB_PAGE_TIMEOUT", 120)
 # Statuses caused by the network rather than the site: worth one more try.
 TRANSIENT = {"load_timeout", "browser_error", "empty_capture", "load_error"}
 
@@ -178,13 +180,21 @@ def wait_settled(driver, quiet, max_wait):
     return round(time.time() - start, 2), count
 
 
-class PortWatch:
-    """Poll lyrebird's local UDP ports in the background; keep the union."""
+class Watch:
+    """Poll `probe()` in the background while a capture runs; keep the union.
 
-    def __init__(self, interval=0.5):
+    Used where the right capture filter is only known afterwards: Snowflake's
+    WebRTC ports move whenever the volunteer proxy changes, and the unpinned
+    baseline Tor may open a connection to a second guard (conflux legs, guard
+    rotation). Both were seen mid-capture in the pilots, so the capture takes
+    everything of the protocol and is cut down to what was seen, afterwards.
+    """
+
+    def __init__(self, probe, interval=0.5):
         import threading
 
-        self.seen = set(cfg.snowflake_ports())
+        self.probe = probe
+        self.seen = set(probe())
         self.changes = 0
         self._last = set(self.seen)
         self._stop = threading.Event()
@@ -193,7 +203,7 @@ class PortWatch:
 
     def _run(self, interval):
         while not self._stop.wait(interval):
-            now = set(cfg.snowflake_ports())
+            now = set(self.probe())
             if now and now != self._last:
                 self.changes += 1
                 self._last = now
@@ -205,10 +215,10 @@ class PortWatch:
         return sorted(self.seen)
 
 
-def cut_to_ports(raw, out, ports):
-    """Keep only packets on `ports` from the all-UDP scratch capture."""
-    if os.path.exists(raw) and ports:
-        subprocess.run(["tcpdump", "-r", raw, "-w", out] + cfg.capture_filter([], udp_ports=ports),
+def cut_capture(raw, out, bpf):
+    """Rewrite the scratch capture keeping only packets matching `bpf`."""
+    if os.path.exists(raw) and bpf:
+        subprocess.run(["tcpdump", "-r", raw, "-w", out] + bpf,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
     if os.path.exists(raw):
         os.remove(raw)
@@ -254,17 +264,16 @@ def capture_one(slot, arm, attempt, ctx):
         row.update(status="browser_error", detail=f"launch: {str(exc)[:250]}", pcap="")
         return row
 
-    ports = None
+    watch = None
+    raw = pcap + ".raw"
     if arm.name == "snowflake":
-        # The WebRTC ports move whenever the volunteer proxy changes, and the
-        # pilot saw that mid-capture in one visit out of four. A filter fixed
-        # at the start would silently drop the rest of the page load, so all
-        # UDP is captured to a scratch file while lyrebird's ports are polled,
-        # and the trace is cut down to the union of them afterwards.
-        ports = PortWatch()
-        raw = pcap + ".raw"
+        watch = Watch(cfg.snowflake_ports)
         bpf = ["udp"]
+    elif arm.name == "baseline" and arm.pid:
+        watch = Watch(lambda: cfg.process_peers(arm.pid))
+        bpf = ["tcp"]
     else:
+        # obfs4 goes only to our own bridge, whose addresses are known.
         raw = pcap
         row["peer_ip"] = ",".join(arm.peer_ips or [arm.peer_ip])
         bpf = cfg.capture_filter(arm.peer_ips or [arm.peer_ip])
@@ -306,10 +315,14 @@ def capture_one(slot, arm, attempt, ctx):
 
     stop_tcpdump(tcpdump)
     row["capture_s"] = round(time.time() - t0, 2)
-    if ports is not None:
-        seen = ports.stop()
-        row["peer_ip"] = "udp:" + ",".join(str(p) for p in seen)
-        cut_to_ports(raw, pcap, seen)
+    if watch is not None:
+        seen = watch.stop()
+        if arm.name == "snowflake":
+            row["peer_ip"] = "udp:" + ",".join(str(p) for p in seen)
+            cut_capture(raw, pcap, seen and cfg.capture_filter([], udp_ports=seen))
+        else:
+            row["peer_ip"] = ",".join(seen)
+            cut_capture(raw, pcap, seen and cfg.capture_filter(seen))
 
     try:
         if page is None:
@@ -330,8 +343,9 @@ def capture_one(slot, arm, attempt, ctx):
 
     ok, size = cfg.pcap_ok(pcap)
     row["pcap_bytes"] = size
-    if ports is not None and ports.changes:
-        detail = (detail + "; " if detail else "") + f"snowflake ports changed {ports.changes}x, all kept"
+    if watch is not None and watch.changes:
+        what = "ports" if arm.name == "snowflake" else "peers"
+        detail = (detail + "; " if detail else "") + f"{arm.name} {what} changed {watch.changes}x, all kept"
     if status == "ok" and not ok:
         status, detail = "empty_capture", f"pcap only {size} bytes"
     row["status"], row["detail"] = status, detail
@@ -429,6 +443,7 @@ def main():
         with Controller.from_port(port=arm.control_port) as c:
             c.authenticate()
             cfg.resolve_peer_ip(c, arm)
+            arm.pid = c.get_pid(None)
             tor_versions[arm.name] = cfg.tor_metadata(c).get("tor_version")
         print(f"    {arm.name}: socks {arm.socks_port}, peer {arm.peer_ip}, guard {arm.guard_nickname}")
 
@@ -485,6 +500,7 @@ def main():
                                 with Controller.from_port(port=arm.control_port) as c:
                                     c.authenticate()
                                     cfg.resolve_peer_ip(c, arm)
+                                    arm.pid = c.get_pid(None)
                                 print(f"    re-resolved {arm_name} peer -> {arm.peer_ip}")
                             except Exception as exc:
                                 print(f"    {arm_name} re-resolve failed: {exc}")

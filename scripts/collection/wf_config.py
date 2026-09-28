@@ -123,6 +123,8 @@ class Arm:
         # Snowflake only: local UDP ports of the WebRTC sockets, see
         # snowflake_ports().
         self.udp_ports = []
+        # PID of this arm's tor process, for per-process peer lookups.
+        self.pid = None
 
     def __repr__(self):
         return f"<Arm {self.name} socks={self.socks_port} ctrl={self.control_port} peer={self.peer_ip}>"
@@ -180,6 +182,32 @@ def live_peers(process_name):
         if process_name not in line:
             continue
         # Peer address is the second-to-last whitespace field before users:(...)
+        m = re.search(r"\s(\[[0-9A-Fa-f:]+\]|\d{1,3}(?:\.\d{1,3}){3}):(\d+)\s+users:", line)
+        if not m:
+            continue
+        host = m.group(1).strip("[]")
+        if host.startswith("127.") or host == "::1":
+            continue
+        if host not in out:
+            out.append(host)
+    return out
+
+
+def process_peers(pid):
+    """Remote addresses of the TCP connections owned by one process.
+
+    For the baseline Tor these are its guards (and the odd directory mirror),
+    whichever it happens to be using right now.
+    """
+    out = []
+    try:
+        r = subprocess.run(["ss", "-tnp"], capture_output=True, text=True, timeout=10)
+    except Exception:
+        return out
+    tag = f"pid={pid},"
+    for line in r.stdout.splitlines():
+        if tag not in line:
+            continue
         m = re.search(r"\s(\[[0-9A-Fa-f:]+\]|\d{1,3}(?:\.\d{1,3}){3}):(\d+)\s+users:", line)
         if not m:
             continue
