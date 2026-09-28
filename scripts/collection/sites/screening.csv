@@ -1,0 +1,2601 @@
+rank,domain,ok,reason,final_url
+1,google.com,1,ok,https://www.google.com/
+2,cloudflare.com,1,ok,https://www.cloudflare.com/
+3,facebook.com,0,http 400,https://www.facebook.com/
+4,gstatic.com,0,http 404,https://www.gstatic.com/
+5,googleapis.com,0,http 404,https://googleapis.com/
+6,microsoft.com,1,ok,https://www.microsoft.com/
+7,akamai.net,0,http 0,https://akamai.net/
+8,amazonaws.com,1,ok,https://aws.amazon.com:443/
+9,youtube.com,1,ok,https://www.youtube.com/
+10,apple.com,1,ok,https://www.apple.com/
+11,instagram.com,1,ok,https://www.instagram.com/
+12,mail.ru,0,http 0,https://mail.ru/
+13,fbcdn.net,0,http 400,https://www.facebook.com/
+14,ezviz7.com,0,http 0,https://ezviz7.com/
+15,twitter.com,1,ok,https://x.com/
+16,domaincontrol.com,0,http 0,https://domaincontrol.com/
+17,dzen.ru,0,only 3046 bytes,https://sso.passport.yandex.ru/push?uuid=44acb201-9ff6-4907-9f9e-cb1b6a17e10b&retpath=https%3A%2F%2Fdzen.ru%2F%3Fis_autologin_ya%3Dtrue
+18,linkedin.com,0,http 403,https://linkedin.com/
+19,googlevideo.com,0,http 0,https://googlevideo.com/
+20,googletagmanager.com,0,http 404,https://googletagmanager.com/
+21,office.com,0,http 403,https://office.com/
+22,akamaiedge.net,0,http 0,https://akamaiedge.net/
+23,live.com,0,http 417,https://outlook.live.com/mail/
+24,amazon.com,0,http 202,https://www.amazon.com/
+25,akadns.net,0,http 0,https://akadns.net/
+26,hicloudcam.com,0,http 0,https://hicloudcam.com/
+27,gtld-servers.net,0,http 0,https://gtld-servers.net/
+28,azure.com,1,ok,https://azure.microsoft.com/en-us
+31,bing.com,1,ok,https://www.bing.com:443/?toWww=1&redig=B2F49631F10E43199D637E878707B5EE
+32,whatsapp.net,0,http 400,https://www.whatsapp.com/
+33,appsflyersdk.com,0,http 403,https://appsflyersdk.com/
+34,apple-dns.net,0,http 0,https://apple-dns.net/
+35,googleusercontent.com,0,http 404,https://googleusercontent.com/
+36,fastly.net,1,ok,https://www.fastly.com/
+37,aaplimg.com,0,http 0,https://aaplimg.com/
+38,doubleclick.net,1,ok,https://marketingplatform.google.com/about/enterprise/
+39,microsoftonline.com,0,http 0,https://microsoftonline.com/
+40,office.net,0,http 0,https://office.net/
+41,cloud.microsoft,0,only 79 bytes,https://m365.cloud.microsoft/
+42,trafficmanager.net,0,http 0,https://trafficmanager.net/
+43,netflix.com,1,ok,https://www.netflix.com/de-en/
+44,sharepoint.com,0,http 302,https://www.microsoft.com/microsoft-365/sharepoint/collaboration?ms.officeurl=sharepoint
+45,gandi.net,1,ok,https://www.gandi.net/en
+46,youtu.be,1,ok,https://www.youtube.com/?feature=youtu.be
+47,digicert.com,1,ok,https://www.digicert.com/
+49,cloudfront.net,0,http 0,https://cloudfront.net/
+50,x.com,1,ok,https://x.com/
+51,skype.com,1,ok,https://teams.live.com/free?source=skype
+52,icloud.com,1,ok,https://www.icloud.com/
+53,tiktok.com,1,ok,https://www.tiktok.com/
+54,whatsapp.com,0,http 400,https://www.whatsapp.com/
+55,goo.gl,0,http 400,https://goo.gl/
+56,pinterest.com,1,ok,https://www.pinterest.com/
+57,cloudflare.net,0,http 403,https://cloudflare.net/
+58,googledomains.com,1,ok,https://domains.google/
+59,yahoo.com,1,ok,https://www.yahoo.com/
+60,googlesyndication.com,1,ok,https://www.google.com/
+61,roblox.com,1,ok,https://www.roblox.com/
+62,gvt1.com,0,http 0,https://gvt1.com/
+63,spotify.com,0,http 403,https://spotify.com/
+64,pv-cdn.net,0,http 0,https://pv-cdn.net/
+65,windows.net,0,http 0,https://windows.net/
+66,wa.me,0,http 400,https://api.whatsapp.com/
+67,adobe.com,0,http 301,https://www.adobe.com/
+68,windowsupdate.com,0,http 0,https://windowsupdate.com/
+69,msn.com,1,ok,https://www.msn.com/
+70,myfritz.net,1,ok,https://www.myfritz.net/devices/
+71,ntp.org,1,ok,https://www.ntp.org/
+72,qq.com,1,ok,https://www.qq.com/
+73,root-servers.net,0,http 0,https://root-servers.net/
+74,zoom.us,1,ok,https://www.zoom.com/
+75,nginx.org,1,ok,https://nginx.org/
+76,cloudflare-dns.com,1,ok,https://one.one.one.one/dns/
+77,akam.net,0,http 0,https://akam.net/
+78,chatgpt.com,0,http 403,https://chatgpt.com/
+79,tiktokcdn.com,0,http 0,https://tiktokcdn.com/
+80,workers.dev,1,ok,https://www.cloudflare.com/products/workers/
+81,tiktokv.com,0,http 404,https://tiktokv.com/
+82,edgekey.net,0,http 0,https://edgekey.net/
+83,yandex.net,1,ok,https://ya.ru/?nr=1&redirect_ts=1790626308.00000
+84,baidu.com,0,http 0,https://baidu.com/
+85,cdninstagram.com,0,http 0,https://cdninstagram.com/
+86,openai.com,0,http 403,https://openai.com/
+87,gvt2.com,0,http 0,https://gvt2.com/
+89,opera.com,1,ok,https://www.opera.com/
+90,f5.com,0,http 403,https://f5.com/
+91,ytimg.com,0,http 0,https://ytimg.com/
+92,sentry.io,0,http 403,https://sentry.io/
+93,windows.com,1,ok,https://www.microsoft.com/en-gb/windows/
+94,samsung.com,0,http 403,https://www.samsung.com/
+95,nginx.com,0,http 403,https://nginx.com/
+96,yandex.ru,0,only 3061 bytes,https://sso.passport.yandex.ru/push?uuid=34f33ce9-9bdb-4885-bac1-d6b8bdc26699&retpath=https%3A%2F%2Fdzen.ru%2F%3Fyredirect%3Dtrue%26is_autologin_ya%3Dtrue
+97,highwebmedia.com,0,http 0,https://highwebmedia.com/
+98,gwfb.net,0,http 0,https://gwfb.net/
+99,a2z.com,0,http 0,https://a2z.com/
+100,wordpress.com,1,ok,https://wordpress.com/
+101,t.me,1,ok,https://telegram.org/
+103,yuga.com,1,ok,https://yuga.com/
+104,dellemc.com,0,http 0,https://dellemc.com/
+105,blogspot.com,1,ok,https://www.blogger.com/about/?bpli=1
+106,actify.nl,0,http 302,https://www.zilverenkruis.nl/error?support_id=9165579254487090279
+107,edgesuite.net,0,http 0,https://edgesuite.net/
+108,b-cdn.net,1,ok,https://bunny.net/
+110,yccdn.ru,0,http 0,https://yccdn.ru/
+111,ui.com,1,ok,https://ui.com/
+112,nic.ru,0,http 0,https://nic.ru/
+113,office365.com,0,http 403,https://office365.com/
+114,europa.eu,0,http 403,https://european-union.europa.eu/select-language?destination=/node/1
+115,aws.dev,0,http 0,https://aws.dev/
+116,google-analytics.com,1,ok,https://marketingplatform.google.com/about/analytics/
+117,bit.ly,1,ok,https://bitly.com/
+118,okcdn.ru,0,http 403,https://st.okcdn.ru/
+119,outlook.com,0,http 417,https://outlook.com/mail/
+120,app-analytics-services.com,0,http 404,https://app-analytics-services.com/
+121,amazonvideo.com,1,ok,https://www.primevideo.com/offers/nonprimehomepage?ref_=dv_web_force_root
+122,registrar-servers.com,0,only 2027 bytes,https://registrar-servers.com/
+123,app-measurement.com,0,http 404,https://app-measurement.com/
+124,trbcdn.net,0,http 0,https://trbcdn.net/
+125,cdn77.org,0,http 0,https://cdn77.org/
+126,github.io,1,ok,https://pages.github.com/
+127,snapchat.com,1,ok,https://www.snapchat.com:443/
+128,dnsowl.com,0,http 0,https://dnsowl.com/
+129,apache.org,1,ok,https://apache.org/
+130,vk.com,1,ok,https://vk.com/
+131,reg.ru,0,http 0,https://reg.ru/
+132,criteo.com,1,ok,https://www.criteo.com/
+133,epicgames.com,0,http 403,https://www.epicgames.com:443/
+134,amazon-adsystem.com,0,http 0,https://amazon-adsystem.com/
+135,dropbox.com,1,ok,https://www.dropbox.com/
+136,amazon.dev,0,http 0,https://amazon.dev/
+137,unity3d.com,0,http 403,https://unity3d.com/
+138,intuit.com,0,http 429,https://www.intuit.com/
+139,triplinkintl.com,1,ok,https://www.triplinkintl.com/
+140,kaspersky.com,1,ok,https://www.kaspersky.com/
+141,nih.gov,0,http 403,https://www.nih.gov/
+142,discord.gg,1,ok,https://discord.com/
+143,msftncsi.com,0,http 0,https://msftncsi.com/
+144,static.microsoft,0,http 0,https://static.microsoft/
+145,forms.gle,0,http 400,https://forms.gle/
+147,azurefd.net,0,http 0,https://azurefd.net/
+148,godaddy.com,0,http 403,https://www.godaddy.com/
+149,afternic.com,1,ok,https://www.afternic.com/
+150,iiko.it,0,http 0,https://iiko.it/
+151,dns.google,0,only 1381 bytes,https://dns.google/
+152,aliyuncs.com,0,http 0,https://aliyuncs.com/
+153,xiaomi.com,0,http 0,https://xiaomi.com/
+154,gravatar.com,1,ok,https://gravatar.com/
+155,steamserver.net,0,http 0,https://steamserver.net/
+156,nytimes.com,0,http 403,https://www.nytimes.com/
+157,tumblr.com,1,ok,https://www.tumblr.com/
+158,3gppnetwork.org,0,http 0,https://3gppnetwork.org/
+159,dns-parking.com,0,http 0,https://dns-parking.com/
+160,jomodns.com,0,http 0,https://jomodns.com/
+161,one.one,1,ok,https://www.one.com/
+162,msftconnecttest.com,0,http 0,https://msftconnecttest.com/
+163,tm-azurefd.net,0,http 0,https://tm-azurefd.net/
+164,adtrafficquality.google,1,ok,https://www.google.com/ads/adtrafficquality/
+165,mts.ru,1,ok,https://moskva.mts.ru/personal
+166,applovin.com,0,http 403,https://applovin.com/
+167,hichina.com,0,http 0,https://hichina.com/
+168,vkuserphoto.ru,0,http 418,https://ps.userapi.com/
+169,adobe.io,1,ok,https://developer.adobe.com/
+170,discord.com,1,ok,https://discord.com/
+171,webex.com,0,http 403,https://www.webex.com/
+172,example.com,0,only 713 bytes,https://example.com/
+173,ax-msedge.net,0,http 0,https://ax-msedge.net/
+174,paypal.com,1,ok,https://www.paypal.com/nl/home
+175,shopify.com,1,ok,https://www.shopify.com/
+176,miit.gov.cn,0,http 0,https://miit.gov.cn/
+177,spectrum.com,0,http 301,https://www.spectrum.com/
+178,vk.ru,1,ok,https://vk.ru/
+179,azurewebsites.net,0,http 0,https://azurewebsites.net/
+180,lencr.org,1,ok,https://letsencrypt.org/docs/lencr.org/
+181,vedcdnlb.com,0,http 0,https://vedcdnlb.com/
+182,base.org,1,ok,https://www.base.org/
+183,ggpht.com,0,http 0,https://ggpht.com/
+184,hosting24.com,0,http 403,https://hosting24.com/
+185,macromedia.com,0,http 0,https://macromedia.com/
+186,doctolib.net,0,http 0,https://doctolib.net/
+187,paytmfirstgames.com,0,http 0,https://paytmfirstgames.com/
+188,telekom.net,1,ok,https://www.telekom.com/
+190,flickr.com,1,ok,https://flickr.com/
+191,cdn-apple.com,0,http 0,https://cdn-apple.com/
+192,googleadservices.com,0,http 404,https://googleadservices.com/
+194,nflxso.net,0,http 0,https://nflxso.net/
+195,namebrightdns.com,0,http 0,https://namebrightdns.com/
+196,duckdns.org,0,http 0,https://duckdns.org/
+197,creativecommons.org,1,ok,https://creativecommons.org/
+198,yandexcloud.net,0,http 0,https://yandexcloud.net/
+199,adsafeprotected.com,0,type image/gif,https://adsafeprotected.com/skeleton.gif
+200,bytefcdn-oversea.com,0,http 0,https://bytefcdn-oversea.com/
+204,fastly-edge.com,0,http 0,https://fastly-edge.com/
+205,rubiconproject.com,0,http 403,https://www.rubiconproject.com/
+207,oracle.com,0,http 403,https://www.oracle.com/
+208,lsrelayaccess.com,0,http 0,https://lsrelayaccess.com/
+209,ttdns2.com,0,http 0,https://ttdns2.com/
+210,t-online.de,1,ok,https://www.t-online.de/
+211,ailawandorder.com,0,http 0,https://ailawandorder.com/
+212,youtube-nocookie.com,0,http 0,https://youtube-nocookie.com/
+213,shifen.com,0,http 0,https://shifen.com/
+214,vungle.com,0,http 403,https://vungle.com/
+215,doi.org,1,ok,https://www.doi.org/
+216,ksyuncdn.com,0,http 0,https://ksyuncdn.com/
+217,akamaized.net,0,http 0,https://akamaized.net/
+218,shiabank.com,0,http 0,https://shiabank.com/
+219,forbes.com,1,ok,https://www.forbes.com/
+221,endpoints.news,1,ok,https://endpoints.news/
+222,pki.goog,0,challenge phrase,https://pki.goog/
+223,taboola.com,1,ok,https://www.taboola.com/
+224,sciencedirect.com,0,http 403,https://www.sciencedirect.com/
+225,ubuntu.com,1,ok,https://ubuntu.com/
+226,cdngslb.com,0,http 0,https://cdngslb.com/
+227,capcutapi.com,0,http 0,https://capcutapi.com/
+229,sfx.ms,0,http 0,https://sfx.ms/
+230,researchgate.net,0,http 403,https://www.researchgate.net/
+232,ozon.ru,0,http 0,https://ozon.ru/
+233,pages.dev,1,ok,https://www.cloudflare.com/products/pages/
+234,android.com,1,ok,https://www.android.com/
+235,userapi.com,0,http 301,https://vk.com/
+236,bbc.co.uk,1,ok,https://www.bbc.co.uk/
+237,azureedge.net,0,http 0,https://azureedge.net/
+238,stripe.com,1,ok,https://stripe.com/at
+239,nist.gov,1,ok,https://www.nist.gov/
+240,gmail.com,1,ok,https://accounts.google.com/v3/signin/identifier?continue=https://mail.google.com/mail/u/0/&emr=1&followup=https://mail.google.com/mail/u/0/&osid=1&passive=1209600&service=mail&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S1681572808:1790626388531604
+241,t.co,0,only 3255 bytes,https://t.co/
+242,cpanel.net,0,http 403,https://www.cpanel.net/
+243,canva.com,0,http 403,https://www.canva.com/
+244,alidns.com,0,http 0,https://alidns.com/
+245,wsdvs.com,0,http 0,https://wsdvs.com/
+246,sourceforge.net,0,http 403,https://sourceforge.net/
+247,meraki.com,0,http 403,https://www.cisco.com/site/us/en/about/corporate-strategy-office/acquisitions/meraki/index.html
+248,cisco.com,0,http 0,https://cisco.com/
+249,comcast.net,0,http 403,https://www.xfinity.com/
+250,telegram.org,1,ok,https://telegram.org/
+251,wikimedia.org,1,ok,https://www.wikimedia.org/
+252,miui.com,1,ok,https://home.miui.com/
+253,nr-data.net,0,http 0,https://nr-data.net/
+254,rbxcdn.com,0,http 0,https://rbxcdn.com/
+255,pubmatic.com,1,ok,https://pubmatic.com/
+256,scorecardresearch.com,1,ok,https://www.scorecardresearch.com/Home.aspx
+257,playstation.net,0,http 0,https://playstation.net/
+258,omtrdc.net,0,http 0,https://omtrdc.net/
+259,2mdn.net,0,http 0,https://2mdn.net/
+260,statsigapi.net,0,http 403,https://statsigapi.net/
+261,roku.com,0,http 403,https://roku.com/
+262,media-amazon.com,0,http 0,https://media-amazon.com/
+263,imcmdb.net,0,http 0,https://imcmdb.net/
+264,hubspot.com,1,ok,https://www.hubspot.com/
+265,adsrvr.org,1,ok,https://adsrvr.org/
+266,ripn.net,0,http 0,https://ripn.net/
+267,adnxs.com,0,http 404,https://adnxs.com/
+268,spov-msedge.net,0,http 0,https://spov-msedge.net/
+269,who.int,1,ok,https://www.who.int/
+270,alibabadns.com,0,http 0,https://alibabadns.com/
+272,hcaptcha.com,1,ok,https://www.hcaptcha.com/
+273,linktr.ee,1,ok,https://linktr.ee/
+274,wixsite.com,0,http 0,https://wixsite.com/
+275,forter.com,0,http 403,https://forter.com/
+276,name-services.com,0,http 0,https://name-services.com/
+277,booking.com,0,http 202,https://booking.com/
+278,ttvnw.net,0,http 0,https://ttvnw.net/
+279,telecid.ru,0,http 0,https://telecid.ru/
+280,launchpad.net,1,ok,https://launchpad.net/
+281,namecheap.com,0,http 403,https://www.namecheap.com/
+282,facebook.net,0,http 0,https://facebook.net/
+283,amon.tech,0,http 0,https://amon.tech/
+284,appsflyer.com,0,http 403,https://www.appsflyer.com:443/
+285,ibm.com,1,ok,https://www.ibm.com/ca-en
+286,aliyuncsslbintl.com,0,http 0,https://aliyuncsslbintl.com/
+287,mangosip.ru,0,http 0,https://mangosip.ru/
+288,msedge.net,0,http 0,https://msedge.net/
+290,dnsmadeeasy.com,1,ok,https://dnsmadeeasy.com/
+291,mobile.de,0,http 403,https://www.mobile.de/
+292,samsungcloud.com,1,ok,https://www.samsungcloud.com/
+293,salesforce.com,1,ok,https://www.salesforce.com/de/?ir=1&bc=OTH
+294,springer.com,0,only 3036 bytes,https://link.springer.com/brands/springer
+295,mzstatic.com,1,ok,https://www.apple.com/
+296,telegram.me,1,ok,https://telegram.org/
+297,tinyurl.com,1,ok,https://tinyurl.com/
+298,ipify.org,1,ok,https://www.ipify.org/
+299,mtgglobals.com,0,http 0,https://mtgglobals.com/
+300,hp.com,1,ok,https://www.hp.com/de-de/home.html
+301,tiktokcdn-us.com,0,http 0,https://tiktokcdn-us.com/
+302,crashlytics.com,0,http 403,https://firebase.google.com/products/crashlytics/
+303,nature.com,1,ok,https://www.nature.com/?error=cookies_not_supported&code=3066a01a-8325-4c18-947a-5e264477fae1
+304,byteoversea.net,0,http 0,https://byteoversea.net/
+305,steampowered.com,1,ok,https://store.steampowered.com/
+306,jsdelivr.net,0,http 0,https://jsdelivr.net/
+307,inmobi.com,0,http 0,https://inmobi.com/
+308,www.gov.uk,1,ok,https://www.gov.uk/
+309,autodesk.com,0,http 403,https://www.autodesk.com/
+310,weibo.com,1,ok,https://passport.weibo.com/visitor/visitor?entry=miniblog&a=enter&url=https%3A%2F%2Fweibo.com%2F&domain=weibo.com&ua=Mozilla%2F5.0%20%28Windows%20NT%2010.0%3B%20rv%3A140.0%29%20Gecko%2F20100101%20Firefox%2F140.0&_rand=1790626435320&sudaref=
+311,drom.ru,0,http 301,https://www.drom.ru/
+312,crpt.ru,1,ok,https://crpt.ru/
+313,twc.com,0,http 0,https://twc.com/
+314,ok.ru,1,ok,https://ok.ru/
+315,amplitude.com,1,ok,https://amplitude.com/
+316,alibaba.com,1,ok,https://www.alibaba.com/
+317,dell.com,0,http 0,https://dell.com/
+318,wac-msedge.net,0,http 0,https://wac-msedge.net/
+320,googleblog.com,1,ok,https://blog.google/
+321,harvard.edu,1,ok,https://www.harvard.edu/
+322,avast.com,1,ok,https://www.avast.com/de-de/index
+323,clarity.ms,0,http 0,https://clarity.ms/
+324,weather.com,0,http 403,https://weather.com/
+325,casalemedia.com,1,ok,https://www.indexexchange.com/
+326,spaceweb.pro,0,http 0,https://spaceweb.pro/
+327,douyincdn.com,0,http 0,https://douyincdn.com/
+328,wiley.com,1,ok,https://www.wiley.com/en-us
+329,heytapmobile.com,0,http 0,https://heytapmobile.com/
+330,samsungqbe.com,0,http 0,https://samsungqbe.com/
+331,php.net,1,ok,https://www.php.net/
+332,shalltry.com,0,http 403,https://shalltry.com/
+333,aliyun.com,0,http 0,https://aliyun.com/
+334,arubanetworks.com,0,http 0,https://arubanetworks.com/
+335,awswaf.com,0,http 0,https://awswaf.com/
+336,media.net,1,ok,https://www.media.net/
+337,hostinger.com,0,http 403,https://hostinger.com/
+338,akamaihd.net,0,http 0,https://akamaihd.net/
+340,etsy.com,0,http 403,https://www.etsy.com/
+341,mozilla.com,1,ok,https://www.firefox.com/
+342,ea.com,1,ok,https://www.ea.com/
+343,trueconf.net,0,http 0,https://trueconf.net/
+344,name.com,0,http 403,https://name.com/
+345,smartadserver.com,1,ok,https://www.equativ.com/
+346,bilibili.com,0,http 0,https://bilibili.com/
+348,myshopify.com,0,http 404,https://myshopify.com/
+349,tbcache.com,0,http 0,https://tbcache.com/
+350,licdn.com,0,http 0,https://licdn.com/
+351,worldnic.com,0,http 0,https://worldnic.com/
+352,doubleverify.com,1,ok,https://doubleverify.com/
+353,slack.com,1,ok,https://slack.com/
+354,naver.com,1,ok,https://www.naver.com/
+355,checkpoint.com,0,http 403,https://checkpoint.com/
+356,inner-active.mobi,0,http 0,https://inner-active.mobi/
+357,trustpilot.com,0,http 403,https://www.trustpilot.com/
+358,dnspod.net,0,http 0,https://dnspod.net/
+359,mi.com,1,ok,https://www.mi.com/de/
+360,selectel.ru,0,http 0,https://selectel.ru/
+361,weebly.com,0,http 403,https://weebly.com/
+362,cdc.gov,0,http 403,https://cdc.gov/
+363,un.org,0,http 403,https://www.un.org/
+364,opendns.com,1,ok,https://www.opendns.com/
+365,washingtonpost.com,0,http 301,https://www.washingtonpost.com/
+366,tradingview.com,0,http 403,https://tradingview.com/
+367,allawnos.com,0,http 0,https://allawnos.com/
+368,hostgator.com,0,http 403,https://www.hostgator.com/
+369,vecdnlb.com,0,http 0,https://vecdnlb.com/
+370,ip-api.com,1,ok,https://ip-api.com/
+371,zendesk.com,0,http 403,https://www.zendesk.com/
+372,onelink.me,0,http 403,https://www.appsflyer.com/products/customer-experience-deep-linking/
+373,cookiedatabase.org,0,http 403,https://cookiedatabase.org/
+374,nvidia.com,0,http 403,https://www.nvidia.com/
+375,cdnbuild.net,0,http 0,https://cdnbuild.net/
+376,netangels.ru,1,ok,https://www.netangels.ru/
+377,gitlab.com,1,ok,https://about.gitlab.com/
+378,live-video.net,0,only 2180 bytes,https://live-video.net/
+379,issuu.com,1,ok,https://issuu.com/
+380,volcfcdndvs.com,0,http 0,https://volcfcdndvs.com/
+381,datadoghq.com,1,ok,https://www.datadoghq.com/
+382,skybridge.click,1,ok,https://skybridge.click/
+383,bloomberg.com,0,http 403,https://www.bloomberg.com/
+384,stanford.edu,1,ok,https://www.stanford.edu/
+385,wsj.com,0,http 404,https://wsj.com/
+386,samsungcloudsolution.com,0,http 0,https://samsungcloudsolution.com/
+387,calendly.com,1,ok,https://calendly.com/
+388,nasa.gov,1,ok,https://www.nasa.gov/
+389,plesk.com,0,http 403,https://plesk.com/
+390,vkuser.net,0,http 0,https://vkuser.net/
+391,tp-link.com,1,ok,https://www.tp-link.com/de/
+392,tiktokv.us,0,http 0,https://tiktokv.us/
+393,yandex.com,1,ok,https://yandex.com/
+394,amazontrust.com,1,ok,https://www.amazontrust.com/
+395,xcal.tv,0,http 0,https://xcal.tv/
+396,amazon.de,0,only 2161 bytes,https://www.amazon.de/
+397,gandi-ns.fr,0,http 0,https://gandi-ns.fr/
+398,online-metrix.net,0,http 0,https://online-metrix.net/
+399,bsky.app,1,ok,https://bsky.app/
+400,ibyteimg.com,0,http 0,https://ibyteimg.com/
+401,shopifysvc.com,0,http 0,https://shopifysvc.com/
+402,espn.com,0,http 202,https://espn.com/
+403,virginm.net,0,http 0,https://virginm.net/
+404,avcdn.net,0,http 0,https://avcdn.net/
+405,demdex.net,0,http 0,https://demdex.net/
+407,vivoglobal.com,0,only 2165 bytes,https://vivoglobal.com/
+408,paloaltonetworks.com,0,http 403,https://paloaltonetworks.com/
+409,expireddomains.com,0,http 403,https://expireddomains.com/
+410,kwai-pro.com,0,http 0,https://kwai-pro.com/
+411,indeed.com,0,http 403,https://indeed.com/
+413,rocket-cdn.com,0,http 0,https://rocket-cdn.com/
+414,quickconnect.to,1,ok,https://quickconnect.to/
+415,globo.com,1,ok,https://www.globo.com/
+416,unsplash.com,0,http 401,https://unsplash.com/.within.website?redir=%2F
+417,163.com,0,http 0,https://163.com/
+418,nflximg.com,0,http 0,https://nflximg.com/
+419,timeweb.ru,1,ok,https://timeweb.com/
+420,chinamobile.com,0,http 0,https://chinamobile.com/
+421,heytapdl.com,0,http 0,https://heytapdl.com/
+422,line.me,1,ok,https://www.line.me/en/
+423,brave.com,1,ok,https://brave.com/
+425,dropcatch.com,1,ok,https://www.dropcatch.com/
+426,tiktokv.eu,0,http 0,https://tiktokv.eu/
+427,steamcommunity.com,1,ok,https://steamcommunity.com/
+428,claude.ai,0,http 403,https://claude.ai/
+429,google.cn,0,only 1384 bytes,http://www.google.cn/
+430,go.com,1,ok,https://www.go.com/
+431,netease.com,0,http 0,https://netease.com/
+432,dailymotion.com,1,ok,https://www.dailymotion.com/
+433,temu.com,0,only 2889 bytes,https://www.temu.com/
+434,tiktokcdn-eu.com,0,http 0,https://tiktokcdn-eu.com/
+435,amazonalexa.com,0,http 202,https://www.amazon.com:443/alexa
+436,kaspersky-labs.com,0,http 0,https://kaspersky-labs.com/
+437,supercell.com,1,ok,https://supercell.com/
+438,skyhigh.cloud,0,http 403,https://www.skyhighsecurity.com/
+439,huawei.com,0,http 0,https://huawei.com/
+440,ezvizlife.com,0,http 0,https://ezvizlife.com/
+441,intel.com,0,http 403,https://www.intel.com/
+442,pangle.io,0,http 0,https://pangle.io/
+443,taobao.com,0,http 0,https://taobao.com/
+444,kwaipros.com,0,http 0,https://kwaipros.com/
+445,awsglobalaccelerator.com,0,http 0,https://awsglobalaccelerator.com/
+446,walmart.com,1,ok,https://www.walmart.com/
+447,tencent-cloud.net,0,http 0,https://tencent-cloud.net/
+448,substack.com,1,ok,https://substack.com/
+449,ipinfo.io,0,http 403,https://ipinfo.io/
+450,myqcloud.com,0,http 0,https://myqcloud.com/
+451,cloudns.net,1,ok,https://www.cloudns.net/
+452,adobe.net,0,http 0,https://adobe.net/
+453,yahoo.co.jp,0,http 403,https://www.yahoo.co.jp:443/
+454,businessinsider.com,1,ok,https://www.businessinsider.com/
+455,whecloud.com,0,http 0,https://whecloud.com/
+457,duolingo.com,0,challenge phrase,https://www.duolingo.com/
+458,gamepass.com,0,http 0,https://gamepass.com/
+459,dotaplabs.net,0,http 0,https://dotaplabs.net/
+460,pixabay.com,0,http 403,https://pixabay.com/
+461,edgcdn.net,0,http 0,https://edgcdn.net/
+462,edgecdn.ru,0,http 0,https://edgecdn.ru/
+463,goodreads.com,0,http 403,https://www.goodreads.com/
+464,vercel-dns-016.com,0,http 0,https://vercel-dns-016.com/
+465,gcdn.co,0,http 0,https://gcdn.co/
+466,wbx2.com,0,http 0,https://wbx2.com/
+467,g.page,0,http 403,https://business.google.com/
+468,aol.com,1,ok,https://www.aol.com:443/
+469,cloudflareinsights.com,0,only 498 bytes,https://cloudflareinsights.com/
+470,speedtest.net,0,http 403,https://www.speedtest.net/
+471,byteglb.com,0,http 0,https://byteglb.com/
+472,sina.com.cn,1,ok,https://www.sina.com.cn/
+473,wp.com,1,ok,https://wordpress.com/
+474,enacdn.net,0,http 0,https://enacdn.net/
+475,bluehost.com,0,http 403,https://www.bluehost.com/
+476,arxiv.org,1,ok,https://arxiv.org/
+477,eye4.cn,0,only 83 bytes,https://eye4.cn/
+478,mikrotik.com,1,ok,https://mikrotik.com/
+479,prodregistryv2.org,0,http 404,https://prodregistryv2.org/
+480,avsxappcaptiveportal.com,0,http 0,https://avsxappcaptiveportal.com/
+481,dual-s-msedge.net,0,http 0,https://dual-s-msedge.net/
+482,sohu.com,0,http 0,https://sohu.com/
+483,firetvcaptiveportal.com,0,http 0,https://firetvcaptiveportal.com/
+484,bdydns.com,0,http 0,https://bdydns.com/
+485,cnbc.com,0,http 403,https://www.cnbc.com/
+486,kwai.net,0,http 0,https://kwai.net/
+487,statista.com,1,ok,https://www.statista.com/
+488,okta.com,1,ok,https://www.okta.com/
+489,launchdarkly.com,1,ok,https://launchdarkly.com/
+490,nease.net,0,http 0,https://nease.net/
+491,ietf.org,1,ok,https://www.ietf.org/
+492,list-manage.com,0,http 0,https://list-manage.com/
+493,addtoany.com,1,ok,https://www.addtoany.com/
+494,mcafee.com,0,http 403,https://www.mcafee.com:443/
+497,sc-gw.com,0,http 0,https://sc-gw.com/
+498,bitdefender.net,1,ok,https://www.bitdefender.com/en-us/
+499,ivi.ru,1,ok,https://www.ivi.tv/
+500,markmonitor.com,0,http 403,https://markmonitor.com/
+501,dynatrace.com,1,ok,https://www.dynatrace.com/
+502,impervadns.net,0,http 0,https://impervadns.net/
+503,adriver.ru,0,http 0,https://adriver.ru/
+504,gosuslugi.ru,1,ok,https://gosuslugi.ru/vpn-block?u=1
+506,shein.com,0,http 403,https://www.shein.com/
+507,wildberries.ru,0,http 0,https://wildberries.ru/
+508,run.app,0,http 404,https://run.app/
+509,mediatek.com,0,http 0,https://mediatek.com/
+510,atlassian.net,0,http 405,https://atlassian.net/
+511,newrelic.com,1,ok,https://newrelic.com/
+512,scribd.com,1,ok,https://www.scribd.com/
+513,scdn.co,0,http 0,https://scdn.co/
+514,docker.com,1,ok,https://www.docker.com/
+515,browser-intake-datadoghq.com,0,http 403,https://browser-intake-datadoghq.com/
+516,amzn.to,0,http 202,https://www.amazon.com/
+518,behance.net,0,http 403,https://www.behance.net/
+519,google.de,1,ok,https://www.google.com/
+520,indiatimes.com,0,http 301,https://www.indiatimes.com/
+521,foxnews.com,1,ok,https://www.foxnews.com/
+522,fandom.com,0,http 403,https://www.fandom.com/
+523,eventbrite.com,0,http 403,https://eventbrite.com/
+524,mysql.com,0,http 403,https://www.mysql.com/
+525,ipv4only.arpa,0,http 0,https://ipv4only.arpa/
+526,ngenix.net,0,http 503,https://ngenix.net/
+527,tplinkcloud.com,1,ok,https://www.tplinkcloud.com/
+528,exp-tas.com,0,http 0,https://exp-tas.com/
+529,amazon.co.za,0,http 202,https://www.amazon.co.za/
+530,noaa.gov,1,ok,https://www.noaa.gov/
+531,ampproject.org,1,ok,https://amp.dev/
+532,ui-dns.com,0,http 0,https://ui-dns.com/
+533,netflix.net,1,ok,https://www.netflix.com/ca/
+534,elasticbeanstalk.com,0,http 0,https://elasticbeanstalk.com/
+535,slideshare.net,0,only 3036 bytes,https://slideshare.net/
+536,bitrix24.ru,1,ok,https://www.bitrix24.ru/
+537,libp2p.direct,0,http 0,https://libp2p.direct/
+538,share.google,0,only 2006 bytes,https://share.google/
+539,on.aws,0,http 0,https://on.aws/
+540,adobedtm.com,0,http 0,https://adobedtm.com/
+541,h264.io,0,http 0,https://h264.io/
+542,capcut.com,1,ok,https://www.capcut.com/nl-nl/
+543,trendmicro.com,1,ok,https://www.trendmicro.com/en_gb/business.html
+544,squarespacedns.com,0,http 0,https://squarespacedns.com/
+545,azure-dns.com,0,http 0,https://azure-dns.com/
+546,oup.com,0,http 403,https://oup.com/
+547,discord.media,0,http 520,https://discord.media/
+548,squarespace.com,1,ok,https://www.squarespace.com/
+549,google.com.hk,1,ok,https://www.google.com.hk/
+550,visualstudio.com,1,ok,https://visualstudio.microsoft.com/
+551,ft.com,0,http 403,https://www.ft.com/
+552,openx.net,0,http 403,https://openx.net/
+553,digitalocean.com,1,ok,https://www.digitalocean.com/
+554,adobedc.net,0,http 0,https://adobedc.net/
+555,firefox.com,1,ok,https://www.firefox.com/
+556,icloud-content.com,1,ok,https://developer.apple.com/icloud/
+557,wswebcdn.com,0,http 0,https://wswebcdn.com/
+558,fast.com,1,ok,https://fast.com/
+560,blogger.com,1,ok,https://www.blogger.com/about/?bpli=1
+561,jquery.com,1,ok,https://jquery.com/
+562,shop.app,0,http 403,https://shop.app/
+563,grammarly.com,1,ok,https://www.grammarly.com/
+564,nstld.com,0,http 0,https://nstld.com/
+565,vidaahub.com,0,http 0,https://vidaahub.com/
+566,tandfonline.com,0,http 403,https://tandfonline.com/
+567,oraclecloud.com,0,http 403,https://www.oracle.com/cloud/
+568,live.net,0,http 0,https://live.net/
+569,eset.com,1,ok,https://www.eset.com/us/
+570,time.com,1,ok,https://time.com/
+571,360yield.com,1,ok,https://ssp.improvedigital.com/login
+572,svc.ms,0,http 0,https://svc.ms/
+573,uol.com.br,1,ok,https://www.uol.com.br/
+574,palmplaystore.com,1,ok,https://palmplaystore.com/
+576,qlivecdn.com,0,http 0,https://qlivecdn.com/
+577,vercel-dns-3.com,0,http 0,https://vercel-dns-3.com/
+578,deviantart.com,0,http 403,https://deviantart.com/
+579,openstreetmap.org,1,ok,https://www.openstreetmap.org/
+580,hicloud.com,0,http 0,https://hicloud.com/
+581,cornell.edu,1,ok,https://www.cornell.edu/
+582,myhuaweicloud.com,0,http 0,https://myhuaweicloud.com/
+583,aboutads.info,0,http 301,https://youradchoices.com/
+584,dreamhost.com,1,ok,https://www.dreamhost.com/
+585,t-msedge.net,0,http 0,https://t-msedge.net/
+586,free.fr,1,ok,https://www.free.fr/
+587,yahoodns.net,0,http 0,https://yahoodns.net/
+588,teamviewer.com,0,http 403,https://teamviewer.com/
+589,share-dns.com,0,http 0,https://share-dns.com/
+590,sberbank.ru,0,http 0,https://sberbank.ru/
+591,usatoday.com,1,ok,https://eu.usatoday.com/
+592,my.com,0,http 0,https://my.com/
+593,bx-msedge.net,0,http 0,https://bx-msedge.net/
+594,spo-msedge.net,0,http 0,https://spo-msedge.net/
+595,gotinder.com,0,http 301,https://tinder.com/
+596,tripadvisor.com,0,http 403,https://www.tripadvisor.com/
+597,ca.gov,1,ok,https://www.ca.gov/
+598,cdn20.com,0,http 0,https://cdn20.com/
+599,3lift.com,0,only 62 bytes,https://3lift.com/
+600,imgsmail.ru,1,ok,https://login.vk.ru/challenge.html?tid=wZLWZ1XIEmOWZw5JWtP2hR0QikVpzQ&hash429=jEMAZoNDB1k3shBvH8Ep4d-eIVmVmkNluoSO8J9dQWSgQW_kPFORxZFiiBx_pCAc8zZkSPPClwqii5T7qv7fWJPUltHNOvZjr9lxoGcKU1WCTQbxgNFkDjcVYM9uAlcP2kY96nLHlTf9J6J1&redirect=/%3Fact=autologin%26app_id=7539952%26redirect_uri=https%253A%252F%252Faccount.mail.ru%252Flogin%253Fautologin_exp%253Dv22%2526autologin_project%253Dhome%2526page%253Dhttps%25253A%25252F%25252Fmail.ru%25252F%25253Fautologin%25253D1790626626%26state=a731f731e8a44f2c8e37935199dfa075%26uuid=bdd09350-6530-4d8f-a0a1-2273977ee616%26service_group=oid_54VteQH7f1t1igqMmzitQ&sign=KK5gg0KiYoKkUWTjOMm60Q&lang_id=
+601,klaviyo.com,1,ok,https://www.klaviyo.com/de/
+602,rlcdn.com,0,http 0,https://rlcdn.com/
+603,akamaitech.net,0,http 0,https://akamaitech.net/
+604,braze.com,1,ok,https://www.braze.com/
+605,hotjar.com,0,http 301,https://contentsquare.com/hotjar/?utm_campaign=exp__hj_hp_redirection
+606,target.com,1,ok,https://www.target.com/
+607,avito.ru,0,http 429,https://www.avito.ru/
+608,threads.com,1,ok,https://www.threads.com/
+609,playstation.com,1,ok,https://www.playstation.com/fr-fr/
+610,anthropic.com,1,ok,https://www.anthropic.com/
+611,ieee.org,0,http 202,https://www.ieee.org/
+612,xiaomi.net,0,http 0,https://xiaomi.net/
+613,berkeley.edu,0,http 403,https://berkeley.edu/
+614,mdpi.com,0,http 403,https://mdpi.com/
+615,force.com,0,http 404,https://www.salesforce.com/404/
+616,onetrust.com,0,http 403,https://onetrust.com/
+617,vercel-dns-017.com,0,http 0,https://vercel-dns-017.com/
+619,atlassian.com,0,http 405,https://www.atlassian.com/
+620,ovh.net,1,ok,https://proof.ovh.net/
+621,e2ro.com,0,http 0,https://e2ro.com/
+622,translate.goog,0,http 404,https://translate.goog/
+623,firefox-portal-detection.com,0,type text/plain,https://firefox-portal-detection.com/
+624,comcast.com,0,http 0,https://comcast.com/
+625,amazon.fr,0,http 202,https://www.amazon.fr/
+626,cdnvideo.ru,1,ok,https://www.cdnvideo.ru/
+627,unesco.org,1,ok,https://www.unesco.org/en
+628,accuweather.com,0,http 403,https://accuweather.com/
+629,nintendo.com,1,ok,https://www.nintendo.com/nl-nl/
+630,wix.com,0,http 403,https://www.wix.com/
+631,alicdn.com,0,http 0,https://alicdn.com/
+632,bytedns1.com,0,http 0,https://bytedns1.com/
+633,footprintdns.com,0,http 0,https://footprintdns.com/
+634,ikea.com,0,http 403,https://www.ikea.com/
+635,dyndns.org,1,ok,https://account.dyn.com/
+636,samsungapps.com,0,http 0,https://samsungapps.com/
+637,nike.com,0,http 403,https://www.nike.com/
+638,doctolib.fr,0,http 403,https://doctolib.fr/
+639,vercel.app,1,ok,https://vercel.com/
+640,2gis.com,0,http 0,https://2gis.com/
+641,easebar.com,0,http 0,https://easebar.com/
+642,mega.co.nz,0,only 554 bytes,https://mega.co.nz/
+643,sharethrough.com,1,ok,https://www.sharethrough.com/
+644,branch.io,0,http 403,https://www.branch.io/
+645,tencent.com,0,http 0,https://tencent.com/
+646,cookielaw.org,0,http 403,https://cookielaw.org/
+647,msidentity.com,0,http 0,https://msidentity.com/
+649,amazon.ca,0,http 202,https://www.amazon.ca/
+650,supertms.com,0,http 0,https://supertms.com/
+651,jotform.com,0,http 403,https://jotform.com/
+653,pushy.io,1,ok,https://pushy.me/
+654,ups.com,0,type application/blank,https://www.ups.com/
+655,loc.gov,0,http 403,https://loc.gov/
+656,linode.com,0,http 403,https://linode.com/
+657,resolver.arpa,0,http 0,https://resolver.arpa/
+658,intercom.io,1,ok,https://www.intercom.com/
+659,withgoogle.com,1,ok,https://www.google.com/
+660,sagepub.com,1,ok,https://www.sagepub.com/
+661,bidswitch.net,0,http 0,https://bidswitch.net/
+662,telephony.goog,0,http 0,https://telephony.goog/
+664,redhat.com,1,ok,https://www.redhat.com/en
+665,googletagservices.com,0,http 0,https://googletagservices.com/
+667,stackadapt.com,1,ok,https://www.stackadapt.com/
+668,ks-cdn.com,0,http 0,https://ks-cdn.com/
+669,britannica.com,0,http 403,https://www.britannica.com:443/
+670,elpais.com,0,http 403,https://elpais.com/
+671,bunnyinfra.net,0,http 0,https://bunnyinfra.net/
+672,verisign.com,1,ok,https://www.verisign.com/
+673,yelp.com,0,http 403,https://yelp.com/
+674,primevideo.com,0,http 503,https://www.primevideo.com/
+675,360.cn,0,http 0,https://360.cn/
+676,mhverifier.ru,0,http 0,https://mhverifier.ru/
+677,anydesk.com,0,http 403,https://anydesk.com/
+678,surveymonkey.com,1,ok,https://www.surveymonkey.com/
+679,allegro.pl,0,http 0,https://allegro.pl/
+680,perplexity.ai,0,http 403,https://www.perplexity.ai/
+681,vedsalb.com,0,http 0,https://vedsalb.com/
+682,cambridge.org,0,http 403,https://cambridge.org/
+683,uk.com,1,ok,https://uk.com/
+684,consultant.ru,0,http 0,https://consultant.ru/
+685,hstgr.net,0,http 0,https://hstgr.net/
+686,viber.com,1,ok,https://www.viber.com/en/
+687,optimizely.com,1,ok,https://www.optimizely.com/
+688,wpguardian.io,0,http 403,https://wpguardian.io/
+689,hihonorcloud.com,0,http 0,https://hihonorcloud.com/
+690,vkontakte.ru,1,ok,https://vkontakte.ru/challenge.html?tid=nQPV7rps9wrEbHa8zYRNaekPEZRE7A&hash429=ordhhwzSdFnFW9fqg3jKyW5KLzNW57FlvQte8W5E-nJPoaig48nyL2dTvR3FFSNZB0BmYGdNc2uA4xNky8ddOvLEJuKf6lQ6YA4LnWNczvc8A5enmYH6qbwDo2H2vLeWpY-Eo40UDOSXn2fM&redirect=/&sign=yfeQsfd7k0wKnkWqbeQtMA&lang_id=
+691,amazon.in,0,http 202,https://www.amazon.in/
+692,geobasket.ru,0,http 0,https://geobasket.ru/
+693,fontawesome.com,0,http 403,https://fontawesome.com/
+694,outbrain.com,1,ok,https://www.outbrain.com/
+695,cmediahub.ru,0,http 0,https://cmediahub.ru/
+696,dotomi.com,1,ok,https://www.epsilon.com/us?redirect=dotomi
+698,kick.com,0,http 403,https://kick.com/
+699,dailymail.com,1,ok,https://www.dailymail.com/ushome/index.html
+700,typekit.net,0,http 0,https://typekit.net/
+701,wps.com,1,ok,https://www.wps.com/
+702,twimg.com,0,http 0,https://twimg.com/
+703,iso.org,0,http 403,https://iso.org/
+704,cbsnews.com,0,http 406,https://www.cbsnews.com/
+705,lemonde.fr,1,ok,https://www.lemonde.fr/
+706,seznam.cz,1,ok,https://www.seznam.cz/
+707,sophos.com,0,http 403,https://www.sophos.com/
+708,alipaydns.com,0,http 0,https://alipaydns.com/
+709,id5-sync.com,0,only 12 bytes,https://id5-sync.com/
+710,samsungacr.com,0,http 0,https://samsungacr.com/
+711,usercontent.goog,0,http 404,https://usercontent.goog/
+712,fb.com,0,http 400,https://fb.com/
+713,ring.com,0,http 406,https://ring.com/
+714,wpguardian.com,0,http 403,https://wpguardian.com/
+715,porkbun.com,1,ok,https://porkbun.com/
+716,googlezip.net,0,http 0,https://googlezip.net/
+717,pinimg.com,1,ok,https://www.pinterest.com/
+718,amazon.es,0,http 202,https://www.amazon.es/
+719,patreon.com,0,http 403,https://patreon.com/
+720,imgur.com,1,ok,https://imgur.com/
+721,ya.ru,1,ok,https://ya.ru/?nr=1&redirect_ts=1790626692.00000
+722,nmrodam.com,0,http 0,https://nmrodam.com/
+723,asus.com,0,http 0,https://asus.com/
+724,uber.com,0,http 403,https://uber.com/
+725,nel.goog,0,http 0,https://nel.goog/
+726,itch.io,1,ok,https://itch.io/
+727,bamgrid.com,0,http 0,https://bamgrid.com/
+730,marriott.com,0,http 403,https://marriott.com/
+731,cnet.com,1,ok,https://www.cnet.com/
+732,amazon.it,0,http 202,https://www.amazon.it/
+733,airbnb.com,0,http 403,https://www.airbnb.com/
+734,quantserve.com,0,http 503,https://quantserve.com/
+735,wp.pl,1,ok,https://www.wp.pl/
+736,mailchimp.com,1,ok,https://mailchimp.com/de/
+737,cdnhwc1.com,0,http 0,https://cdnhwc1.com/
+738,bandcamp.com,0,http 403,https://bandcamp.com/
+740,grammarly.io,0,http 0,https://grammarly.io/
+741,globalsign.com,1,ok,https://www.globalsign.com/en
+742,oxylabs.io,1,ok,https://oxylabs.io/
+743,githubusercontent.com,0,http 0,https://githubusercontent.com/
+744,bugsnag.com,1,ok,https://www.bugsnag.com/
+745,shopee.co.id,1,ok,https://shopee.co.id/
+746,dbankcloud.com,0,http 0,https://dbankcloud.com/
+747,creativecdn.com,0,http 204,https://creativecdn.com/
+749,safebrowsing.apple,0,http 0,https://safebrowsing.apple/
+750,bidr.io,0,http 0,https://bidr.io/
+751,agkn.com,0,http 0,https://agkn.com/
+752,1rx.io,0,http 0,https://1rx.io/
+753,imrworldwide.com,0,http 0,https://imrworldwide.com/
+754,pvp.net,0,http 0,https://pvp.net/
+755,mlb.com,1,ok,https://www.mlb.com/
+756,g.co,0,only 2178 bytes,https://g.co/
+758,ad-tech.ru,0,http 0,https://ad-tech.ru/
+759,crwdcntrl.net,0,http 0,https://crwdcntrl.net/
+760,ddnss.de,0,http 0,https://ddnss.de/
+761,homedepot.com,0,http 403,https://homedepot.com/
+762,zillow.com,0,http 202,https://zillow.com/
+763,gumgum.com,1,ok,https://gumgum.com/
+764,lijit.com,0,only 3229 bytes,https://lijit.com/
+765,ozone.ru,0,http 0,https://ozone.ru/
+766,steamstatic.com,0,http 0,https://steamstatic.com/
+767,fda.gov,0,http 403,https://fda.gov/
+768,bild.de,1,ok,https://www.bild.de/
+769,curseforge.com,0,http 403,https://www.curseforge.com/
+770,criteo.net,0,http 0,https://criteo.net/
+771,parklogic.com,1,ok,https://parklogic.com/
+772,mediafire.com,0,challenge phrase,https://www.mediafire.com/
+773,herokudns.com,0,http 0,https://herokudns.com/
+774,webempresa.eu,1,ok,https://webempresa.eu/
+775,box.com,1,ok,https://www.box.com/
+776,usgovcloudapi.net,0,http 0,https://usgovcloudapi.net/
+777,nikkei.com,1,ok,https://www.nikkei.com:443/
+778,ovscdns.com,0,http 0,https://ovscdns.com/
+779,buydomains.com,0,http 403,https://buydomains.com/
+781,sedo.com,1,ok,https://sedo.com/us/
+782,bestbuy.com,0,http 403,https://bestbuy.com/
+783,keenetic.io,0,http 0,https://keenetic.io/
+784,shopeemobile.com,0,http 0,https://shopeemobile.com/
+785,singular.net,0,http 403,https://singular.net/
+786,mckinsey.com,0,http 0,https://mckinsey.com/
+787,sc-cdn.net,0,http 0,https://sc-cdn.net/
+788,rt.ru,0,http 0,https://rt.ru/
+789,craigslist.org,1,ok,https://www.craigslist.org/area/berlin
+790,lenovo.com,0,http 503,https://www.lenovo.com/
+791,recaptcha.net,0,http 404,https://recaptcha.net/
+792,wattpad.com,1,ok,https://www.wattpad.com/
+793,fiverr.com,0,http 403,https://www.fiverr.com/
+794,allaboutcookies.org,0,http 403,https://allaboutcookies.org/
+795,orderbox-dns.com,0,http 0,https://orderbox-dns.com/
+796,smaato.net,0,http 0,https://smaato.net/
+797,cursor.sh,0,http 308,https://cursor.com/
+798,icanhazip.com,0,type text/plain,https://icanhazip.com/
+799,no-ip.com,1,ok,https://www.noip.com/
+800,liadm.com,0,http 0,https://liadm.com/
+802,ameblo.jp,1,ok,https://ameblo.jp/
+803,ted.com,1,ok,https://www.ted.com/
+804,welt.de,1,ok,https://www.welt.de:443/
+805,wcdnga.com,0,http 0,https://wcdnga.com/
+806,merriam-webster.com,0,http 403,https://www.merriam-webster.com:443/
+807,mixpanel.com,0,http 403,https://mixpanel.com/
+808,disneyplus.com,0,http 403,https://disneyplus.com/
+809,prnewswire.com,1,ok,https://www.prnewswire.com/
+810,xboxlive.com,0,http 0,https://xboxlive.com/
+811,appcenter.ms,1,ok,https://appcenter.ms/
+812,moloco.com,1,ok,https://www.moloco.com/
+813,xbox.com,0,http 403,https://www.xbox.com/
+814,people.com,0,http 460,https://people.com/
+815,adform.net,0,http 403,https://adform.net/
+816,rakuten.com,1,ok,https://www.rakuten.com/
+817,33across.com,0,http 403,https://www.33across.com/
+818,erome.com,1,ok,https://www.erome.com/
+819,pccc.com,1,ok,https://pccc.com/
+821,networkadvertising.org,0,http 403,https://thenai.org/
+822,teads.tv,1,ok,https://cdn.teads.tv:443/redirect.html
+823,adjust.com,0,http 429,https://www.adjust.com/
+824,liftoff.io,0,http 403,https://liftoff.io/
+825,deepl.com,1,ok,https://www.deepl.com/en
+826,discordapp.com,1,ok,https://discord.com/
+827,a-mo.net,0,only 337 bytes,https://a-mo.net/
+828,goskope.com,0,http 0,https://goskope.com/
+829,zoho.com,1,ok,https://www.zoho.com/nl/?sredirect=true
+830,ryanair.com,0,http 403,https://ryanair.com/
+831,meta.com,0,http 400,https://www.meta.com/
+832,unpkg.com,1,ok,https://unpkg.com/
+833,lefigaro.fr,0,http 403,https://lefigaro.fr/
+834,odoo.com,1,ok,https://www.odoo.com/
+835,me.com,1,ok,https://www.icloud.com/
+836,cloudsink.net,0,http 0,https://cloudsink.net/
+837,turn.com,0,http 0,https://turn.com/
+838,blackberry.com,0,http 0,https://blackberry.com/
+839,nintendo.net,0,http 0,https://nintendo.net/
+840,grab.co,0,http 0,https://grab.co/
+841,usps.com,0,http 0,https://usps.com/
+842,zoom.com,1,ok,https://www.zoom.com/
+843,usda.gov,0,http 0,https://usda.gov/
+844,daum.net,1,ok,https://www.daum.net/
+845,tbank.ru,0,http 0,https://tbank.ru/
+846,academia.edu,0,http 405,https://academia.edu/
+847,wb.ru,0,http 0,https://wb.ru/
+848,agoda.com,1,ok,https://www.agoda.com/
+850,amazon.com.au,0,only 2169 bytes,https://www.amazon.com.au/
+852,amagi.tv,0,http 0,https://amagi.tv/
+854,ebay.de,1,ok,https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.ebay.de%2F&iid=ce0d83bf-ebb1-4e1c-923a-35c307f997cd&iim=VMTg1Ljn&iia=VKIyMC4xfz&iiz=manMDAuMjQyQvi
+855,eeroup.com,0,http 404,https://eeroup.com/
+856,jetbrains.com,1,ok,https://www.jetbrains.com/
+857,onetag-sys.com,0,only 923 bytes,https://onetag-sys.com/
+858,discogs.com,0,http 403,https://www.discogs.com:443/
+859,a-msedge.net,0,http 0,https://a-msedge.net/
+860,pexels.com,0,http 403,https://www.pexels.com/
+861,pendo.io,1,ok,https://www.pendo.io:443/
+862,livejournal.com,1,ok,https://www.livejournal.com/
+863,focus.de,1,ok,https://www.focus.de/
+865,msftauth.net,0,http 0,https://msftauth.net/
+866,samsungosp.com,0,http 0,https://samsungosp.com/
+867,figma.com,1,ok,https://www.figma.com/
+869,adgrx.com,0,http 0,https://adgrx.com/
+870,expedia.com,0,http 403,https://www.expedia.com/
+871,dnse0.com,0,http 0,https://dnse0.com/
+872,chess.com,0,http 403,https://chess.com/
+873,pikabu.ru,1,ok,https://pikabu.ru/
+874,yellowblue.io,0,http 0,https://yellowblue.io/
+875,life360.com,0,http 403,https://www.life360.com:443/
+876,synology.com,1,ok,https://www.synology.com/en-global
+877,kleinanzeigen.de,0,http 403,https://kleinanzeigen.de/
+878,fbsbx.com,0,http 404,https://fbsbx.com/
+879,frontiersin.org,1,ok,https://www.frontiersin.org/
+880,appspot.com,0,http 403,https://console.cloud.google.com/appengine
+881,www.gov.br,1,ok,https://www.gov.br/pt-br
+882,disqus.com,0,only 1606 bytes,https://disqus.com/
+883,hbr.org,1,ok,https://hbr.org/
+884,biblegateway.com,1,ok,https://www.biblegateway.com/
+885,360safe.com,0,http 0,https://360safe.com/
+886,spotifycdn.com,0,http 0,https://spotifycdn.com/
+887,kunluncan.com,0,http 0,https://kunluncan.com/
+888,beget.ru,0,http 0,https://beget.ru/
+889,it.com,0,http 403,https://get.it.com/
+890,nbcnews.com,1,ok,https://www.nbcnews.com/
+891,myspace.com,0,http 403,https://myspace.com/
+892,ssl-images-amazon.com,0,http 0,https://ssl-images-amazon.com/
+893,ys7.com,0,http 0,https://ys7.com/
+894,azure-devices.net,0,http 0,https://azure-devices.net/
+895,lg.com,0,http 403,https://www.lg.com:443/
+896,bytefcdn.com,0,http 0,https://bytefcdn.com/
+897,agora.io,1,ok,https://www.agora.io/en/
+898,dnse2.com,0,http 0,https://dnse2.com/
+899,cdn-vk.ru,0,http 0,https://cdn-vk.ru/
+901,dv.tech,0,http 0,https://dv.tech/
+902,readthedocs.io,1,ok,https://about.readthedocs.com/?ref=app.readthedocs.org
+903,mayoclinic.org,0,http 0,https://mayoclinic.org/
+904,worldbank.org,1,ok,https://www.worldbank.org/ext/en/home
+905,bankofamerica.com,0,http 403,https://www.bankofamerica.com/
+906,immedia-semi.com,0,http 0,https://immedia-semi.com/
+907,coupang.com,0,only 4800 bytes,https://www.coupang.com/
+908,fwmrm.net,0,http 403,https://freewheel.com:443/
+909,princeton.edu,0,http 403,https://www.Princeton.EDU/
+910,thenai.org,0,http 403,https://thenai.org/
+911,volcgslb.com,0,http 0,https://volcgslb.com/
+912,publicnode.com,1,ok,https://publicnode.com/
+913,att.net,0,http 403,https://www.att.net/
+914,arcgis.com,0,only 823 bytes,https://www.arcgis.com/index.html
+915,latimes.com,1,ok,https://www.latimes.com:443/
+916,lwsdns.com,0,http 0,https://lwsdns.com/
+917,eu-1-id5-sync.com,0,http 522,https://eu-1-id5-sync.com/
+918,warnerbros.com,1,ok,https://www.warnerbros.com/
+919,herokuapp.com,0,http 0,https://herokuapp.com/
+920,netlify.app,1,ok,https://www.netlify.com/
+921,stbid.ru,0,http 0,https://stbid.ru/
+922,starlink.com,1,ok,https://starlink.com/
+923,wyzecam.com,1,ok,https://www.wyze.com/
+925,washington.edu,1,ok,https://www.washington.edu/
+926,seedtag.com,1,ok,https://www.seedtag.com/
+927,queniuaa.com,0,http 0,https://queniuaa.com/
+928,samsungiotcloud.com,0,http 0,https://samsungiotcloud.com/
+929,epa.gov,0,http 0,https://epa.gov/
+930,qualtrics.com,0,http 403,https://www.qualtrics.com/
+931,mynetname.net,0,http 0,https://mynetname.net/
+932,flashtalking.com,0,http 0,https://flashtalking.com/
+933,abovedomains.com,1,ok,https://www.above.com/
+934,zenecn.net,0,http 0,https://zenecn.net/
+935,docker.io,1,ok,https://www.docker.com/
+936,miwifi.com,0,http 403,https://miwifi.com/
+937,genius.com,0,http 403,https://genius.com/
+938,tiktokw.us,0,http 0,https://tiktokw.us/
+939,smartthings.com,0,http 403,https://www.samsung.com/us/smartthings/
+940,dbankcloud.ru,0,http 0,https://dbankcloud.ru/
+941,deloitte.com,1,ok,https://www.deloitte.com/at/de.html
+942,trendyol.com,0,http 403,https://www.trendyol.com/
+943,lowes.com,0,challenge title 'Access Denied',https://www.lowes.com/
+944,state.gov,0,http 403,https://www.state.gov/
+945,youku.com,0,http 0,https://youku.com/
+946,t-s1-msedge.net,0,http 0,https://t-s1-msedge.net/
+947,onet.pl,1,ok,https://www.onet.pl/
+948,go-mpulse.net,0,http 0,https://go-mpulse.net/
+949,tailscale.com,1,ok,https://tailscale.com/
+950,leiniao.com,0,http 0,https://leiniao.com/
+951,mercadolibre.com.ar,1,ok,https://www.mercadolibre.com.ar/
+954,note.com,1,ok,https://note.com/
+955,jd.com,0,http 0,https://jd.com/
+956,character.ai,0,http 403,https://character.ai/
+957,fidelity.com,0,http 403,https://fidelity.com/
+958,mailchi.mp,1,ok,https://mailchimp.com/
+959,lgtvcommon.com,0,http 0,https://lgtvcommon.com/
+960,webmd.com,1,ok,https://www.webmd.com/
+961,hm.com,0,http 403,https://hm.com/
+962,repubblica.it,0,http 403,https://www.repubblica.it/
+963,cdnhwc2.com,0,http 0,https://cdnhwc2.com/
+964,sentinelone.net,0,http 0,https://sentinelone.net/
+965,playrix.com,0,only 3042 bytes,https://playrix.com/
+966,zpath.net,0,http 0,https://zpath.net/
+967,4dex.io,0,http 0,https://4dex.io/
+969,corriere.it,1,ok,https://www.corriere.it/
+970,change.org,1,ok,https://www.change.org/
+971,otto.de,1,ok,https://www.otto.de/
+972,xerox.com,1,ok,https://www.xerox.com/en-us
+975,nexusmods.com,0,http 403,https://www.nexusmods.com/
+976,cloudinary.com,0,http 403,https://cloudinary.com/
+977,yieldmo.com,0,http 0,https://yieldmo.com/
+978,ancestry.com,0,http 403,https://ancestry.com/
+979,featureassets.org,0,http 403,https://featureassets.org/
+980,app-ads-services.com,1,ok,https://www.google.com/
+981,presage.io,0,http 0,https://presage.io/
+982,btloader.com,0,http 403,https://btloader.com/
+983,investopedia.com,0,http 460,https://www.investopedia.com/
+984,internetwarriors.net,0,only 2874 bytes,https://tracker.cl/
+985,conviva.com,0,http 403,https://conviva.com/
+986,ubi.com,1,ok,https://www.ubisoft.com/de-de
+987,sofascore.com,0,http 403,https://sofascore.com/
+988,nexthink.cloud,0,http 0,https://nexthink.cloud/
+989,kwai.com,1,ok,https://www.kwai.com/
+990,ddns.net,0,http 0,https://ddns.net/
+991,px-cloud.net,0,http 403,https://px-cloud.net/
+992,binance.com,0,http 202,https://www.binance.com/
+993,nationalgeographic.com,0,http 403,https://nationalgeographic.com/
+994,faphouse.com,1,ok,https://faphouse.com/
+995,transsion-os.com,0,http 0,https://transsion-os.com/
+996,pixiv.net,0,http 403,https://www.pixiv.net/
+997,bol.com,0,http 403,https://bol.com/
+998,elmundo.es,1,ok,https://www.elmundo.es/
+999,flightradar24.com,0,http 403,https://www.flightradar24.com/
+1000,hugedomains.com,0,http 403,https://hugedomains.com/
+1001,heytapmobi.com,0,http 0,https://heytapmobi.com/
+1002,healthline.com,1,ok,https://www.healthline.com/
+1003,ln-msedge.net,0,http 0,https://ln-msedge.net/
+1004,flashscore.com,1,ok,https://www.flashscore.com/
+1005,costco.com,1,ok,https://www.costco.com/
+1006,gtm-a2b2.com,0,http 0,https://gtm-a2b2.com/
+1007,chatgpt.site,1,ok,https://learn.chatgpt.com/docs/sites
+1008,flipkart.com,0,http 529,https://flipkart.com/
+1009,weforum.org,0,http 403,https://www.weforum.org:443/
+1010,onesignal.com,1,ok,https://onesignal.com/
+1011,statcounter.com,1,ok,https://statcounter.com/
+1012,hilton.com,0,http 403,https://www.hilton.com/
+1013,tsyndicate.com,0,http 204,https://tsyndicate.com/
+1014,eu.com,1,ok,https://eu.com/
+1015,nextlgsdp.com,0,http 0,https://nextlgsdp.com/
+1016,amemv.com,0,http 0,https://amemv.com/
+1017,xhcdn.com,0,http 403,https://xhcdn.com/
+1018,bytefcdn-ttpus.com,0,http 0,https://bytefcdn-ttpus.com/
+1019,ox.ac.uk,0,http 0,https://ox.ac.uk/
+1020,spamhaus.org,1,ok,https://www.spamhaus.org/
+1021,youronlinechoices.com,1,ok,https://www.youronlinechoices.com/
+1022,poki.com,1,ok,https://poki.com/
+1023,shopee.ph,1,ok,https://shopee.ph/
+1024,ecosia.org,0,http 403,https://www.ecosia.org/
+1025,tiktokpangle.us,0,http 0,https://tiktokpangle.us/
+1026,xing.com,1,ok,https://www.xing.com/
+1027,nextcloud.com,1,ok,https://nextcloud.com/
+1028,infobae.com,1,ok,https://www.infobae.com/america/
+1029,amazon.com.mx,0,http 202,https://www.amazon.com.mx/
+1030,bund.de,0,http 0,https://bund.de/
+1031,theatlantic.com,0,http 403,https://www.theatlantic.com/
+1032,whitehouse.gov,0,http 403,https://whitehouse.gov/
+1033,umich.edu,1,ok,https://umich.edu/
+1034,docomo.ne.jp,0,http 404,https://docomo.ne.jp/
+1035,kwcdn.com,0,http 0,https://kwcdn.com/
+1036,kontur.ru,0,http 0,https://kontur.ru/
+1037,auvik.com,0,http 403,https://auvik.com/
+1038,bidmachine.io,1,ok,https://www.bidmachine.com/
+1039,zhihu.com,1,ok,https://www.zhihu.com/signin?next=%2F
+1041,kohls.com,0,http 403,https://kohls.com/
+1042,vk-analytics.ru,0,http 0,https://vk-analytics.ru/
+1043,statuspage.io,0,http 405,https://www.atlassian.com/software/statuspage
+1044,incapdns.net,0,http 0,https://incapdns.net/
+1045,themeforest.net,1,ok,https://themeforest.net/
+1046,freepik.com,0,http 403,https://www.freepik.com/
+1047,columbia.edu,0,http 403,https://columbia.edu/
+1048,garmin.com,0,http 403,https://www.garmin.com/
+1049,douyinvod.com,0,http 0,https://douyinvod.com/
+1050,letterboxd.com,0,http 403,https://letterboxd.com/
+1051,moneycontrol.com,0,http 403,https://moneycontrol.com/
+1052,namecheaphosting.com,0,http 0,https://namecheaphosting.com/
+1053,pbs.org,0,http 0,https://pbs.org/
+1054,epicgames.dev,0,http 403,https://dev.epicgames.com:443/
+1055,instructure.com,1,ok,https://www.instructure.com/
+1056,maricopa.gov,0,http 403,https://maricopa.gov/
+1057,app-analytics-services-att.com,0,http 404,https://app-analytics-services-att.com/
+1058,rfc-editor.org,1,ok,https://www.rfc-editor.org/
+1059,n-tv.de,1,ok,https://www.n-tv.de/
+1060,tplinknbu.com,0,http 0,https://tplinknbu.com/
+1061,supabase.co,0,http 0,https://supabase.co/
+1062,samsungcloudsolution.net,0,http 0,https://samsungcloudsolution.net/
+1063,interia.pl,1,ok,https://www.interia.pl/
+1065,ouest-france.fr,0,http 0,https://ouest-france.fr/
+1066,wise.com,0,http 403,https://wise.com/
+1067,orange.fr,0,http 0,https://orange.fr/
+1068,adblockplus.org,1,ok,https://adblockplus.org/
+1069,mioffice.cn,0,http 0,https://mioffice.cn/
+1070,tiktokrow-cdn.com,0,http 0,https://tiktokrow-cdn.com/
+1071,tubi.io,0,http 0,https://tubi.io/
+1072,archiveofourown.org,1,ok,https://archiveofourown.org/
+1073,netgear.com,1,ok,https://www.netgear.com:443/
+1074,xserver.jp,0,http 0,https://xserver.jp/
+1075,ameba.jp,0,http 302,https://www.ameba.jp/loginCheck.do?isAuthenticated=false
+1076,redfin.com,0,http 403,https://redfin.com/
+1077,alphonso.tv,0,http 403,https://alphonso.tv/
+1079,goal.com,1,ok,https://www.goal.com/en
+1080,as.com,0,http 403,https://as.com/
+1081,wscvip.cn,0,http 0,https://wscvip.cn/
+1082,olx.pl,0,http 403,https://www.olx.pl/
+1083,skroutz.gr,0,http 403,https://www.skroutz.gr/
+1084,i18n-pglstatp.com,0,http 0,https://i18n-pglstatp.com/
+1085,inkuai.com,0,http 0,https://inkuai.com/
+1086,bfmtv.com,1,ok,https://www.bfmtv.com:443/
+1087,ilovepdf.com,1,ok,https://www.ilovepdf.com/
+1088,oecd.org,0,http 403,https://www.oecd.org/
+1089,huffpost.com,1,ok,https://www.huffpost.com/
+1090,crazygames.com,1,ok,https://www.crazygames.com/
+1091,marca.com,0,http 0,https://marca.com/
+1093,jimdo.com,1,ok,https://www.jimdo.com/
+1094,opera-api2.com,0,http 0,https://opera-api2.com/
+1095,google.fr,1,ok,https://www.google.com/
+1096,kslawin.com,0,http 0,https://kslawin.com/
+1097,tabelog.com,1,ok,https://tabelog.com/
+1098,mi-img.com,0,http 0,https://mi-img.com/
+1099,riotgames.com,1,ok,https://www.riotgames.com/en
+1100,nsone.net,0,only 3863 bytes,https://my.nsone.net/
+1101,giphy.com,0,http 403,https://giphy.com/
+1102,ioref.io,0,http 0,https://ioref.io/
+1103,aparat.com,1,ok,https://www.aparat.com/home
+1104,opera-api.com,0,http 0,https://opera-api.com/
+1105,finn.no,0,http 403,https://finn.no/
+1106,ovscdns.net,0,http 0,https://ovscdns.net/
+1107,safety.google,1,ok,https://safety.google/
+1108,xiaohongshu.com,1,ok,https://www.xiaohongshu.com:443/explore
+1109,webhostbox.net,0,http 0,https://webhostbox.net/
+1110,skysports.com,1,ok,https://www.skysports.com/
+1111,lge.com,0,http 403,https://www.lg.com/se
+1112,tnaflix.com,1,ok,https://www.tnaflix.com/
+1113,huggingface.co,1,ok,https://huggingface.co/
+1114,wetteronline.de,1,ok,https://www.wetteronline.de/
+1116,att.com,0,http 403,https://www.att.com/
+1117,typeform.com,1,ok,https://www.typeform.com/
+1118,gofundme.com,1,ok,https://www.gofundme.com/
+1119,alipay.com,0,http 0,https://alipay.com/
+1120,amd.com,1,ok,https://www.amd.com/de.html
+1121,gsmarena.com,1,ok,https://www.gsmarena.com/
+1122,mythad.com,0,http 0,https://mythad.com/
+1123,wbbasket.ru,0,http 0,https://wbbasket.ru/
+1124,contentsquare.net,0,http 0,https://contentsquare.net/
+1125,cookpad.com,0,only 3036 bytes,https://cookpad.com/jp
+1126,usercentrics.eu,0,http 403,https://usercentrics.com:443/
+1127,company-target.com,0,http 0,https://company-target.com/
+1129,magnific.com,0,http 403,https://magnific.com/
+1130,t-mobile.com,0,http 403,https://t-mobile.com/
+1131,zijieapi.com,0,http 0,https://zijieapi.com/
+1133,hltv.org,0,http 403,https://hltv.org/
+1134,kickstarter.com,0,http 403,https://www.kickstarter.com/
+1135,superhosting.bg,0,http 0,https://superhosting.bg/
+1136,msauth.net,0,http 0,https://msauth.net/
+1137,vivo.com,1,ok,https://www.vivo.com/at
+1138,apa.org,0,only 212 bytes,https://www.apa.org/
+1139,samsungcloud.tv,0,http 0,https://samsungcloud.tv/
+1140,theconversation.com,1,ok,https://theconversation.com/europe
+1141,nypost.com,1,ok,https://nypost.com/
+1142,ultimate-guitar.com,1,ok,https://www.ultimate-guitar.com/
+1143,aftonbladet.se,1,ok,https://www.aftonbladet.se/
+1144,letsencrypt.org,1,ok,https://letsencrypt.org/
+1145,meethue.com,1,ok,https://www.philips-hue.com/en-us
+1146,cspserver.net,0,http 404,https://cspserver.net/
+1147,alikunlun.com,0,http 0,https://alikunlun.com/
+1148,megafon.ru,0,http 0,https://megafon.ru/
+1149,he.net,1,ok,https://he.net/
+1150,hotpepper.jp,1,ok,https://www.hotpepper.jp/
+1151,byteoversea.com,0,http 0,https://byteoversea.com/
+1152,yale.edu,1,ok,https://www.yale.edu/
+1153,xhaccess.com,1,ok,https://xhaccess.com/
+1154,clarin.com,1,ok,https://www.clarin.com/
+1155,plex.direct,0,http 0,https://plex.direct/
+1156,inven.co.kr,1,ok,https://www.inven.co.kr/
+1157,gafg.com,0,http 0,https://gafg.com/
+1158,yastatic.net,0,challenge phrase,https://yandex.ru/showcaptcha?cc=1&form-fb-hint=2.74&mt=3B0A2B51842567C98BCACA2D27940DB34298A8EA66B992310BFECC268B70F0E8379D348BD05D472C56580880E0ACE843522D9EC911FBE9360FDEFBEDA0F1A2AF4077175BDFD00143E5CBBFFA52363E7062DCD07D3D887FA03C0BBFC05F4F589B57CA867EDE6EABE9E1AB9C5ECAEA0D036C82BDD15CF36AF8DCF9EC0B98A47B9A28E829E086A9D9CB8ED83E0C13A2892E5D442919B6FE59018338F2B0AC1F752A6BD7C44A30CF29891667483E9F5237E7B9BEFB6C64A464A524AD2FA5A9D5B4219FCFCE6437928220F50E9F988E771418F164CF474555DA7210F1669EA402793A4E79E32A79B897EF101999DC92E6B80BFD4CAA&retpath=aHR0cHM6Ly95YW5kZXgucnUvZGV2L2pzbGlicw%2C%2C_d5e7823cf5c525780bbfb2f9639581b5&t=2%252F1790626981%252F7aba931a6fb65c4c5c7fcab20fffc7fc&u=9486478124899050894&s=8bae8966cef389cf76d347baa665cdb7
+1159,economist.com,0,http 403,https://economist.com/
+1160,dafont.com,1,ok,https://www.dafont.com/
+1161,dnse1.com,0,http 0,https://dnse1.com/
+1162,ltwebstatic.com,0,http 404,https://ltwebstatic.com/
+1163,google.ca,1,ok,https://www.google.com/
+1164,service-now.com,0,http 301,http://www.servicenow.com/
+1165,susercontent.com,0,http 0,https://susercontent.com/
+1166,one.com,1,ok,https://www.one.com/
+1167,plos.org,0,http 403,https://plos.org/
+1168,auth0.com,0,http 500,https://auth0.com/
+1169,gismeteo.ru,0,http 0,https://gismeteo.ru/
+1170,cbc.ca,1,ok,https://www.cbc.ca/
+1171,aiv-delivery.net,0,http 0,https://aiv-delivery.net/
+1173,rings.solutions,0,http 0,https://rings.solutions/
+1174,adguard-vpn.online,0,http 0,https://adguard-vpn.online/
+1175,wetter.com,1,ok,https://www.wetter.com/
+1176,tesla.com,0,http 403,https://tesla.com/
+1177,jw.org,1,ok,https://www.jw.org/en/
+1179,ad.nl,0,http 403,https://ad.nl/
+1182,tendawifi.com,0,http 0,https://tendawifi.com/
+1183,nu.nl,0,http 403,https://nu.nl/
+1184,elconfidencial.com,0,http 403,https://www.elconfidencial.com/
+1185,rbc.ru,0,http 401,https://www.rbc.ru/8c1a1713-f82e-4b8a-97a4-6a2f1cfa20a2/
+1186,rustore.ru,1,ok,https://www.rustore.ru/
+1188,vnexpress.net,1,ok,https://vnexpress.net/
+1189,cricinfo.com,0,http 403,https://www.cricinfo.com/
+1190,indiamart.com,0,http 403,https://indiamart.com/
+1191,fmkorea.com,0,http 429,https://www.fmkorea.com/
+1192,sahibinden.com,0,http 403,https://www.sahibinden.com/
+1193,pimpbunny.com,1,ok,https://pimpbunny.com/
+1195,leboncoin.fr,0,http 403,https://www.leboncoin.fr/
+1196,xhopen.com,1,ok,https://xhopen.com/
+1197,vg.no,1,ok,https://www.vg.no/
+1198,dcinside.com,1,ok,https://www.dcinside.com/
+1199,upenn.edu,1,ok,https://www.upenn.edu/
+1200,namu.wiki,0,http 403,https://namu.wiki/
+1201,tabor.ru,0,http 0,https://tabor.ru/
+1202,adfuse-ssp.com,0,http 400,https://adfuse-ssp.com/
+1203,siemens.com,0,http 405,https://siemens.com/
+1204,inleed.net,1,ok,https://inleed.se/
+1205,janitorai.com,0,http 403,https://janitorai.com/
+1206,spankbang.com,0,http 403,https://spankbang.com/
+1207,lequipe.fr,0,http 403,https://lequipe.fr/
+1208,unrulymedia.com,0,only 78 bytes,https://unrulymedia.com/
+1210,myntra.com,0,http 403,https://www.myntra.com/
+1211,ay267.com,1,ok,https://ay267.com/
+1213,themoviedb.org,1,ok,https://www.themoviedb.org/
+1215,fb.me,0,http 400,https://fb.me/
+1216,remove.bg,0,http 403,https://remove.bg/
+1217,phncdn.com,0,http 0,https://phncdn.com/
+1220,lichess.org,1,ok,https://lichess.org/
+1221,pandora.com,1,ok,https://www.pandora.com/restricted
+1222,wswebpic.com,0,http 0,https://wswebpic.com/
+1223,us.com,1,ok,https://us.com/
+1224,meesho.com,0,http 403,https://www.meesho.com:443/
+1225,sectigo.com,1,ok,https://www.sectigo.com/
+1226,dlsite.com,1,ok,https://www.dlsite.com/index.html
+1227,marktplaats.nl,1,ok,https://www.marktplaats.nl/
+1228,wiktionary.org,1,ok,https://www.wiktionary.org/
+1229,gazzetta.it,1,ok,https://www.gazzetta.it/
+1230,singtelchina.cn,0,http 0,https://singtelchina.cn/
+1231,rutube.ru,1,ok,https://rutube.ru/
+1232,tradplusad.com,1,ok,https://tradplusad.com/
+1233,savefrom.net,1,ok,https://en1.savefrom.net/19wr/
+1234,amap.com,0,http 0,https://amap.com/
+1235,digitaloceanspaces.com,1,ok,https://www.digitalocean.com/
+1236,vscode-cdn.net,0,http 0,https://vscode-cdn.net/
+1237,kakao.com,1,ok,https://www.kakaocorp.com/page/
+1238,tori.fi,0,http 403,https://tori.fi/
+1239,fetlife.com,0,http 403,https://fetlife.com/
+1240,digikala.com,1,ok,https://www.digikala.com/
+1241,blackberry.net,1,ok,https://www.blackberry.com/en
+1242,azure.net,1,ok,https://azure.microsoft.com/en-us
+1243,divar.ir,1,ok,https://divar.ir/
+1244,idealista.com,0,http 403,https://www.idealista.com/
+1245,xhname.com,1,ok,https://xhname.com/
+1247,adaether.com,0,http 0,https://adaether.com/
+1249,furaffinity.net,0,http 403,https://furaffinity.net/
+1250,xhtotal.com,1,ok,https://xhtotal.com/
+1251,hln.be,0,http 403,https://hln.be/
+1252,netcraze.io,0,http 0,https://netcraze.io/
+1253,deepseek.com,0,http 202,https://deepseek.com/
+1254,livedoor.com,0,http 403,https://livedoor.com/
+1255,ctdns.cn,0,http 0,https://ctdns.cn/
+1256,fortune.com,1,ok,https://fortune.com/
+1257,bilibili.tv,1,ok,https://www.bilibili.tv/
+1258,ovhcloud.com,1,ok,https://www.ovhcloud.com/en-ie/
+1259,dribbble.com,0,http 202,https://dribbble.com/
+1261,admin.ch,0,http 0,https://admin.ch/
+1262,kueezrtb.com,1,ok,https://weare.kueez.com/
+1264,mundodeportivo.com,1,ok,https://www.mundodeportivo.com/
+1265,emag.ro,0,http 511,https://www.emag.ro/
+1266,makemytrip.com,0,http 403,https://www.makemytrip.com:443/
+1267,abc.net.au,0,http 403,https://www.abc.net.au/
+1268,livescore.com,1,ok,https://www.livescore.com/en/
+1269,litnet.com,1,ok,https://litnet.com/
+1270,ap4r.com,0,http 0,https://ap4r.com/
+1271,psychologytoday.com,0,http 403,https://www.psychologytoday.com/us
+1272,tinkoff.ru,0,http 0,https://tinkoff.ru/
+1273,edna.ru,0,http 0,https://edna.ru/
+1274,beboo.ru,0,only 2035 bytes,https://beboo.ru/
+1275,canada.ca,0,http 302,https://www.canada.ca/
+1276,xhspot.com,1,ok,https://xhspot.com/
+1277,vercel-dns.com,0,http 404,https://vercel-dns.com/
+1278,fanfiction.net,0,http 0,https://fanfiction.net/
+1280,ladepeche.fr,1,ok,https://www.ladepeche.fr/
+1281,bbb.org,0,http 403,https://www.bbb.org/
+1282,privacy-mgmt.com,0,http 0,https://privacy-mgmt.com/
+1283,psu.edu,1,ok,https://www.psu.edu:443/
+1284,boyfriendtv.com,0,http 403,https://boyfriendtv.com/
+1285,julydns.com,0,only 795 bytes,https://www.julydns.com/
+1286,naukri.com,1,ok,https://www.naukri.com/
+1287,id.me,0,http 403,https://id.me/
+1288,oneme.ru,0,http 0,https://oneme.ru/
+1289,postgresql.org,0,http 301,https://www.postgresql.org/
+1290,wshifen.com,0,http 0,https://wshifen.com/
+1291,cdiscount.com,0,http 403,https://www.cdiscount.com/
+1292,mydramalist.com,0,http 403,https://mydramalist.com/
+1293,epcco.com.sa,1,ok,https://epcco.com.sa/
+1294,noodlemagazine.com,0,http 403,https://noodlemagazine.com/
+1295,cricbuzz.com,1,ok,https://www.cricbuzz.com/
+1296,datadome.co,0,http 403,https://datadome.co/
+1297,ultradns.com,1,ok,https://www.digicert.com/dns
+1298,actu.fr,1,ok,https://actu.fr/
+1299,arca.live,0,http 403,https://arca.live/
+1300,hai8g.com,1,ok,https://hai8g.com/
+1301,segment.io,0,http 403,https://www.twilio.com/en-us/segment
+1302,polybuzz.ai,1,ok,https://polybuzz.ai/
+1303,dyingbirds.com,0,http 0,https://dyingbirds.com/
+1304,luugy.com,1,ok,https://luugy.com/
+1305,b-msedge.net,0,http 0,https://b-msedge.net/
+1306,labs.google,1,ok,https://labs.google/
+1307,mmechocaptiveportal.com,0,http 0,https://mmechocaptiveportal.com/
+1308,ilfattoquotidiano.it,1,ok,https://www.ilfattoquotidiano.it:443/
+1309,rajasthan.gov.in,0,http 0,https://rajasthan.gov.in/
+1310,justdial.com,0,http 403,https://justdial.com/
+1311,grow.google,0,http 403,https://grow.google/
+1313,f95zone.to,1,ok,https://f95zone.to/
+1314,xham.live,0,http 406,https://xham.live/
+1315,bmj.com,0,http 403,https://www.bmj.com/
+1316,ruliweb.com,1,ok,https://bbs.ruliweb.com/
+1317,hubspotemail.net,0,http 0,https://hubspotemail.net/
+1318,nexon.com,0,only 2125 bytes,https://www.nexon.com/main/en
+1319,faphouse2.com,1,ok,https://faphouse2.com/
+1320,playhop.com,1,ok,https://playhop.com/
+1321,netkeiba.com,1,ok,https://netkeiba.com/
+1322,donmai.us,0,http 403,https://donmai.us/
+1323,akamaitechnologies.com,0,http 0,https://akamaitechnologies.com/
+1324,websitewelcome.com,0,http 0,https://websitewelcome.com/
+1325,meteofrance.com,0,http 0,https://meteofrance.com/
+1326,xhsocial.com,1,ok,https://xhsocial.com/
+1327,suumo.jp,1,ok,https://suumo.jp/
+1328,rustdesk.com,1,ok,https://rustdesk.com/
+1330,battle.net,0,http 403,https://oauth.battle.net/authorize?response_type=code&client_id=a1645ac274514d8ebe9b5ffab1a30660&scope=account.basic%20account.full%20openid%20web.storefront%20web.storefront.internal%20web.storefront.internal:modify%20commerce.wishlist%20commerce.wishlist:modify%20commerce.wishlist.internal%20web.storefront.internal:bypass-product-scheduling%20commerce.catalog.availability:override&state=APC2Be_XRdltZvwXTj586wWivNW3KhEaIkPw7B3Wddk%3D&redirect_uri=https://eu.shop.battle.net/login/oauth2/code/storefront&nonce=js4Syp-17Wev-1wEFGHyi4zOIXknzXPiFls0QA4OqVM&optLogin=true
+1333,blackhub.team,0,http 403,https://blackhub.team/
+1334,jstor.org,1,ok,https://www.jstor.org/
+1335,biomedcentral.com,0,only 3036 bytes,https://link.springer.com/brands/bmc
+1336,lookmovie2.to,1,ok,https://www.lookmovie2.to/
+1337,calculator.net,1,ok,https://www.calculator.net/
+1339,kaspi.kz,1,ok,https://kaspi.kz/
+1340,subito.it,0,http 403,https://www.subito.it/
+1341,funpay.com,1,ok,https://funpay.com/
+1342,youjizz.com,1,ok,https://www.youjizz.com/
+1343,jalan.net,1,ok,https://www.jalan.net/
+1344,hollywoodbets.net,0,http 403,https://hollywoodbets.net/
+1345,douyin.com,0,http 0,https://douyin.com/
+1346,thisvid.com,1,ok,https://thisvid.com/
+1347,redtube.com,1,ok,https://www.redtube.com/
+1348,mediaexpert.pl,0,http 403,https://mediaexpert.pl/
+1349,weathernews.jp,1,ok,https://weathernews.jp/
+1350,varzesh3.com,1,ok,https://www.varzesh3.com/
+1351,e621.net,1,ok,https://e621.net/
+1352,aznude.com,1,ok,https://www.aznude.com/
+1353,asurascans.com,1,ok,https://asurascans.com/
+1354,riotcdn.net,0,http 0,https://riotcdn.net/
+1355,akahost.net,0,http 0,https://akahost.net/
+1356,sport.es,0,http 0,https://sport.es/
+1357,tenki.jp,1,ok,https://tenki.jp/
+1358,aternos.org,0,http 403,https://aternos.org/
+1359,tapad.com,0,http 403,https://tapad.com/
+1360,turkiye.gov.tr,0,http 0,https://turkiye.gov.tr/
+1361,mybluehost.me,0,http 0,https://mybluehost.me/
+1362,irs.gov,0,http 403,https://www.irs.gov/
+1364,tgju.org,1,ok,https://www.tgju.org/
+1366,smilewanted.com,0,http 403,https://smilewanted.com/
+1367,fdown.net,0,http 403,https://fdown.net/
+1368,nesine.com,0,http 0,https://nesine.com/
+1369,comix.to,1,ok,https://comix.to/
+1372,xhtv.today,1,ok,https://xhamster.com/
+1373,sportybet.com,0,http 403,https://sportybet.com/
+1375,leroymerlin.fr,0,http 403,https://www.leroymerlin.fr/
+1376,missav.ws,1,ok,https://missav.ws/dm265/en
+1377,haberler.com,1,ok,https://www.haberler.com/
+1379,huffingtonpost.com,1,ok,https://www.huffpost.com/
+1380,businesswire.com,0,http 403,https://businesswire.com/
+1381,rule34video.com,1,ok,https://rule34video.com/
+1382,sotwe.com,0,http 403,https://www.sotwe.com/
+1383,nikkansports.com,1,ok,https://www.nikkansports.com/
+1384,bookmyshow.com,0,http 403,https://bookmyshow.com/
+1385,cardgames.io,1,ok,https://cardgames.io/
+1386,novinky.cz,1,ok,https://www.novinky.cz/
+1387,platorelay.com,0,http 0,https://platorelay.com/
+1388,mbga.jp,0,http 403,http://www.mbga.jp/
+1389,hostpoint.ch,1,ok,https://www.hostpoint.ch/
+1391,dagbladet.no,1,ok,https://www.dagbladet.no/
+1392,okdiario.com,1,ok,https://okdiario.com/
+1393,ilmeteo.it,1,ok,https://www.ilmeteo.it/
+1394,classlink.com,1,ok,https://www.classlink.com/
+1395,beyondwickedmapping.org,0,http 403,https://beyondwickedmapping.org/
+1397,idealista.it,0,http 403,https://www.idealista.it/
+1398,syosetu.com,0,http 403,https://syosetu.com/
+1399,your-server.de,0,http 404,https://your-server.de/
+1400,9ffyu1g9c.com,0,http 0,https://9ffyu1g9c.com/
+1401,mangabuff.ru,1,ok,https://mangabuff.ru/
+1402,ucla.edu,1,ok,https://www.ucla.edu:443/
+1403,zozo.jp,0,http 403,https://zozo.jp/
+1407,cronista.com,1,ok,https://www.cronista.com:443/
+1408,ficbook.net,0,http 403,https://ficbook.net/
+1409,inps.it,1,ok,https://www.inps.it/
+1410,property24.com,1,ok,https://www.property24.com/
+1412,zedge.net,1,ok,https://www.zedge.net/
+1413,iltalehti.fi,1,ok,https://www.iltalehti.fi/
+1414,carsensor.net,1,ok,https://www.carsensor.net/
+1415,action.com,0,http 403,https://action.com/
+1416,ukdevilz.com,0,http 403,https://ukdevilz.com/
+1417,jino.ru,0,http 0,https://jino.ru/
+1418,admanmedia.com,1,ok,https://admanmedia.com/
+1419,filmweb.pl,1,ok,https://www.filmweb.pl/
+1421,otomoto.pl,0,http 403,https://www.otomoto.pl:443/
+1422,protothema.gr,1,ok,https://www.protothema.gr/
+1423,blic.rs,1,ok,https://www.blic.rs/
+1424,jutarnji.hr,0,http 404,https://jutarnji.hr/
+1426,sozcu.com.tr,1,ok,https://www.sozcu.com.tr/
+1427,24h.com.vn,1,ok,https://www.24h.com.vn/
+1428,index.hr,1,ok,https://www.index.hr/
+1429,3bmeteo.com,1,ok,https://www.3bmeteo.com/
+1430,toyhou.se,0,http 403,https://toyhou.se/
+1432,loobygamesonline.com,0,only 2963 bytes,http://www.loobygamesonline.com/
+1433,evo-games.com,0,http 0,https://evo-games.com/
+1434,bing.net,0,http 0,https://bing.net/
+1435,iana.org,1,ok,https://www.iana.org/
+1436,rambler.ru,0,http 0,https://rambler.ru/
+1437,omg10.com,1,ok,https://omg10.com/
+1438,gamewith.jp,0,http 403,https://gamewith.jp/
+1439,vivox.com,0,http 403,https://unity.com/products/vivox
+1440,jamfcloud.com,0,http 0,https://jamfcloud.com/
+1441,jable.tv,0,http 403,https://jable.tv/
+1442,elsevier.com,0,http 403,https://www.elsevier.com/
+1443,cardmarket.com,0,http 403,https://cardmarket.com/
+1444,nosv.org,1,ok,http://uranai.nosv.org/
+1445,utorrent.com,1,ok,https://www.utorrent.com/
+1447,ssstik.io,1,ok,https://ssstik.io/
+1448,twilio.com,0,http 403,https://www.twilio.com:443/
+1449,fapello.com,1,ok,https://fapello.com/
+1450,jagran.com,1,ok,https://www.jagran.com:443/
+1451,gcash.com,1,ok,https://gcash.com/
+1452,imagefap.com,1,ok,https://www.imagefap.com/
+1453,hitomi.la,1,ok,https://hitomi.la/
+1454,cmoa.jp,0,http 0,https://cmoa.jp/
+1455,sapo.pt,1,ok,https://sapo.pt/
+1456,ekstrabladet.dk,1,ok,https://ekstrabladet.dk/
+1457,wisc.edu,1,ok,https://www.wisc.edu/
+1458,adobestats.io,0,http 0,https://adobestats.io/
+1460,theblowers.com,0,http 403,https://theblowers.com/
+1463,luxuretv.com,0,http 403,https://luxuretv.com/
+1464,pussyspace.com,1,ok,https://www.pussyspace.com/
+1466,myinstants.com,0,http 403,https://myinstants.com/
+1467,klikbca.com,0,http 403,https://klikbca.com/
+1468,liteapks.com,1,ok,https://liteapks.com/
+1472,markt.de,1,ok,https://www.markt.de/
+1474,umn.edu,0,http 0,https://umn.edu/
+1476,leroymerlin.es,0,http 403,https://www.leroymerlin.es/
+1477,hik-connect.com,0,http 0,https://hik-connect.com/
+1478,bblaa.com,1,ok,https://bblaa.com/
+1480,fedoraproject.org,1,ok,https://fedoraproject.org/
+1481,kooora.com,1,ok,https://www.kooora.com:443/
+1482,xhwide.com,1,ok,https://xhwide.com/
+1483,eenadu.net,1,ok,https://www.eenadu.net/
+1484,testbook.com,1,ok,https://testbook.com/
+1485,crn77.com,1,ok,https://crn77.com/
+1488,torob.com,0,http 490,https://torob.com/
+1489,sxyprn.com,0,http 403,https://sxyprn.com/
+1490,upskirt.tv,1,ok,https://upskirt.tv/
+1491,dogdrip.net,1,ok,https://www.dogdrip.net/
+1492,manulife-sinochem.com,0,http 0,https://manulife-sinochem.com/
+1494,mangago.me,0,http 403,https://mangago.me/
+1495,ptt.cc,0,http 0,https://ptt.cc/
+1498,simpcity.cr,0,http 403,https://simpcity.cr/
+1500,ninisite.com,1,ok,https://www.ninisite.com/
+1502,sondakika.com,1,ok,https://www.sondakika.com/
+1503,missav.live,0,http 403,https://missav.live/
+1504,immobiliare.it,0,http 403,https://www.immobiliare.it/
+1506,1mg.com,0,http 403,https://1mg.com/
+1509,google.co.in,1,ok,https://www.google.com/
+1511,fatalmodel.com,0,http 403,https://fatalmodel.com/
+1512,programme-tv.net,1,ok,https://www.programme-tv.net/
+1513,spankbang.party,0,http 403,https://spankbang.party/
+1514,missav.ai,1,ok,https://missav.ai/dm265/en
+1515,18comic.vip,0,http 403,https://18comic.vip/
+1516,joyclub.de,0,http 403,https://www.joyclub.de/
+1517,moe.video,0,http 0,https://moe.video/
+1518,max.ru,1,ok,https://max.ru/
+1519,missav123.com,0,http 403,https://missav123.com/cn/
+1520,bt.dk,1,ok,https://www.bt.dk/
+1521,hanime1.me,0,http 403,https://hanime1.me/
+1523,playfabapi.com,0,http 0,https://playfabapi.com/
+1525,absher.sa,0,http 0,https://absher.sa/
+1526,stackexchange.com,1,ok,https://stackexchange.com/
+1528,musicdel.ir,1,ok,https://musicdel.ir/
+1529,aajtak.in,0,http 403,https://aajtak.in/
+1530,tokyomotion.net,1,ok,https://www.tokyomotion.net/
+1531,cityheaven.net,0,http 403,https://www.cityheaven.net:443/
+1533,iau.ir,0,http 403,https://iau.ir/
+1534,shahvani.com,1,ok,https://shahvani.com/
+1535,xvv1deos.com,1,ok,https://www.xvideos.com/
+1536,notion.com,1,ok,https://www.notion.com/
+1537,dns-shop.ru,0,http 401,https://dns-shop.ru/
+1539,goodreturns.in,1,ok,https://www.goodreturns.in/
+1540,luticlip.com,1,ok,https://luticlip.com/
+1542,ubnt.com,1,ok,https://www.ui.com/
+1543,fifa.com,0,only 4547 bytes,https://www.fifa.com/
+1544,buzzfeed.com,1,ok,https://www.buzzfeed.com/
+1545,kakuyomu.jp,1,ok,https://kakuyomu.jp/
+1548,listcrawler.eu,0,http 403,https://listcrawler.eu/
+1549,fuq.com,0,http 403,https://www.fuq.com/
+1550,edgecastdns.net,0,http 0,https://edgecastdns.net/
+1551,tjk.org,0,http 0,https://tjk.org/
+1552,afip.gob.ar,0,http 0,https://afip.gob.ar/
+1553,snaptik.app,1,ok,https://snaptik.app/en3
+1554,croxyproxy.com,1,ok,https://www.croxyproxy.com/
+1555,bikewale.com,1,ok,https://www.bikewale.com/
+1557,wpastra.com,1,ok,https://wpastra.com/
+1558,mat6tube.com,1,ok,https://mat6tube.com/recent
+1560,trilltrill.jp,1,ok,https://trilltrill.jp/
+1561,google.nl,1,ok,https://www.google.com/
+1562,myreadingmanga.info,0,http 403,https://myreadingmanga.info/
+1563,aka.ms,0,only 612 bytes,https://witty-sand-06796de1e.2.azurestaticapps.net/links?host=1
+1564,qorno.com,0,http 403,https://www.qorno.com/
+1565,smadex.com,1,ok,https://smadex.com/
+1567,therapservices.net,0,http 403,https://therapservices.net/
+1568,txnhh.com,1,ok,https://www.xnxx.com/
+1569,theqoo.net,0,http 403,https://theqoo.net/
+1570,tremorhub.com,0,http 403,https://tremorhub.com/
+1571,fastdl.app,1,ok,https://fastdl.app/en5IW
+1573,sinoptik.ua,1,ok,https://sinoptik.ua/
+1574,autoplius.lt,0,http 403,https://autoplius.lt/
+1575,meteociel.fr,1,ok,https://meteociel.fr/
+1576,ahacdn.me,0,only 0 bytes,https://ahacdn.me/
+1577,wnacg.com,1,ok,https://www.wnacg.com/
+1579,oddspark.com,0,http 0,https://oddspark.com/
+1580,ladies.de,1,ok,https://ladies.de/
+1581,syosetu.org,0,http 403,https://syosetu.org/
+1582,uci.edu,1,ok,https://uci.edu/
+1583,screener.in,1,ok,https://www.screener.in/
+1584,kompoz2.com,0,http 403,https://kompoz2.com/
+1585,nya2.com,1,ok,https://nya2.com/
+1586,site.com,0,http 0,https://site.com/
+1587,imgsrc.ru,1,ok,https://imgsrc.ru/
+1588,jav.guru,1,ok,https://jav.guru/
+1589,tupi.fm,1,ok,https://www.tupi.fm/
+1590,mamastar.jp,0,http 202,https://mamastar.jp/
+1591,ijavhd.com,1,ok,https://x.ijavhd.com/
+1592,plex.tv,1,ok,https://watch.plex.tv/
+1593,betika.com,1,ok,https://www.betika.com/en-ke/
+1594,bingoplus.com,0,http 433,https://bingoplus.com/
+1595,deezer.com,0,http 403,https://www.deezer.com/
+1596,chordtela.com,0,http 403,https://chordtela.com/
+1597,czbooks.net,0,http 403,https://czbooks.net/
+1599,skokka.com,0,http 403,https://skokka.com/
+1600,desitales2.com,1,ok,https://www.desitales2.com/
+1602,everesttech.net,0,http 0,https://everesttech.net/
+1603,ftc.gov,1,ok,https://www.ftc.gov/
+1604,supjav.com,0,http 403,https://supjav.com/
+1606,indoav.com,1,ok,https://www.indoav.com/
+1607,freewebnovel.com,0,http 403,https://freewebnovel.com/
+1608,search-start.org,0,http 0,https://search-start.org/
+1609,lk21official.cc,0,http 0,https://lk21official.cc/
+1611,acm.org,0,http 403,https://acm.org/
+1612,girlschannel.net,1,ok,https://girlschannel.net/
+1614,ss.com,1,ok,https://www.ss.com/
+1615,kingbokep.tv,1,ok,https://kingbokep.tv/
+1617,njavtv.com,0,http 403,https://njavtv.com/
+1619,skelbiu.lt,0,http 403,https://skelbiu.lt/
+1620,pussyboy.net,1,ok,https://pussyboy.net/
+1621,mechacomic.jp,1,ok,https://mechacomic.jp/
+1622,fabswingers.com,0,challenge phrase,https://www.fabswingers.com/Handler.aspx
+1623,rayjump.com,0,http 0,https://rayjump.com/
+1625,anybunny.org,1,ok,https://anybunny.org/
+1626,nustargame.com,0,http 403,https://nustargame.com/
+1628,arabx.cam,1,ok,https://www.arabx.cam/
+1630,jra.go.jp,0,http 0,https://jra.go.jp/
+1631,attn.tv,0,http 0,https://attn.tv/
+1632,tiktokio.com,1,ok,https://tiktokio.com/
+1634,hotxv.com,1,ok,https://hotxv.com/
+1635,lecturas.com,0,http 403,https://www.lecturas.com/
+1636,ey43.com,1,ok,https://ey43.com/
+1637,bakusai.com,0,http 403,https://bakusai.com/
+1638,piccoma.com,0,http 403,https://piccoma.com/web/
+1639,letras.mus.br,0,http 403,https://www.letras.mus.br/
+1641,goojara.to,1,ok,https://ww1.goojara.to/
+1642,publi24.ro,0,http 403,https://publi24.ro/
+1643,taktube.net,1,ok,https://www.taktube.net/
+1644,eepurl.com,1,ok,https://mailchimp.com/de/
+1646,kir2kos.net,1,ok,https://kir2kos.net/
+1647,darkero.com,1,ok,https://darkero.com/
+1648,ptgaming.ph,0,http 403,https://www.ptgaming.ph/
+1649,mileroticos.com,0,http 403,https://mileroticos.com/
+1650,flashscore.fr,0,http 403,https://flashscore.fr/
+1651,an1.com,1,ok,https://an1.com/
+1652,patria.org.ve,0,http 0,https://patria.org.ve/
+1653,arabtnt.com,0,http 403,https://arabtnt.com/
+1655,skipthegames.com,0,http 403,https://skipthegames.com/
+1656,afribaba.com,0,http 403,https://afribaba.com/
+1657,xorgasmo.com,1,ok,https://xorgasmo.com/
+1658,googll.store,0,http 403,https://googll.store/
+1659,waze.com,1,ok,https://www.waze.com/
+1660,animanch.com,0,http 403,https://animanch.com/
+1661,hdhub4u.cl,0,http 0,https://hdhub4u.cl/
+1662,zebawy.com,1,ok,https://zebawy.com/
+1663,kemkes.go.id,0,http 403,https://kemkes.go.id/
+1664,xosodaiphat.com,1,ok,https://xosodaiphat.com/
+1665,betano.pe,0,http 403,https://www.betano.pe/
+1666,jra.jp,0,http 403,https://jra.jp/
+1667,sportfilm800.com,1,ok,https://sportfilm800.com/
+1668,betking.com,1,ok,https://www.betking.com/
+1670,xpaja.net,1,ok,https://www.xpaja.net/
+1671,keirin.jp,1,ok,https://keirin.jp:443/pc/top
+1672,ecnavi.jp,1,ok,https://ecnavi.jp/
+1673,dto.jp,0,http 403,https://dto.jp/
+1674,flashscore.mobi,1,ok,https://www.flashscore.mobi/
+1676,arbada.com,1,ok,https://www.arbada.com/
+1677,arionplay.com,0,http 403,https://arionplay.com/
+1679,goal7.co,1,ok,https://goal7.co/
+1680,livescore.cz,1,ok,https://www.livescore.cz/
+1682,twkan.com,0,http 403,https://twkan.com/
+1683,salonboard.com,0,http 0,https://salonboard.com/
+1684,indown.io,0,http 403,https://indown.io/
+1685,turbo.az,0,http 403,https://turbo.az/
+1686,sun.com,1,ok,https://www.oracle.com/it-infrastructure/
+1687,tjsp.jus.br,1,ok,https://www.tjsp.jus.br/
+1688,betpawa.ug,1,ok,https://www.betpawa.ug/
+1689,sarkariresult.com.cm,1,ok,https://sarkariresult.com.cm/
+1691,momon-ga.com,1,ok,https://momon-ga.com/
+1692,manhwaweb.com,0,only 1605 bytes,https://manhwaweb.com/
+1693,eroterest.net,0,http 0,https://eroterest.net/
+1696,espn.com.ve,0,http 202,https://espn.com.ve/
+1697,bancodevenezuela.com,0,http 0,https://bancodevenezuela.com/
+1699,humoruniv.com,1,ok,https://web.humoruniv.com/main.html
+1700,ojogodobicho.com,1,ok,https://www.ojogodobicho.com/
+1702,choiceadvantage.com,0,http 403,https://www.choiceadvantage.com/
+1703,xsmn.mobi,1,ok,https://xsmn.mobi/
+1704,fabguys.com,1,ok,https://www.fabguys.com/Handler.aspx
+1705,startappservice.com,0,http 403,https://startappservice.com/
+1707,minhngoc.net.vn,1,ok,https://www.minhngoc.net.vn/
+1708,betano.bet.ar,0,http 403,https://www.betano.bet.ar/
+1709,usnews.com,0,http 403,https://usnews.com/
+1711,thscore99.com,1,ok,https://www.thscore99.com/
+1712,packzy.com,1,ok,https://packzy.com/
+1713,clever.com,0,http 403,https://www.clever.com/
+1714,triunfobet.com,1,ok,https://triunfobet.com/
+1715,mobiledokan.com,1,ok,https://www.mobiledokan.com/
+1716,kqbd.mobi,1,ok,https://kqbd.mobi/
+1717,site777.jp,0,http 403,http://www.d-deltanet.com/ld/
+1718,kinnser.net,0,http 0,https://kinnser.net/
+1719,ovh.com,1,ok,https://www.ovhcloud.com/de/
+1720,restream-media.net,0,http 0,https://restream-media.net/
+1721,koselarab.com,0,http 403,https://koselarab.com/
+1722,gree-apps.net,0,http 0,https://gree-apps.net/
+1723,konami.net,0,http 0,https://konami.net/
+1724,simontokx.asia,0,http 0,https://simontokx.asia/
+1725,annunci69.it,0,http 403,https://annunci69.it/
+1726,az24.vn,1,ok,https://az24.vn/
+1727,albumaty.com,1,ok,https://www.albumaty.com/
+1729,pagibigfundservices.com,1,ok,https://pagibigfundservices.com/Views/HomePage.aspx
+1730,linkmake.in,1,ok,https://linkmake.in/
+1731,xahani.com,0,http 403,https://xahani.com/
+1732,pitc.com.pk,0,http 0,https://pitc.com.pk/
+1734,tamildhool.tech,0,http 403,https://tamildhool.tech/
+1735,filesdl.top,0,http 0,https://filesdl.top/
+1736,scan-manga.com,0,http 404,https://scan-manga.com/
+1738,33apk.com,1,ok,https://33apk.com/
+1739,bpcl.in,0,http 0,https://bpcl.in/
+1741,cbl.gov.ly,1,ok,https://cbl.gov.ly/
+1742,satta-king-fast.com,1,ok,https://satta-king-fast.com/
+1744,loteriadehoy.com,1,ok,https://loteriadehoy.com/
+1745,javwow.com,0,http 403,https://javwow.com/
+1746,downloadpage.xyz,0,http 0,https://downloadpage.xyz/
+1747,javsub.blog,0,http 403,https://javsub.blog/
+1749,newtoki1.org,1,ok,https://newtoki1.org/
+1752,maynoe.com,1,ok,https://maynoe.com/
+1753,antarvasna3.com,1,ok,https://www.antarvasna3.com/
+1755,staseraintv.com,1,ok,https://staseraintv.com/
+1756,bpexch.live,1,ok,https://bpexch.live/Users/Login
+1757,mgslb.com,0,http 0,https://mgslb.com/
+1758,xn--42cf7cgd7gxbd4m7c.cc,1,ok,https://www.xn--42cf7cgd7gxbd4m7c.cc/
+1759,xn--12c1ezaww.com,1,ok,https://xn--12c1ezaww.com/
+1760,yasyadong02.tv,0,only 807 bytes,https://yasyadong02.tv/
+1762,sattamatkadpboss.mobi,1,ok,https://sattakalyanmatka.net/
+1763,sambad.com,1,ok,https://sambad.com/
+1764,mobcup.fm,1,ok,https://mobcup.fm/
+1766,mangaraw.ac,0,http 0,https://mangaraw.ac/
+1767,rsch.jp,0,http 0,https://rsch.jp/
+1768,gree-pf.net,0,http 0,https://gree-pf.net/
+1769,dpbossss.boston,1,ok,https://dpboss.tax/
+1770,ad-contents.jp,0,only 4226 bytes,https://ad-contents.jp/
+1771,playinboss.com,0,http 202,https://playinboss.com/
+1772,sattamatkano1.me,1,ok,https://sattamatkano1.me/
+1775,filmyfly.soy,1,ok,https://filmyfly.army/
+1776,kolkataff.tv,1,ok,https://kolkataff.tv/
+1777,dns.cn,0,http 0,https://dns.cn/
+1778,ico.org.uk,1,ok,https://ico.org.uk/
+1779,hover.com,1,ok,https://www.hover.com/
+1780,shutterstock.com,0,http 403,https://www.shutterstock.com:443/
+1781,sendgrid.net,0,http 404,https://sendgrid.net/
+1782,gartner.com,0,http 403,https://www.gartner.com:443/
+1783,home.pl,1,ok,https://home.pl/
+1784,overwolf.com,1,ok,https://www.overwolf.com/
+1785,threads.net,1,ok,https://www.threads.com/
+1786,enable-javascript.com,1,ok,https://www.enable-javascript.com/
+1787,avira.com,1,ok,https://www.avira.com/
+1788,apdcdn.com,0,http 0,https://apdcdn.com/
+1789,akismet.com,1,ok,https://akismet.com/
+1790,gpcloudservice.com,0,http 0,https://gpcloudservice.com/
+1791,google.ru,1,ok,https://www.google.com/
+1792,qcloud.com,0,http 0,https://qcloud.com/
+1793,rfihub.com,0,http 0,https://rfihub.com/
+1794,xfinity.com,0,http 403,https://www.xfinity.com/
+1795,cmu.edu,1,ok,https://www.cmu.edu/
+1796,tawk.to,0,http 403,https://tawk.to/
+1797,amocrm.ru,0,http 0,https://amocrm.ru/
+1798,archive.is,1,ok,https://archive.is/
+1799,vtwenty.com,0,http 0,https://vtwenty.com/
+1800,fao.org,1,ok,https://www.fao.org/home/en
+1801,intercom.com,0,http 403,https://www.intercom.com/
+1802,googleapis.cn,0,http 0,https://googleapis.cn/
+1803,kargo.com,1,ok,https://www.kargo.com/
+1804,contextweb.com,0,only 1 bytes,https://contextweb.com/
+1805,bitdefender.com,1,ok,https://www.bitdefender.com/en-us/
+1806,vmware.com,1,ok,https://www.vmware.com/
+1807,beeline.ru,0,http 0,https://beeline.ru/
+1808,badoo.com,1,ok,https://badoo.com/
+1809,166.com,0,http 0,https://166.com/
+1810,fedex.com,0,only 1770 bytes,https://www.fedex.com/
+1811,avito.st,0,http 429,https://www.avito.ru/
+1812,archive.ph,1,ok,https://archive.ph/
+1813,xincache.com,0,http 0,https://xincache.com/
+1814,google.es,1,ok,https://www.google.com/
+1815,mongodb.com,1,ok,https://www.mongodb.com/
+1816,w3schools.com,1,ok,https://www.w3schools.com:443/
+1817,newsweek.com,1,ok,https://www.newsweek.com/
+1818,adroll.com,1,ok,https://www.adroll.com/
+1819,acs.org,0,only 212 bytes,https://www.acs.org/
+1820,charter.net,1,ok,https://www.spectrum.net:443/
+1821,va.gov,1,ok,https://www.va.gov/
+1822,rapid7.com,1,ok,https://www.rapid7.com/
+1823,rncdn7.com,0,http 0,https://rncdn7.com/
+1824,medallia.com,0,http 403,https://www.medallia.com/
+1825,newyorker.com,1,ok,https://www.newyorker.com/
+1826,rocketmoney.dev,1,ok,https://www.rocketmoney.dev/
+1827,trello.com,0,http 405,https://trello.com/
+1828,fc2.com,1,ok,https://fc2.com/
+1829,google.it,1,ok,https://www.google.com/
+1830,firebaseio.com,0,http 0,https://firebaseio.com/
+1831,technorail.com,0,http 0,https://technorail.com/
+1832,1c.ru,1,ok,https://1c.ru/
+1833,dbankcloud.cn,0,http 0,https://dbankcloud.cn/
+1834,pluto.tv,1,ok,https://pluto.tv/gsa/
+1835,ak-is2.net,0,http 0,https://ak-is2.net/
+1836,moodle.org,0,http 403,https://moodle.org/
+1837,trustarc.com,0,http 403,https://trustarc.com/
+1838,sciencedaily.com,1,ok,https://sciencedaily.com/
+1839,ipredictive.com,0,http 0,https://ipredictive.com/
+1840,blizzard.com,1,ok,https://www.blizzard.com/en-us/
+1841,giex.ru,0,http 0,https://giex.ru/
+1842,si.edu,0,http 403,https://www.si.edu/
+1843,pewresearch.org,1,ok,https://www.pewresearch.org/
+1845,verify.hn,0,only 114 bytes,https://verify.hn/
+1846,gshifen.com,0,http 0,https://gshifen.com/
+1847,nelreports.net,0,http 0,https://nelreports.net/
+1848,ns1p.net,0,http 404,https://ns1p.net/
+1849,gdemoideti.ru,1,ok,https://gdemoideti.ru/
+1850,wps.cn,0,http 0,https://wps.cn/
+1851,zenlogic.net,0,http 0,https://zenlogic.net/
+1852,zdnet.com,1,ok,https://www.zdnet.com/
+1853,pusher.com,1,ok,https://pusher.com/
+1854,nps.gov,1,ok,https://www.nps.gov/index.htm
+1855,xundns.com,0,http 0,https://xundns.com/
+1856,investing.com,0,http 403,https://investing.com/
+1857,ruidongcloud.com,0,http 0,https://ruidongcloud.com/
+1858,sweb.ru,1,ok,https://sweb.ru/
+1859,omnitagjs.com,0,http 0,https://omnitagjs.com/
+1860,sitescout.com,0,http 0,https://sitescout.com/
+1861,cootlogix.com,0,http 403,https://cootlogix.com/
+1862,kraken.com,1,ok,https://www.kraken.com/
+1863,amp-endpoint2.com,0,http 0,https://amp-endpoint2.com/
+1864,office365.us,0,http 0,https://office365.us/
+1865,geocities.com,0,http 0,https://geocities.com/
+1866,marketwatch.com,0,http 401,https://www.marketwatch.com/
+1867,beget.com,1,ok,https://beget.com/ru
+1868,yimg.com,0,only 194 bytes,https://yimg.com/
+1869,adrta.com,0,only 185 bytes,https://adrta.com/
+1870,api.aws,0,http 0,https://api.aws/
+1871,uchicago.edu,0,http 403,https://www.uchicago.edu/
+1872,ctecdn.cn,0,http 0,https://ctecdn.cn/
+1873,ucsd.edu,1,ok,https://ucsd.edu/
+1874,_wildcard_.ph,0,http 0,https://_wildcard_.ph/
+1875,elegantthemes.com,1,ok,https://www.elegantthemes.com/
+1876,shopifycloud.com,0,type text/plain;,https://shopifycloud.com/
+1877,sinaedge.com,0,http 0,https://sinaedge.com/
+1878,hh.ru,0,http 403,https://hh.ru/
+1879,utexas.edu,1,ok,https://www.utexas.edu/
+1880,register.com,0,http 403,https://www.register.com/
+1881,systemdns.com,0,http 0,https://systemdns.com/
+1882,akamai.com,0,http 403,https://www.akamai.com/de
+1883,indexww.com,0,http 403,https://indexww.com/
+1884,salthasher.com,0,http 403,https://salthasher.com/
+1885,mega.nz,0,only 2540 bytes,https://mega.nz/
+1886,loopia.se,1,ok,https://www.loopia.se/
+1887,udemy.com,0,http 403,https://udemy.com/
+1888,rzone.de,0,http 0,https://rzone.de/
+1889,scientificamerican.com,0,http 403,https://scientificamerican.com/
+1890,bytedns3.com,0,http 0,https://bytedns3.com/
+1891,usercontent.microsoft,0,http 0,https://usercontent.microsoft/
+1892,clevelandclinic.org,0,http 403,https://clevelandclinic.org/
+1893,samsungknox.com,1,ok,https://www.samsungknox.com/en
+1894,xinhuanet.com,1,ok,https://www.xinhuanet.com/
+1895,mathtag.com,0,http 0,https://mathtag.com/
+1896,opera.software,0,http 0,https://opera.software/
+1897,tdnsstic1.cn,0,http 0,https://tdnsstic1.cn/
+1898,ax-dc-msedge.net,0,http 0,https://ax-dc-msedge.net/
+1899,azure-api.net,0,http 0,https://azure-api.net/
+1900,apigee.net,0,http 0,https://apigee.net/
+1901,cloud.com,1,ok,https://www.cloud.com/
+1902,orcid.org,1,ok,https://orcid.org/
+1903,norton.com,1,ok,https://no.norton.com/
+1904,vice.com,1,ok,https://www.vice.com/
+1905,bytefcdn-ttpeu.com,0,http 0,https://bytefcdn-ttpeu.com/
+1906,hulu.com,0,http 406,http://www.hulu.com/
+1907,fb.watch,0,http 400,https://fb.watch/
+1908,sky.com,1,ok,https://www.sky.com/
+1909,sciencemag.org,0,http 403,https://www.sciencemag.org/
+1910,core.microsoft,0,http 0,https://core.microsoft/
+1911,bigcommerce.com,1,ok,https://www.bigcommerce.com/
+1912,iqiyi.com,0,http 0,https://iqiyi.com/
+1913,litix.io,0,http 0,https://litix.io/
+1914,thelancet.com,0,http 403,https://thelancet.com/
+1915,wikihow.com,1,ok,https://www.wikihow.com/Main-Page
+1916,paramountplus.com,1,ok,https://www.paramountplus.com/at/
+1917,pubmnet.com,0,http 0,https://pubmnet.com/
+1918,www.nhs.uk,1,ok,https://www.nhs.uk/
+1919,mapbox.com,1,ok,https://www.mapbox.com/
+1920,1drv.com,0,http 0,https://1drv.com/
+1921,t-bank-app.ru,0,http 0,https://t-bank-app.ru/
+1922,ctadns.cn,0,http 0,https://ctadns.cn/
+1923,mercadolibre.com,1,ok,https://mercadolibre.com/
+1924,deepintent.com,1,ok,https://deepintent.com/
+1925,mindbox.ru,0,http 0,https://mindbox.ru/
+1926,usgs.gov,0,http 0,https://usgs.gov/
+1927,canvas-user-content.com,0,http 0,https://canvas-user-content.com/
+1928,oreilly.com,0,http 403,https://www.oreilly.com/
+1929,appier.net,1,ok,https://www.appier.com/en/
+1930,livechatinc.com,1,ok,https://www.livechat.com/
+1931,themeisle.com,1,ok,https://themeisle.com/
+1932,git-scm.com,1,ok,https://git-scm.com/
+1933,iubenda.com,1,ok,https://www.iubenda.com/en/
+1934,dnse3.com,0,http 0,https://dnse3.com/
+1935,isappcloud.com,0,http 0,https://isappcloud.com/
+1936,moengage.com,0,http 403,https://moengage.com/
+1937,cpmstar.com,1,ok,https://www.cpmstar.com/
+1938,sprinthost.ru,0,http 0,https://sprinthost.ru/
+1939,wordwall.net,0,http 403,https://wordwall.net/
+1940,stripe.network,1,ok,https://stripe.com/se
+1941,russianpost.ru,0,http 0,https://russianpost.ru/
+1942,dnse4.com,0,http 0,https://dnse4.com/
+1943,1password.com,1,ok,https://1password.com/
+1944,aadrm.com,0,http 0,https://aadrm.com/
+1945,mozilla.net,0,http 0,https://mozilla.net/
+1946,amazon.eg,0,http 202,https://www.amazon.eg/
+1947,ninjarmm.com,0,http 403,https://ninjarmm.com/
+1948,fortinet.net,0,http 0,https://fortinet.net/
+1949,deepl-cdn.com,0,http 0,https://deepl-cdn.com/
+1950,wa.link,1,ok,https://create.wa.link/
+1951,fastcompany.com,0,http 403,https://www.fastcompany.com/
+1952,jamanetwork.com,0,http 403,https://jamanetwork.com/
+1953,pnas.org,0,http 403,https://pnas.org/
+1954,hetzner.com,0,http 302,https://www.hetzner.com/_ray/pow
+1955,euronews.com,1,ok,https://www.euronews.com:443/
+1956,bootstrapcdn.com,1,ok,https://www.bootstrapcdn.com/
+1957,rackspace.com,1,ok,https://www.rackspace.com:443/
+1958,usgovtrafficmanager.net,0,http 0,https://usgovtrafficmanager.net/
+1959,tld-servers.ru,0,http 0,https://tld-servers.ru/
+1960,squareup.com,0,http 403,https://squareup.com/
+1961,mitre.org,0,http 403,https://www.mitre.org/
+1962,m.me,0,http 400,https://m.me/
+1963,postrelease.com,0,http 403,https://postrelease.com/
+1964,vinted.fr,1,ok,https://www.vinted.fr/
+1965,richaudience.com,1,ok,https://richaudience.com/en/
+1966,dhl.com,0,http 301,https://www.dhl.com/
+1967,redditstatic.com,0,http 0,https://redditstatic.com/
+1968,threema.ch,1,ok,https://threema.com/en
+1969,igamecj.com,0,http 0,https://igamecj.com/
+1970,romarg.com,1,ok,https://romarg.com/
+1971,savvis.net,0,http 0,https://savvis.net/
+1972,cloudflarestorage.com,0,http 522,https://cloudflarestorage.com/
+1973,techtarget.com,0,http 403,https://techtarget.com/
+1974,lnkd.in,0,http 403,https://lnkd.in/
+1975,hwcdn.ru,0,http 0,https://hwcdn.ru/
+1976,sec.gov,0,http 403,https://sec.gov/
+1977,meetup.com,1,ok,https://www.meetup.com/
+1978,springserve.com,0,http 403,https://www.springserve.com/
+1979,strava.com,1,ok,https://www.strava.com/
+1980,ssrn.com,0,http 403,https://www.ssrn.com/
+1981,privacymanager.io,1,ok,https://liveramp.com/
+1982,freebsd.org,1,ok,https://www.freebsd.org/
+1983,logitech.com,1,ok,https://www.logitech.com/nl-nl
+1984,connatix.com,1,ok,https://jwx.com/
+1985,loopme.me,0,http 0,https://loopme.me/
+1986,acrobat.com,1,ok,https://acrobat.adobe.com/?x_api_client_id=acrobat_com
+1987,jhu.edu,0,http 403,https://www.jhu.edu/
+1988,clevertap-prod.com,0,type ?,https://clevertap-prod.com/
+1989,ed.gov,0,http 403,https://www.ed.gov/
+1990,tripod.com,0,http 0,https://tripod.com/
+1991,umeng.com,0,http 0,https://umeng.com/
+1992,sogou.com,1,ok,https://sogou.com/
+1993,truste.com,0,http 403,https://trustarc.com:443/
+1994,intentiq.com,1,ok,https://www.intentiq.com/
+1995,science.org,0,http 403,https://www.science.org/
+1996,gvt1-cn.com,0,http 404,https://gvt1-cn.com/
+1997,algolia.net,0,http 404,https://algolia.net/1/404
+1998,apple.news,1,ok,https://apple.news/
+1999,typepad.com,0,http 403,https://typepad.com/
+2000,wechat.com,1,ok,https://www.wechat.com/en
+2001,business.site,0,http 403,https://www.google.com/business/how-it-works/website/
+2002,secureserver.net,0,http 404,https://www.secureserver.net/
+2003,magnit.ru,1,ok,https://magnit.ru/
+2004,about.com,0,http 460,https://www.people.inc/
+2005,bitrixphone.com,0,http 0,https://bitrixphone.com/
+2006,iponweb.net,0,only 4508 bytes,https://iam.iponweb.net/auth/realms/iponweb/protocol/openid-connect/auth?approval_prompt=force&client_id=jira.iponweb.net&redirect_uri=https%3A%2F%2Fjira.iponweb.net%2Foauth2%2Fcallback&response_type=code&scope=openid+email+profile&state=rdNyc1-Qyg75RhqYzbkda85ZKsZi53tvJUdJCrNjKvU%3A%2F
+2007,getbootstrap.com,1,ok,https://getbootstrap.com/
+2008,hpe.com,0,http 301,https://www.hpe.com/
+2009,dondominio.com,1,ok,https://www.dondominio.com/es/
+2010,segment.com,0,http 403,https://www.twilio.com/en-us/segment
+2012,adsco.re,0,only 158 bytes,https://adsco.re/
+2013,hubspot.net,1,ok,https://www.hubspot.com/
+2014,ign.com,1,ok,https://de.ign.com/
+2015,vtb.ru,0,http 0,https://vtb.ru/
+2016,hotels.com,0,http 403,https://hotels.com/
+2017,sedoparking.com,0,only 4166 bytes,https://sedoparking.com/infopage/en/index.html
+2018,easy4ipcloud.com,0,http 0,https://easy4ipcloud.com/
+2019,wunderground.com,1,ok,https://www.wunderground.com/
+2020,matterport.com,1,ok,https://matterport.com/
+2023,ixl.com,1,ok,https://www.ixl.com/
+2024,automattic.com,1,ok,https://automattic.com/
+2025,astrumu.io,0,http 302,http://ww38.astrumu.io/
+2026,garenanow.com,0,http 0,https://garenanow.com/
+2027,app.link,0,http 403,https://app.link/
+2028,acronis.com,0,http 403,https://acronis.com/
+2029,bls.gov,0,http 403,https://www.bls.gov/
+2030,merkur.de,0,http 0,https://merkur.de/
+2031,discomax.com,0,http 0,https://discomax.com/
+2032,gizmodo.com,1,ok,https://gizmodo.com/
+2033,t2.ru,0,http 503,https://t2.ru/
+2034,wayground.com,0,http 202,https://wayground.com/
+2035,ueiwsp.com,0,http 403,https://ueiwsp.com/
+2036,npmjs.com,0,http 403,https://www.npmjs.com/
+2037,aibixby.com,0,http 0,https://aibixby.com/
+2038,gvt3.com,0,http 0,https://gvt3.com/
+2039,meitu.com,0,http 0,https://meitu.com/
+2040,adobelogin.com,0,http 0,https://adobelogin.com/
+2041,timeanddate.com,0,http 403,https://timeanddate.com/
+2042,earthlink.net,0,http 403,https://earthlink.net/
+2043,eskimi.com,1,ok,https://www.eskimi.com/
+2044,dropbox-dns.com,0,http 0,https://dropbox-dns.com/
+2045,lync.com,0,http 0,https://lync.com/
+2046,bitbucket.org,1,ok,https://bitbucket.org/
+2047,gamebanana.com,1,ok,https://gamebanana.com/
+2048,broadcom.com,1,ok,https://www.broadcom.com/
+2049,dnsv.jp,0,http 0,https://dnsv.jp/
+2050,salesforceliveagent.com,0,http 0,https://salesforceliveagent.com/
+2051,cloudfunctions.net,0,http 0,https://cloudfunctions.net/
+2052,exelator.com,0,http 302,http://www.exelate.com/
+2053,truecaller.com,1,ok,https://www.truecaller.com/
+2054,nic.io,1,ok,https://nic.io/
+2055,notion.so,1,ok,https://www.notion.com/
+2056,revenuecat.com,1,ok,https://www.revenuecat.com/
+2057,mastercard.com,0,http 403,https://www.mastercard.com/
+2058,globenewswire.com,0,http 301,https://www.globenewswire.com:443/
+2059,sonobi.com,1,ok,https://sonobi.com/
+2060,ingage.tech,0,http 403,https://ingage.tech/
+2061,primis.tech,0,http 301,https://www.primis.tech/
+2062,bplslb.com,0,http 0,https://bplslb.com/
+2063,evernote.com,0,http 403,https://evernote.com/
+2064,otm-r.com,0,http 0,https://otm-r.com/
+2065,cafe24.com,1,ok,https://www.cafe24.com/
+2066,yotpo.com,1,ok,https://www.yotpo.com:443/
+2067,hhs.gov,0,http 403,https://www.hhs.gov/
+2068,com.be,0,http 0,https://com.be/
+2069,ahrefs.com,1,ok,https://ahrefs.com/
+2070,aniview.com,1,ok,https://aniview.com/
+2071,mashable.com,1,ok,https://mashable.com/
+2072,blog.google,1,ok,https://blog.google/
+2073,dynamics.com,1,ok,https://www.microsoft.com/el-gr/dynamics-365/
+2074,fliphtml5.com,0,http 403,https://fliphtml5.com/
+2075,mwbsys.com,0,http 0,https://mwbsys.com/
+2076,ihg.com,0,http 403,https://ihg.com/
+2078,datto.com,0,http 403,https://www.datto.com/
+2079,hola.com,1,ok,https://www.hola.com/
+2080,ack.de,0,only 3653 bytes,https://www.ack.de/
+2081,telegra.ph,0,only 4576 bytes,https://telegra.ph/
+2082,ticketmaster.com,1,ok,https://www.ticketmaster.com/
+2083,mirtesen.ru,0,http 0,https://mirtesen.ru/
+2084,metamask.io,1,ok,https://metamask.io/
+2085,redd.it,1,ok,https://www.reddit.com/
+2086,sony.com,0,http 403,https://www.sony.com:443/
+2087,opera.technology,0,http 0,https://opera.technology/
+2088,adobess.com,0,http 0,https://adobess.com/
+2089,unicef.org,1,ok,https://www.unicef.org/
+2090,shodan.io,0,http 403,https://www.shodan.io/
+2092,rtve.es,1,ok,https://www.rtve.es/
+2093,aboutcookies.org,1,ok,https://www.aboutcookies.org/
+2094,ecdnx.com,0,http 0,https://ecdnx.com/
+2095,av380.net,0,http 0,https://av380.net/
+2096,samsungdm.com,0,http 0,https://samsungdm.com/
+2097,bytedance.com,0,http 0,https://bytedance.com/
+2098,tribalfusion.com,0,http 503,https://tribalfusion.com/
+2099,fyber.com,1,ok,https://www.digitalturbine.com/
+2100,ufl.edu,1,ok,https://www.ufl.edu/
+2101,wpsdns.com,0,http 0,https://wpsdns.com/
+2102,bybanking.com,0,http 0,https://bybanking.com/
+2103,kunlungr.com,0,http 0,https://kunlungr.com/
+2104,lin.ee,0,http 404,https://lin.ee/
+2105,vkvideo.ru,0,http 302,https://vkvideo.ru/?errorCode=11300&errorText=invalid+user&state=eyJzdGF0ZSI6IjFiMDU5MmUxLTk5MGYtNDI5NS1iNWExLTExMmU1ZWM0NTA1ZiIsInJldHVybl90byI6IlwvIiwiYXV0b2xvZ2luIjp0cnVlfQ%3D%3D
+2106,trustedstack.com,1,ok,https://trustedstack.com/
+2107,virtualearth.net,1,ok,https://www.bing.com/maps?FORM=LGCYVD
+2108,digicertdns.com,0,http 0,https://digicertdns.com/
+2109,posthog.com,1,ok,https://posthog.com/
+2110,umbrella.com,1,ok,https://umbrella.cisco.com/
+2111,ctlcdn.cn,0,http 0,https://ctlcdn.cn/
+2112,house.gov,1,ok,https://www.house.gov:443/
+2113,proofpoint.com,0,http 403,https://www.proofpoint.com/
+2114,auone.jp,0,http 403,https://portal.auone.jp/
+2115,mmcdn.com,0,only 940 bytes,https://mmcdn.com/
+2116,asu.edu,1,ok,https://www.asu.edu/
+2118,managed-vps.net,0,http 0,https://managed-vps.net/
+2119,serving-sys.ru,0,http 0,https://serving-sys.ru/
+2120,sap.com,0,http 403,https://www.sap.com/
+2121,gallup.com,1,ok,https://www.gallup.com/home.aspx
+2122,liquipedia.net,0,http 403,https://liquipedia.net/
+2123,barnesandnoble.com,1,ok,https://www.barnesandnoble.com/
+2124,trip.com,1,ok,https://nl.trip.com/?locale=nl-nl
+2125,openssl.org,0,http 403,https://openssl.org/
+2126,adkernel.com,1,ok,https://adkernel.com/
+2127,apple-cloudkit.com,0,http 0,https://apple-cloudkit.com/
+2128,transip.nl,1,ok,https://www.transip.nl/
+2129,sureserver.com,0,http 0,https://sureserver.com/
+2130,iscorp.com,0,http 403,https://iscorp.com/
+2131,nodejs.org,1,ok,https://nodejs.org/en
+2132,americanexpress.com,0,http 403,https://americanexpress.com/
+2133,pwc.com,0,http 403,https://www.pwc.com/
+2134,engadget.com,1,ok,https://www.engadget.com/
+2135,queniuck.com,0,http 0,https://queniuck.com/
+2136,match.com,0,http 403,https://www.match.com/
+2137,feishu.cn,0,http 0,https://feishu.cn/
+2138,mgid.com,1,ok,https://www.mgid.com/
+2139,medicalnewstoday.com,1,ok,https://www.medicalnewstoday.com/
+2140,symantec.com,1,ok,https://www.broadcom.com/products/cybersecurity
+2141,census.gov,1,ok,https://www.census.gov/
+2142,typekit.com,1,ok,https://fonts.adobe.com/?ref=tk.com
+2143,itu.int,0,only 246 bytes,https://www.itu.int/
+2144,onmicrosoft.com,0,http 0,https://onmicrosoft.com/
+2146,adsmoloco.com,0,only 2999 bytes,https://adsmoloco.com/
+2147,ay.delivery,1,ok,https://ay.delivery/
+2148,semrush.com,0,http 403,https://semrush.com/
+2149,onrender.com,0,http 0,https://onrender.com/
+2150,msappproxy.net,0,http 0,https://msappproxy.net/
+2151,constantcontact.com,0,http 403,https://www.constantcontact.com/
+2152,unity.com,0,http 403,https://unity.com/
+2153,semanticscholar.org,1,ok,https://www.semanticscholar.org/
+2154,geoedge.be,0,http 0,https://geoedge.be/
+2155,magonet.ru,0,http 0,https://magonet.ru/
+2156,simpli.fi,1,ok,https://simpli.fi/
+2157,laravel.com,1,ok,https://laravel.com/
+2158,snowflake.com,1,ok,https://www.snowflake.com/en/
+2159,armgs.team,0,http 301,https://sreda.digital.gov.ru/
+2160,vlr.gg,1,ok,https://www.vlr.gg/
+2161,justice.gov,0,http 401,https://www.justice.gov/
+2162,hsforms.com,0,http 0,https://hsforms.com/
+2163,ad.gt,0,http 404,https://ad.gt/
+2165,russianfood.com,1,ok,https://www.russianfood.com/
+2166,leparisien.fr,0,http 403,https://www.leparisien.fr:443/
+2167,variety.com,1,ok,https://variety.com/
+2168,freefiremobile.com,0,http 0,https://freefiremobile.com/
+2169,didiglobal.com,1,ok,https://didiglobal.com/
+2170,sharethis.com,1,ok,https://sharethis.com/
+2171,cymru.com,1,ok,https://www.team-cymru.com/
+2173,constellix.com,1,ok,https://constellix.digicert.com/
+2174,garena.com,1,ok,https://intl.garena.com/
+2175,cpanel.com,0,http 403,https://www.cpanel.net/
+2176,trialpay.com,0,http 0,https://trialpay.com/
+2177,customer.io,1,ok,https://customer.io/
+2178,liftoff-creatives.io,0,http 0,https://liftoff-creatives.io/
+2179,snapkit.com,1,ok,https://developers.snap.com/
+2180,0xrpc.io,1,ok,https://0xrpc.github.io/
+2181,granbluefantasy.jp,1,ok,https://granbluefantasy.com/ja/
+2182,politico.com,0,http 403,https://www.politico.com:443/
+2183,generatepress.com,1,ok,https://generatepress.com/
+2184,verizon.com,1,ok,https://www.verizon.com/
+2185,dropboxusercontent.com,0,http 0,https://dropboxusercontent.com/
+2186,cctv.com,0,http 0,https://cctv.com/
+2187,ccgateway.net,0,http 0,https://ccgateway.net/
+2188,unruly.co,0,http 403,https://unruly.co/
+2189,disdarrummers.shop,1,ok,https://disdarrummers.shop/vpn/en/
+2190,mozgcp.net,0,http 0,https://mozgcp.net/
+2191,thousandeyes.com,0,http 403,https://www.thousandeyes.com/
+2192,chartbeat.net,0,http 0,https://chartbeat.net/
+2193,forebet.com,0,http 403,https://forebet.com/
+2196,a-mx.com,0,http 0,https://a-mx.com/
+2197,uiuc.edu,0,http 0,https://uiuc.edu/
+2199,in.net,0,http 0,https://in.net/
+2200,eltiempo.es,1,ok,https://www.eltiempo.es/
+2201,openwebmp.com,0,http 0,https://openwebmp.com/
+2202,rr.com,0,http 0,https://rr.com/
+2203,myvzw.com,0,http 0,https://myvzw.com/
+2204,split.io,1,ok,https://www.split.io/
+2206,scryfall.com,1,ok,https://scryfall.com/
+2207,amp-endpoint3.com,0,http 0,https://amp-endpoint3.com/
+2209,suruga-ya.jp,0,http 403,https://www.suruga-ya.jp/
+2210,secu100.net,0,http 0,https://secu100.net/
+2211,quantummetric.com,1,ok,https://www.quantummetric.com/
+2212,tiqcdn.com,0,http 0,https://tiqcdn.com/
+2213,im-apps.net,0,http 403,https://im-apps.net/
+2214,duke.edu,1,ok,https://www.duke.edu/
+2215,cookiebot.com,0,http 403,https://cookiebot.com/
+2216,dnsip.com,0,http 0,https://dnsip.com/
+2217,unc.edu,1,ok,https://www.unc.edu/
+2218,useinsider.com,1,ok,https://insiderone.com/
+2219,doppiocdn.com,0,http 0,https://doppiocdn.com/
+2220,adswizz.com,1,ok,https://www.adswizz.com/
+2222,1688.com,0,http 0,https://1688.com/
+2223,oaiusercontent.com,0,http 0,https://oaiusercontent.com/
+2224,purdue.edu,1,ok,https://purdue.edu/
+2225,ucoz.ru,1,ok,https://www.ucoz.ru/
+2226,hotmail.com,0,http 417,https://outlook.live.com/mail/
+2227,clients-cdnnow.ru,0,http 0,https://clients-cdnnow.ru/
+2228,tdnsv5.com,0,http 0,https://tdnsv5.com/
+2229,messenger.com,0,only 882 bytes,https://www.messenger.com/
+2231,wpengine.com,1,ok,https://wpengine.com/
+2232,feedburner.com,0,only 1362 bytes,https://feedburner.google.com/
+2233,elastic.co,0,http 403,https://elastic.co/
+2234,nipr.mil,0,http 0,https://nipr.mil/
+2235,asana.com,1,ok,https://asana.com/
+2236,cc-ecdn.net,0,http 0,https://cc-ecdn.net/
+2237,spbycdn.com,0,http 0,https://spbycdn.com/
+2238,afraid.org,0,http 0,https://afraid.org/
+2239,khanacademy.org,0,only 3036 bytes,https://www.khanacademy.org/
+2240,bazaarvoice.com,1,ok,https://www.bazaarvoice.com/
+2241,adjoe.zone,0,http 404,https://adjoe.zone/
+2242,innovid.com,1,ok,https://www.innovid.com/
+2243,gos-gsp.io,0,http 0,https://gos-gsp.io/
+2245,weather.gov,1,ok,https://www.weather.gov/
+2246,caliente.mx,1,ok,https://www.caliente.mx/
+2247,flashscore.com.ng,0,http 403,https://flashscore.com.ng/
+2249,izy0.com,1,ok,https://izy0.com/
+2251,ionos.de,1,ok,https://www.ionos.de/
+2252,geocomply.com,0,http 403,https://www.geocomply.com//
+2254,microsoftpersonalcontent.com,0,http 0,https://microsoftpersonalcontent.com/
+2255,ad-delivery.net,0,type application/xml;,https://ad-delivery.net/
+2256,spaceweb.ru,0,http 0,https://spaceweb.ru/
+2257,redbus.in,0,http 403,https://www.redbus.in:443/
+2258,techradar.com,1,ok,https://global.techradar.com/nl-nl
+2259,photobucket.com,1,ok,https://photobucket.com/
+2260,diretta.it,1,ok,https://www.diretta.it/
+2261,www.gob.mx,0,http 403,https://www.gob.mx/
+2263,nyu.edu,0,http 403,https://www.nyu.edu/
+2264,grafana.com,0,http 403,https://grafana.com/
+2265,nflxext.com,0,http 0,https://nflxext.com/
+2266,medu.ir,0,http 0,https://medu.ir/
+2267,quantcount.com,0,http 0,https://quantcount.com/
+2269,made-in-china.com,1,ok,https://www.made-in-china.com/
+2270,bixbyllm.com,0,http 0,https://bixbyllm.com/
+2271,sport24.gr,0,http 403,https://sport24.gr/
+2272,ibps.in,0,http 0,https://ibps.in/
+2273,vox.com,1,ok,https://www.vox.com/
+2274,fullstory.com,1,ok,https://www.fullstory.com/
+2275,libero.it,1,ok,https://www.libero.it/
+2276,dnsv5.com,0,http 0,https://dnsv5.com/
+2278,hoyoverse.com,0,only 2466 bytes,https://www.hoyoverse.com/
+2279,easytrader.ir,1,ok,https://easytrader.ir/
+2280,kinopoisk.ru,0,http 0,https://kinopoisk.ru/
+2281,nontondrama.my,0,http 0,https://nontondrama.my/
+2282,mintegral.net,1,ok,https://www.mintegral.com/en
+2283,football.com,1,ok,https://www.football.com/livescore
+2284,lego.com,0,http 403,https://www.lego.com/
+2285,trellix.com,0,http 301,https://www.trellix.com/
+2286,marketingcloudapis.com,0,http 0,https://marketingcloudapis.com/
+2287,kde.org,1,ok,https://kde.org/
+2288,qianxun.com,0,http 0,https://qianxun.com/
+2289,tube8.fr,1,ok,https://www.tube8.fr/
+2290,takarakuji-official.jp,0,http 0,https://takarakuji-official.jp/
+2291,rspamd.com,0,http 0,https://rspamd.com/
+2293,websupport.sk,1,ok,https://www.websupport.sk/
+2294,icann.org,0,http 403,https://www.icann.org/
+2295,infocyte.com,0,http 0,https://infocyte.com/
+2296,mparticle.com,0,http 0,https://mparticle.com/
+2297,screenconnect.com,1,ok,https://www.screenconnect.com/
+2298,desikahani2.net,1,ok,https://www.desikahani2.net/
+2300,crowdstrike.com,1,ok,https://www.crowdstrike.com/en-us/
+2301,ria.ru,1,ok,https://ria.ru/
+2302,tynt.com,0,only 4357 bytes,https://tynt.com/
+2303,yximgs.com,0,http 0,https://yximgs.com/
+2304,loteriasdominicanas.com,0,http 403,https://loteriasdominicanas.com/
+2306,msu.edu,0,only 212 bytes,https://msu.edu/
+2307,wac-dc-msedge.net,0,http 0,https://wac-dc-msedge.net/
+2308,network-auth.com,0,http 0,https://network-auth.com/
+2309,sendbird.com,1,ok,https://sendbird.com/
+2310,tospotify.com,0,http 0,https://tospotify.com/
+2311,onetrust.io,0,http 0,https://onetrust.io/
+2312,lolpol3.com,1,ok,https://lolpol3.com/
+2313,zeasn.tv,1,ok,https://www.whaletv.com/
+2315,betway.co.bw,1,ok,https://www.betway.co.bw/
+2318,doordash.com,0,http 403,https://doordash.com/
+2319,vidoyu.space,0,http 403,https://vidoyu.space/
+2320,winner.bet,0,http 403,https://winner.bet/sportsbook/upcoming
+2321,franceinfo.fr,0,http 403,https://franceinfo.fr/
+2322,av19t.com,0,http 403,https://av19t.com/
+2323,heovl.im,0,http 403,https://heovl.im/
+2324,xn--l3ca4b6dsc1b.com,1,ok,https://xn--l3ca4b6dsc1b.com/
+2325,sl-reverse.com,0,http 0,https://sl-reverse.com/
+2326,morlento.vip,0,http 0,https://morlento.vip/
+2329,thenkiri.com,1,ok,https://thenkiri.com/
+2330,centrastage.net,0,http 0,https://centrastage.net/
+2331,videoxx.com,1,ok,https://www.xvideos.com/
+2332,zelvora.vip,0,http 0,https://zelvora.vip/
+2333,i993.com,1,ok,https://i993.com/
+2334,tvmon1.com,1,ok,https://tvmon1.com/
+2335,kasserver.com,0,http 0,https://kasserver.com/
+2336,educationportal3.in,1,ok,https://educationportal3.in/
+2337,smailru.net,0,http 0,https://smailru.net/
+2338,energy.gov,1,ok,https://www.energy.gov/
+2339,axon.ai,0,http 403,https://www.applovin.com:443/
+2340,atom.com,1,ok,https://www.atom.com/
+2341,123tt.ru,0,http 0,https://123tt.ru/
+2342,filmyfly.fail,1,ok,https://filmyfly.army/
+2343,so.com,1,ok,https://www.so.com/?src=so.com
+2344,klarna.com,0,http 403,https://www.klarna.com/
+2346,verkada.com,1,ok,https://www.verkada.com/
+2347,adtelligent.com,1,ok,https://adtelligent.com/
+2348,ezvizru.com,0,http 0,https://ezvizru.com/
+2349,inmotionhosting.com,0,http 403,https://inmotionhosting.com/
+2350,bigcartel.com,1,ok,https://www.bigcartel.com/
+2351,nielsen.com,1,ok,https://www.nielsen.com/
+2352,a.co,0,http 202,https://www.amazon.com/
+2353,bunny.net,1,ok,https://bunny.net/
+2354,shorturl.at,0,http 403,https://shorturl.at/
+2355,chartboost.com,0,http 403,https://loopme.com/chartboost/
+2356,test-cdn-kkk.com,0,http 0,https://test-cdn-kkk.com/
+2357,gameanalytics.com,1,ok,https://www.gameanalytics.com/
+2358,altervista.org,1,ok,https://en.altervista.org/
+2359,oculus.com,0,http 400,https://www.meta.com/quest/
+2360,example.org,0,only 713 bytes,https://example.org/
+2361,umd.edu,1,ok,https://umd.edu/
+2362,java.com,1,ok,https://www.java.com/en/
+2363,supersonicads.com,0,http 0,https://supersonicads.com/
+2364,smi2.net,0,http 0,https://smi2.net/
+2365,sascdn.com,0,http 301,https://sascdn.com:443/
+2366,adthrive.com,0,http 403,https://adthrive.com/
+2367,infomaniak.com,1,ok,https://www.infomaniak.com/fr
+2368,congress.gov,0,http 403,https://congress.gov/
+2369,mysecurecloudhost.com,1,ok,https://mysecurecloudhost.com/
+2370,hyatt.com,0,http 403,https://hyatt.com/
+2371,fbpigeon.com,0,http 0,https://fbpigeon.com/
+2372,aws-prd.net,0,http 0,https://aws-prd.net/
+2373,hihonor.com,1,ok,https://www.honor.com/benelux/
+2374,surfshark.com,1,ok,https://surfshark.com/
+2375,discordapp.net,0,http 0,https://discordapp.net/
+2376,wsglb0.com,0,http 0,https://wsglb0.com/
+2377,coinmarketcap.com,1,ok,https://coinmarketcap.com/
+2378,samba.tv,1,ok,https://samba.tv/
+2379,web.dev,1,ok,https://web.dev/
+2380,x5.ru,1,ok,https://www.x5.ru/ru/
+2381,idnes.cz,1,ok,https://www.idnes.cz/
+2382,inc.com,0,http 403,https://www.inc.com/
+2383,privacy-center.org,0,http 0,https://privacy-center.org/
+2384,co.com,0,only 255 bytes,https://co.com/
+2385,ford.com,0,http 403,https://www.ford.com/
+2386,tq-tungsten.com,0,http 0,https://tq-tungsten.com/
+2387,adp.com,0,http 403,https://www.adp.com/
+2388,bt.co,0,http 0,https://bt.co/
+2389,windy.com,0,http 403,https://windy.com/
+2390,dtscout.com,1,ok,https://www.dtscout.com/
+2391,webgo.de,1,ok,https://webgo.de/
+2392,samsungelectronics.com,0,http 0,https://samsungelectronics.com/
+2393,samsungconsent.com,0,http 0,https://samsungconsent.com/
+2394,jimdofree.com,0,http 0,https://jimdofree.com/
+2395,wtxcdn.com,0,http 0,https://wtxcdn.com/
+2396,zdassets.com,0,http 0,https://zdassets.com/
+2398,mpg.de,1,ok,https://www.mpg.de/de
+2399,mos.ru,1,ok,https://www.mos.ru/
+2400,utoronto.ca,1,ok,https://www.utoronto.ca/
+2401,miro.com,1,ok,https://miro.com/
+2402,distmed.com,0,http 0,https://distmed.com/
+2403,mobolize.com,1,ok,https://mobolize.com/
+2404,mixcloud.com,0,http 403,https://www.mixcloud.com/
+2406,crunchyroll.com,0,http 403,https://crunchyroll.com/
+2407,xhplus.live,1,ok,https://xhplus.live/
+2408,mwscdn.ru,0,http 0,https://mwscdn.ru/
+2409,tappx.com,1,ok,https://www.tappx.com/
+2410,ny.gov,1,ok,https://www.ny.gov/
+2411,tidal.com,0,http 403,https://tidal.com/
+2412,netscape.com,1,ok,https://www.aol.com:443/
+2413,geotrust.com,1,ok,https://www.geotrust.com/
+2414,hbomax.com,1,ok,https://www.hbomax.com/
+2415,coinbase.com,0,http 403,https://coinbase.com/
+2417,notion.site,1,ok,https://www.notion.com/
+2418,inbake.com,0,http 0,https://inbake.com/
+2420,trustindex.io,1,ok,https://www.trustindex.io/
+2421,nba.com,1,ok,https://www.nba.com/
+2422,canonical.com,1,ok,https://canonical.com/
+2423,ioam.de,0,http 403,https://ioam.de/
+2424,senate.gov,0,http 403,https://senate.gov/
+2425,inmobicdn.net,0,http 0,https://inmobicdn.net/
+2426,okx.com,1,ok,https://www.okx.com/en-eu
+2427,meituan.com,0,http 0,https://meituan.com/
+2428,nic.uk,0,http 0,https://nic.uk/
+2429,last.fm,1,ok,https://www.last.fm/
+2430,usc.edu,1,ok,https://usc.edu/
+2431,pypi.org,1,ok,https://pypi.org/
+2432,juicyscore.com,0,http 0,https://juicyscore.com/
+2433,opensource.org,1,ok,https://opensource.org/
+2434,dnspod.com,0,challenge phrase,https://www.dnspod.com/
+2435,moodle.com,1,ok,https://moodle.com/
+2436,semasio.net,0,http 0,https://semasio.net/
+2437,imf.org,0,http 403,https://imf.org/
+2438,ringcentral.com,0,http 403,https://www.ringcentral.com/
+2439,pubnative.net,0,http 403,https://pubnative.net/
+2441,nejm.org,0,http 403,https://nejm.org/
+2442,traffmonetizer.com,1,ok,https://traffmonetizer.com/
+2443,rollingstone.com,1,ok,https://www.rollingstone.com/
+2444,oath.cloud,0,http 0,https://oath.cloud/
+2445,auth0edge.com,0,http 0,https://auth0edge.com/
+2446,iheart.com,0,http 406,https://www.iheart.com/
+2447,lausd.net,0,http 0,https://lausd.net/
+2448,sparteo.com,0,http 403,https://corporate.sparteo.com/
+2449,indriverapp.com,0,http 0,https://indriverapp.com/
+2450,novelix.vip,0,http 0,https://novelix.vip/
+2451,istockphoto.com,1,ok,https://www.istockphoto.com/de
+2452,home-assistant.io,1,ok,https://www.home-assistant.io/
+2453,bollyflix.free,0,http 403,https://bollyflix.free/
+2454,lgsmartad.com,0,http 0,https://lgsmartad.com/
+2455,callrail.com,1,ok,https://www.callrail.com/
+2456,upwork.com,0,http 403,https://upwork.com/
+2457,nordvpn.com,0,http 403,https://nordvpn.com/
+2458,weibo.cn,1,ok,https://weibo.cn/pub/
+2459,ohmy.bid,1,ok,https://ohmy.bid/
+2460,nrk.no,0,http 403,https://nrk.no/
+2461,ucdavis.edu,1,ok,https://www.ucdavis.edu/
+2462,pullcm.com,0,http 0,https://pullcm.com/
+2463,ctripgslb.net,0,http 0,https://ctripgslb.net/
+2464,strato.de,1,ok,https://www.strato.de/
+2465,mojohost.com,1,ok,https://mojohost.com/
+2466,ey.com,1,ok,https://www.ey.com/nl_nl
+2467,redditmedia.com,1,ok,https://www.reddit.com/
+2468,de.com,1,ok,https://de.com/
+2469,slate.com,1,ok,https://slate.com/
+2470,web.de,1,ok,https://web.de/
+2471,lww.com,0,http 403,https://lww.com/
+2472,ubc.ca,1,ok,https://www.ubc.ca:443/
+2473,applvn.com,0,http 0,https://applvn.com/
+2474,collegeboard.org,0,http 403,https://www.collegeboard.org/
+2475,streamrizz.com,0,http 404,https://streamrizz.com/
+2476,igodigital.com,0,http 0,https://igodigital.com/
+2477,here.com,1,ok,https://www.here.com:443/
+2478,immunet.com,0,http 0,https://immunet.com/
+2479,elster.de,1,ok,https://www.elster.de/eportal/start
+2480,evergage.com,1,ok,https://www.salesforce.com/marketing/personalization/?bc=OTH
+2481,oaistatic.com,0,http 404,https://oaistatic.com/
+2482,2gis.ru,0,http 0,https://2gis.ru/
+2483,cdek.ru,0,only 1766 bytes,https://cdek.ru/
+2484,digg.com,1,ok,https://digg.com/
+2485,abcnews.com,1,ok,https://abcnews.com/
+2486,polymarket.com,1,ok,https://polymarket.com/
+2487,ads-twitter.com,0,http 0,https://ads-twitter.com/
+2488,gmx.net,1,ok,https://www.gmx.net/
+2489,linkis.ru,0,http 0,https://linkis.ru/
+2490,volces.com,0,http 0,https://volces.com/
+2491,meslibertines.com,0,http 403,https://meslibertines.com/
+2492,imoim.net,0,http 0,https://imoim.net/
+2493,admatic.de,1,ok,https://admatic.de/
+2494,yammer.com,0,only 1571 bytes,https://engage.cloud.microsoft/main/feed
+2495,steamcontent.com,0,http 0,https://steamcontent.com/
+2496,urbanairship.com,1,ok,https://www.airship.com/
+2497,ssa.gov,0,http 0,https://ssa.gov/
+2498,travixo.vip,0,http 0,https://travixo.vip/
+2499,getyourguide.com,0,http 403,https://www.getyourguide.com/
+2500,claude.com,1,ok,https://claude.com/
+2501,ifeng.com,0,http 0,https://ifeng.com/
+2502,gettyimages.com,0,http 403,https://gettyimages.com/
+2503,vercel-dns-013.com,0,http 0,https://vercel-dns-013.com/
+2504,xxpkg.com,0,http 0,https://xxpkg.com/
+2505,auth0app.com,0,http 0,https://auth0app.com/
+2506,onedrive.com,1,ok,https://www.microsoft.com/de-de/microsoft-365/onedrive/online-cloud-storage
+2507,hdhub4u.bi,1,ok,https://hdhub4u.bi/
+2508,douban.com,0,http 0,https://douban.com/
+2509,scopely.io,0,http 0,https://scopely.io/
+2510,accenture.com,0,http 0,https://accenture.com/
+2511,ssl.com,1,ok,https://www.ssl.com/
+2512,mlstatic.com,0,http 0,https://mlstatic.com/
+2513,ztomy.com,0,http 0,https://ztomy.com/
+2514,pcmag.com,0,http 403,https://www.pcmag.com/
+2515,knt9.xyz,0,http 404,https://knt9.xyz/
+2516,lastpass.com,1,ok,https://www.lastpass.com/
+2517,videeyss.shop,1,ok,https://videeyss.shop/
+2518,arizona.edu,1,ok,https://www.arizona.edu/
+2519,wetransfer.com,0,http 202,https://wetransfer.com/
+2521,apachefriends.org,1,ok,https://www.apachefriends.org/
+2522,filmyfly.green,1,ok,https://filmyfly.army/
+2523,afilias-nst.info,0,http 0,https://afilias-nst.info/
+2524,5movierulz.kitchen,1,ok,https://www.5movierulz.forex/
+2525,xnhau.show,1,ok,https://xnhau.soy/
+2526,cukrarnauandela.cz,1,ok,https://alexismania.com/
+2527,dpboss.tax,1,ok,https://dpboss.tax/
+2528,paywb.com,0,http 0,https://paywb.com/
+2529,captcha-delivery.com,0,http 0,https://captcha-delivery.com/
+2530,mp4moviez.rip,1,ok,https://www.mp4moviez5.com/
+2531,moviesdatamil.me,1,ok,https://moviezda.net/
+2532,5movierulz.watch,0,http 0,https://5movierulz.watch/
+2533,sharepointonline.com,0,http 0,https://sharepointonline.com/
+2534,hdhub4u.af,0,http 0,https://hdhub4u.af/
+2535,mingky08.tv,0,http 403,https://mingky51.net/
+2536,5movierulz.plumbing,1,ok,https://www.5movierulz.forex/
+2537,moviezwap.taxi,1,ok,https://www.moviezwap.codes/
+2538,moviesdatamil.co,1,ok,https://moviezda.net/
+2539,xnhau.pics,1,ok,https://xnhau.soy/
+2540,ydparty06.tv,0,http 403,https://ydparty09.tv/
+2541,filmyzilla63.com,1,ok,https://www.filmyzilla70.com/
+2542,filmywap.technology,1,ok,https://www.filmywap.doctor/
+2543,filmyzilla56.com,1,ok,https://www.filmyzilla70.com/
+2544,azure-dns.net,0,http 0,https://azure-dns.net/
+2545,xnhau.ink,1,ok,https://xnhau.soy/
+2546,filmyzilla62.com,1,ok,https://www.filmyzilla70.com/
+2547,dpbosssss.boston,1,ok,https://dpboss.tax/
+2548,5movierulz.pictures,1,ok,https://www.5movierulz.forex/
+2550,blacktoon418.com,1,ok,https://blacktoon423.com/
+2551,moviesdatamil.net,1,ok,https://moviezda.net/
+2552,pphosted.com,0,http 0,https://pphosted.com/
+2553,audible.com,1,ok,https://www.audible.com/
+2554,msecnd.net,0,http 0,https://msecnd.net/
+2555,zend.com,1,ok,https://www.zend.com/
+2556,tmall.com,0,http 0,https://tmall.com/
+2557,hath.network,0,http 0,https://hath.network/
+2558,e-msedge.net,0,http 0,https://e-msedge.net/
+2559,siriusxm.com,0,http 403,https://www.siriusxm.com/
+2560,yr.no,1,ok,https://www.yr.no/nb
+2561,aibotplatform.com,0,http 0,https://aibotplatform.com/
+2562,railway.app,1,ok,https://railway.com/
+2563,samsungapis.com,0,http 0,https://samsungapis.com/
+2564,ps.kz,1,ok,https://www.ps.kz/
+2565,wayfair.com,0,http 403,https://www.wayfair.com/
+2566,gccdn.net,0,http 0,https://gccdn.net/
+2567,scmp.com,1,ok,https://www.scmp.com/
+2568,doubao.com,1,ok,https://www.doubao.com/chat/
+2569,ureca-lab.com,0,http 0,https://ureca-lab.com/
+2570,entrepreneur.com,1,ok,https://www.entrepreneur.com/
+2571,snapcraft.io,1,ok,https://snapcraft.io/
+2572,donga.com,1,ok,https://www.donga.com/
+2573,spb.ru,0,http 0,https://spb.ru/
+2574,gboxlab.com,1,ok,https://gboxlab.com/
+2575,churnzero.net,0,http 429,https://churnzero.com:443/
+2576,hollywoodreporter.com,1,ok,https://www.hollywoodreporter.com/
+2577,peacocktv.com,1,ok,https://www.peacocktv.com/unavailable
+2578,ogury.io,0,http 0,https://ogury.io/
+2580,jwplayer.com,0,http 403,https://jwplayer.com/
+2581,visa.com,0,only 612 bytes,https://www.visa.com/
+2582,rockstargames.com,0,only 3546 bytes,https://www.rockstargames.com/
+2583,illinois.edu,1,ok,https://illinois.edu/
+2584,supercdn.ru,0,http 0,https://supercdn.ru/
+2585,brightspace.com,0,http 403,https://www.d2l.com:443/
+2586,baifentan.com,0,http 0,https://baifentan.com/
+2587,disney.com,1,ok,https://www.disney.com/
+2588,kgslb.com,0,http 0,https://kgslb.com/
+2589,ibb.co,1,ok,https://imgbb.com/
+2590,resume.com,0,http 403,https://resume.com/
+2591,qz.com,0,http 403,https://qz.com/
+2592,googlesource.com,0,http 503,https://googlesource.com/
+2593,slackb.com,0,http 404,https://slackb.com/
+2594,cursorvm.com,0,http 0,https://cursorvm.com/
+2595,tiktokglobalshopv.com,0,http 404,https://tiktokglobalshopv.com/
+2596,wikia.com,0,http 403,https://community.fandom.com/
+2597,sfmc-marketing.com,0,http 0,https://sfmc-marketing.com/
+2598,zeit.de,0,http 0,https://zeit.de/
+2599,mgts.ru,0,http 0,https://mgts.ru/
+2600,powerbi.com,1,ok,https://app.powerbi.com/
+2601,rt.com,1,ok,https://www.rt.com/
+2602,axios.com,0,http 403,https://www.axios.com/
+2603,bumlam.com,0,http 0,https://bumlam.com/
+2604,sfr.fr,1,ok,https://www.sfr.fr/
+2605,browser-intake-us5-datadoghq.com,0,http 0,https://browser-intake-us5-datadoghq.com/
+2606,pacloudflare.com,0,http 0,https://pacloudflare.com/
+2607,fotmob.com,1,ok,https://www.fotmob.com/
+2609,lgtvsdp.com,0,http 0,https://lgtvsdp.com/
+2610,flaticon.com,0,http 403,https://www.flaticon.com/
+2611,like.video,0,only 1668 bytes,https://likee.video/notfound
+2612,slashdot.org,1,ok,https://slashdot.org/
+2613,expressapisv2.net,0,only 319 bytes,https://expressapisv2.net/
+2614,oraclecloud.net,0,http 0,https://oraclecloud.net/
+2615,ethz.ch,0,http 404,https://ethz.ch/de.html
+2616,optimove.net,0,http 403,https://optimove.net/
+2617,weplayapp.com,0,only 3694 bytes,https://weplayapp.com/
+2618,olympics.com,0,http 403,https://olympics.com/
+2620,rainberrytv.com,1,ok,https://rainberrytv.com/
+2621,isnssdk.com,0,http 0,https://isnssdk.com/
+2622,lfstrm.tv,0,http 0,https://lfstrm.tv/
+2623,ccc.de,1,ok,https://www.ccc.de/
+2624,mosspf.net,0,http 0,https://mosspf.net/
+2625,webrootcloudav.com,0,http 0,https://webrootcloudav.com/
+2626,colorado.edu,1,ok,https://www.colorado.edu/
+2627,dhs.gov,0,http 403,https://dhs.gov/
+2628,technologyreview.com,1,ok,https://www.technologyreview.com/
+2629,sfgate.com,1,ok,https://www.sfgate.com/
+2630,eurodns.com,1,ok,https://www.eurodns.com/
+2631,histats.com,1,ok,https://www.histats.com/
+2632,perl.org,1,ok,https://www.perl.org/
+2633,cve.org,0,only 880 bytes,https://www.cve.org/
+2634,urldefense.com,1,ok,https://zenweb.proofpoint.com/urldefense?locale=en-US
+2635,mediago.io,1,ok,https://www.mediago.com:443/
+2636,script.ac,0,http 0,https://script.ac/
+2637,queniucf.com,0,http 0,https://queniucf.com/
+2638,lgthinq.com,0,http 0,https://lgthinq.com/
+2639,stratoserver.net,0,http 0,https://stratoserver.net/
+2640,pxf.io,0,http 403,https://pxf.io/
+2641,snssdk.com,0,http 0,https://snssdk.com/
+2642,capitalonegslbex.com,0,http 0,https://capitalonegslbex.com/
+2643,instacart.com,1,ok,https://www.instacart.com/
+2644,flurry.com,1,ok,https://www.flurry.com/
+2645,akaquill.net,0,http 0,https://akaquill.net/
+2646,csdn.net,0,http 0,https://csdn.net/
+2647,itv.com,0,http 301,https://www.itv.com/
+2648,parallels.com,1,ok,https://www.parallels.com/
+2650,matomo.org,1,ok,https://matomo.org/
+2651,northwestern.edu,1,ok,https://www.northwestern.edu/
+2652,drupal.org,0,only 3036 bytes,https://www.drupal.org/
+2653,dropboxapi.com,1,ok,https://www.dropbox.com/developers
+2654,tutu.ru,0,http 0,https://tutu.ru/
+2655,dnsv4.com,0,http 0,https://dnsv4.com/
+2656,tizen.org,0,http 403,https://tizen.org/
+2657,aditude.io,1,ok,https://www.aditude.com/
+2658,sslip.io,1,ok,https://nip.io/
+2659,strpst.com,0,http 0,https://strpst.com/
+2660,roskazna.ru,0,http 0,https://roskazna.ru/
+2661,ndtv.com,0,http 403,https://www.ndtv.com/
+2662,protechts.net,0,http 403,https://protechts.net/
+2663,kuaishou.com,0,http 0,https://kuaishou.com/
+2664,wshareit.com,1,ok,https://www.wshareit.com/
+2665,easybrain.com,1,ok,https://easybrain.com/
+2666,tenable.com,1,ok,https://www.tenable.com/
+2668,sjtu.edu.cn,0,http 0,https://sjtu.edu.cn/
+2669,bcelive.com,0,http 0,https://bcelive.com/
+2670,ns.ph,0,http 0,https://ns.ph/
+2671,firwinds.site,0,http 0,https://firwinds.site/
+2672,ikarem.io,0,http 0,https://ikarem.io/
+2673,heise.de,1,ok,https://www.heise.de/
+2674,vtex.com,1,ok,https://www.vtex.com/en-us
+2675,uribl.com,1,ok,https://uribl.com/
+2676,coe.int,0,http 0,https://coe.int/
+2677,ti.com,0,http 0,https://ti.com/
+2678,edge.apple,0,http 0,https://edge.apple/
+2679,thehill.com,0,http 403,https://thehill.com/
+2680,getpocket.com,1,ok,https://getpocket.com/home
+2681,bcvcdn.com,0,http 0,https://bcvcdn.com/
+2682,indazn.com,0,http 0,https://indazn.com/
+2683,icndns.net,0,http 0,https://icndns.net/
+2684,visualwebsiteoptimizer.com,1,ok,https://wingify.com/
+2685,alibabacorp.com,0,http 0,https://alibabacorp.com/
+2686,wpscdn.com,0,http 0,https://wpscdn.com/
+2687,tdnsv6.com,0,http 0,https://tdnsv6.com/
+2688,mona.co,0,http 522,https://mona.co/
+2689,tmdb.org,1,ok,https://www.themoviedb.org/
+2690,wikisource.org,1,ok,https://wikisource.org/wiki/Wikisource:Main_Page
+2691,betweendigital.com,0,http 0,https://betweendigital.com/
+2692,myq-cloud.com,0,http 0,https://myq-cloud.com/
+2693,cnil.fr,1,ok,https://cnil.fr/fr
+2694,woocommerce.com,1,ok,https://woocommerce.com/
+2695,cookieyes.com,1,ok,https://www.cookieyes.com/
+2696,vkuseraudio.ru,0,http 418,https://ps.userapi.com/
+2697,zefrdata.com,0,http 0,https://zefrdata.com/
+2698,zalando.de,0,http 302,https://www.zalando.de/
+2699,ynet.co.il,1,ok,"https://www.ynet.co.il/home/0,7340,L-8,00.html"
+2700,gutenberg.org,1,ok,https://www.gutenberg.org/
+2701,listdl.com,0,http 0,https://listdl.com/
+2702,safedk.com,0,http 0,https://safedk.com/
+2703,thomsonreuters.com,1,ok,https://www.thomsonreuters.com/en
+2704,archives.gov,1,ok,https://www.archives.gov/
+2705,phantom.app,1,ok,https://phantom.com/
+2706,fanduel.com,1,ok,https://www.fanduel.com/
+2707,riskified.com,0,http 403,https://riskified.com/
+2708,livescience.com,1,ok,https://www.livescience.com/
+2709,envato.com,1,ok,https://elements.envato.com/
+2711,rumble.com,0,http 403,https://rumble.com/
+2712,dnse5.com,0,http 0,https://dnse5.com/
+2713,accor.com,1,ok,https://group.accor.com/en
+2714,adguard.com,0,http 0,https://adguard.com/
+2715,google.us,1,ok,https://www.google.com/
+2716,ko-fi.com,0,http 403,https://ko-fi.com/
+2717,databricks.com,1,ok,https://www.databricks.com/
+2718,harman.com,0,http 0,https://harman.com/
+2719,marzaent.com,0,only 8 bytes,https://marzaent.com/
+2720,wipo.int,0,http 403,https://www.wipo.int/
+2721,rwwsje.com,0,http 0,https://rwwsje.com/
+2722,fastly-masque.net,0,http 0,https://fastly-masque.net/
+2723,nic.do,1,ok,https://www.nic.do/
+2724,clickup.com,1,ok,https://clickup.com/
+2725,nsw.gov.au,1,ok,https://www.nsw.gov.au:443/
+2726,theglobeandmail.com,1,ok,https://www.theglobeandmail.com/
+2727,gamespot.com,0,http 403,https://www.gamespot.com/
+2728,medlineplus.gov,1,ok,https://medlineplus.gov/
+2729,bkcdn.net,0,http 0,https://bkcdn.net/
+2730,padlet.com,0,http 403,https://padlet.com/
+2731,hindustantimes.com,1,ok,https://www.hindustantimes.com/
+2732,poste.it,1,ok,https://www.poste.it/
+2733,nhk.or.jp,0,http 0,https://nhk.or.jp/
+2734,amp-endpoint1.com,0,http 0,https://amp-endpoint1.com/
+2735,scw.cloud,0,http 0,https://scw.cloud/
+2736,sensic.net,1,ok,https://sensic.net/
+2737,kochava.com,1,ok,https://www.kochava.com/
+2738,elastic-cloud.com,0,http 0,https://elastic-cloud.com/
+2739,joinmassive.com,1,ok,https://www.joinmassive.com/
+2740,p-msedge.net,0,http 0,https://p-msedge.net/
+2741,mojang.com,1,ok,https://www.minecraft.net/en-us
+2742,ndcpp-os.com,0,http 0,https://ndcpp-os.com/
+2743,smithsonianmag.com,1,ok,https://www.smithsonianmag.com:443/
+2744,ibytedtos.com,0,http 0,https://ibytedtos.com/
+2745,grok.com,0,http 403,https://grok.com/
+2746,ttlivecdn.com,0,http 0,https://ttlivecdn.com/
+2747,pstatic.net,0,http 0,https://pstatic.net/
+2748,zalo.me,1,ok,https://zalo.me/vi/
+2749,huntress.io,1,ok,https://huntress.io/
+2750,drweb.com,1,ok,https://www.drweb.com/
+2751,system-monitor.com,0,http 403,https://www.system-monitor.com:443/
+2752,cell.com,0,http 403,https://cell.com/
+2753,iionads.com,0,http 404,https://iionads.com/
+2754,aliexpress-media.com,0,http 0,https://aliexpress-media.com/
+2755,npmjs.org,0,http 403,https://www.npmjs.com/
+2756,arc-msedge.net,0,http 0,https://arc-msedge.net/
+2757,centos.org,1,ok,https://centos.org/
+2758,douyinpic.com,0,http 0,https://douyinpic.com/
+2760,newscientist.com,0,http 406,https://www.newscientist.com/
+2761,sketchfab.com,1,ok,https://sketchfab.com/
+2762,ksapisrv.com,0,http 0,https://ksapisrv.com/
+2763,redis.io,1,ok,https://redis.io/
+2764,hisavana.com,0,http 0,https://hisavana.com/
+2765,mmstat.com,0,http 0,https://mmstat.com/
+2766,ihc.ru,1,ok,https://www.ihc.ru/
+2767,brandbucket.com,0,http 403,https://brandbucket.com/
+2768,webflow.com,1,ok,https://webflow.com/
+2770,ksord.com,0,http 0,https://ksord.com/
+2771,wixdns.net,0,http 404,https://wixdns.net/
+2772,iotcplatform.com,0,http 0,https://iotcplatform.com/
+2773,splashtop.com,1,ok,https://www.splashtop.com:443/
+2774,nest.com,1,ok,https://store.google.com/us/category/connected_home?hl=en-US&GoogleNest&utm_source=nest_redirect&utm_medium=google_oo&utm_campaign=homepage&ucbcb=1
+2775,ufileos.com,0,http 0,https://ufileos.com/
+2776,msftstatic.com,0,http 0,https://msftstatic.com/
+2777,addthis.com,0,http 403,https://www.oracle.com/
+2778,capitalone.com,1,ok,https://www.capitalone.com/
+2779,cutt.ly,0,http 403,https://cutt.ly/
+2780,dalyfeds.com,0,only 3109 bytes,https://dalyfeds.com/
+2781,pemsrv.com,0,http 0,https://pemsrv.com/
+2782,glanceapis.com,0,http 0,https://glanceapis.com/
+2784,cdnhwc3.com,0,http 0,https://cdnhwc3.com/
+2785,webs.com,1,ok,https://www.vistaprint.com/digital-marketing/webs-shutdown
+2786,geoipcheck.com,0,http 502,https://geoipcheck.com/
+2787,uisp.com,0,only 705 bytes,https://uisp.com/
+2788,zscaler.com,1,ok,https://www.zscaler.com:443/
+2789,suno.com,1,ok,https://suno.com/
+2790,salesforce-scrt.com,0,http 0,https://salesforce-scrt.com/
+2791,mydramawave.com,1,ok,https://mydramawave.com/
+2792,minutemedia-prebid.com,0,http 0,https://minutemedia-prebid.com/
+2793,cloudx.io,1,ok,https://www.cloudx.ai/
+2794,apptracer.ru,1,ok,https://apptracer.ru/
+2795,cachefly.net,0,http 0,https://cachefly.net/
+2796,affirm.com,1,ok,https://www.affirm.com/
+2797,faa.gov,1,ok,https://www.faa.gov/
+2798,indiegogo.com,0,http 403,https://www.indiegogo.com/
+2799,ravm.tv,0,http 404,https://ravm.tv/
+2800,samsungnyc.com,0,http 0,https://samsungnyc.com/
+2801,html-load.com,0,http 404,https://html-load.com/
+2802,glassdoor.com,0,http 403,https://glassdoor.com/
+2803,sportradar.com,0,http 403,https://sportradar.com/
+2804,virginia.edu,0,http 0,https://virginia.edu/
+2805,ziggo.nl,1,ok,https://www.ziggo.nl/
+2806,shazam.com,1,ok,https://www.shazam.com:443/
+2807,comodoca.com,1,ok,https://www.sectigo.com/?utm_source=redirect&utm_medium=tier2&utm_campaign=comodoca
+2808,aarp.org,0,http 403,https://aarp.org/
+2809,heylink.me,0,http 403,https://heylink.me/
+2810,klarna.net,0,http 0,https://klarna.net/
+2811,jtvnw.net,0,http 0,https://jtvnw.net/
+2812,tuyaeu.com,0,http 0,https://tuyaeu.com/
+2813,nexx360.io,0,http 0,https://nexx360.io/
+2814,amplifyapp.com,0,http 0,https://amplifyapp.com/
+2815,vietnam.vn,1,ok,https://www.vietnam.vn/
+2816,dc-telemetry.net,0,http 0,https://dc-telemetry.net/
+2817,kunlunsl.com,0,http 0,https://kunlunsl.com/
+2818,ilo.org,1,ok,https://www.ilo.org/
+2819,splunkcloud.com,0,http 0,https://splunkcloud.com/
+2820,incognia.com,1,ok,https://www.incognia.com/
+2821,nextdoor.com,1,ok,https://nextdoor.com/
+2822,toutiao.com,0,http 0,https://toutiao.com/
