@@ -21,6 +21,7 @@ it, so the numbers in one row of the matrix are directly comparable.
 """
 
 import argparse
+from collections import Counter
 import json
 import os
 import sys
@@ -138,6 +139,8 @@ def main():
     p.add_argument("--threads", type=int, default=0)
     p.add_argument("--test-size", type=float, default=0.2)
     p.add_argument("--scenarios", default="all", help=f"comma separated from {sorted(ALL_SCENARIOS)}")
+    p.add_argument("--min-visits", type=int, default=0,
+                   help="drop monitored sites with fewer ok visits than this in any arm")
     p.add_argument("--out", default="")
     args = p.parse_args()
     # evaluate_df.fit reads these.
@@ -152,6 +155,15 @@ def main():
     mon = {a: s for a, s in mon.items() if s is not None}
     if not mon:
         sys.exit(f"no monitored features under {features}")
+    if args.min_visits:
+        # A site missing from one arm cannot be scored in the cross matrix.
+        counts = [Counter(s.y) for s in mon.values()]
+        sites = set.intersection(*(set(c) for c in counts))
+        keep = {x for x in sites if all(c[x] >= args.min_visits for c in counts)}
+        print(f"  --min-visits {args.min_visits}: keeping {len(keep)} sites, "
+              f"dropping {sorted(set.union(*(set(c) for c in counts)) - keep)}")
+        mon = {a: Split(s.X[m], s.y[m], s.t[m], args.test_size)
+               for a, s in mon.items() for m in [np.isin(s.y, list(keep))]}
     unmon = {}
     if "open_world" in wanted:
         unmon = {a: load_arm(features, a, "unmonitored", args, force_label=UNMONITORED) for a in mon}

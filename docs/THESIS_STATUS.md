@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-02. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-08. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -28,22 +28,24 @@ the baseline arm. Temporal drift is deferred; the weekly drift rounds are off.
 
 ## Running now
 
-**Full Tor Browser collection `tb-main`** on fujitsu, started 2026-09-28 23:20
-as systemd user unit `wf-tbmain` (restarts on failure, resumes from the
-manifest). At 2026-10-02 it had finished batch 38 of 40.
+**Collection `tb-main` finished 2026-10-02 15:50** (unit `wf-tbmain` inactive).
+Usable captures, from the manifest: monitored 1755 baseline / 1739 obfs4 / 1774
+Snowflake, unmonitored 424 / 427 / 427, background 875 (baseline). Features
+(1.8 GB) and manifest were copied to the Fedora laptop under
+`tor_dataset/tb/tb-main/` on 2026-10-08.
 
-- 50 monitored sites x 40 visits x 3 arms, 500 unmonitored x 3 arms, 50 x 20
-  background-tab visits (baseline): 8500 captures.
-- Output: `~/onlab/tor_dataset/tb/tb-main/<arm>/<kind>/*.pcap`, manifest at
-  `.../tb-main/manifest.csv`, log `~/onlab/logs/tb-main.log`. Feature
-  extraction runs automatically at the end into `.../tb-main/features/`.
-- Status at batch 38: 7243 usable. Failures are concentrated on a few sites:
-  gnu (179 browser network errors), reuters (137 blocked), medium (125),
-  vimeo (124), imdb (97 blocked + 40 empty), quora (71), apnews (62).
+Sites with fewer than 30 ok visits in some arm are dropped by
+`--min-visits 30`: vimeo, medium, gnu, apnews, quora (reuters and imdb have
+no usable visits at all). 43 of 50 monitored sites remain, 33+ visits each.
+`sequence_budget --unit cells`: median trace is 7.5-8.5k cells, so length
+10000 holds the whole median trace and about 60% of traces completely.
 
-Check it with:
-`ssh palos@100.102.24.16 'systemctl --user is-active wf-tbmain; tail ~/onlab/logs/tb-main.log'`
-(from the Fedora laptop or a Codespace only, see CLAUDE.md).
+**DF on tb-main** started 2026-10-08 on the Fedora laptop:
+`python src/evaluate_transport.py --collection tb-main --mode cells --length 10000
+--min-visits 30 --threads 12`, log `logs/transport_tb-main.log`, output
+`figures/metrics_transport_tb-main_cells.json`. Results pending.
+
+The drift timer `tor-wf-round.timer` is disabled and stays off (drift deferred).
 
 ## Results so far (spring dataset, Chromium, 3 seeds, mean ± sd)
 
@@ -61,19 +63,22 @@ The cross-transport gap survives the change of representation, so it is not a
 packetisation artefact. Spring open-world FPR rests on 13 unmonitored test
 traces and is not meaningful; `tb-main` fixes that.
 
+## Picking this up on another machine
+
+- The DF run above lives on the Fedora laptop and writes
+  `figures/metrics_transport_tb-main_cells.json` only when it ends. Check there
+  first (`pgrep -f evaluate_transport`, `tail logs/transport_tb-main.log`). If it
+  was killed, rerun the same command; it does not resume.
+- Features are not in git. From a Fedora laptop or Codespace:
+  `rsync -a palos@100.102.24.16:onlab/tor_dataset/tb/tb-main/{features,manifest.csv} tor_dataset/tb/tb-main/`.
+  The Windows laptop must not reach the server: move the folder there by other
+  means (disk or cloud drive). The manifest holds the obfs4 bridge IP; do not commit it.
+- `git pull` on `szakdolgozat-drift`; `.venv` needs torch, pandas, scikit-learn.
+
 ## Next tasks
 
-1. When `wf-tbmain` finishes: copy `tor_dataset/tb/tb-main/features/` and the
-   manifest to an analysis machine (the features, not the pcaps).
-2. Decide which monitored sites to keep: drop or report separately those with
-   too few usable visits per arm (see the list above). Count ok visits per
-   site x arm from the manifest first.
-3. `python src/sequence_budget.py --collection tb-main --unit cells` to confirm
-   length 10000 on Tor Browser traffic.
-4. `python src/evaluate_transport.py --collection tb-main --mode cells --length 10000`
-   (several hours; run on a laptop, not the server).
-5. Draft the feladatkiírás from the proven scope and send it to the konzulens
-   before 2026-10-09.
-6. Afterwards: re-enable or retire the drift timer (`tor-wf-round.timer`), and
-   delete the Azure resource group `wf-thesis` when the obfs4 arm is no longer
-   needed.
+1. Collect the DF results, write them up as mean ± sd and check the open-world FPR.
+2. Feladatkiírás draft is in `docs/FELADATKIIRAS.md`; the konzulens uploads it
+   by 2026-10-09 24:00. Fill in the adatlap by 2026-10-16.
+3. Delete the Azure resource group `wf-thesis` once no site needs recollecting
+   (the obfs4 arm depends on that bridge). `az` is not installed on the laptop.
