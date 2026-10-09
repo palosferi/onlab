@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-08. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-09. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -78,7 +78,8 @@ traces and is not meaningful; `tb-main` fixes that.
 ## Next tasks
 
 1. Collect the DF results, write them up as mean ± sd and check the open-world FPR.
-2. Feladatkiírás draft is in `docs/FELADATKIIRAS.md`; the konzulens uploads it
-   by 2026-10-09 24:00. Fill in the adatlap by 2026-10-16.
+2. Feladatkiírás draft (rewritten for non-specialist readers 2026-10-09) is in
+   `docs/FELADATKIIRAS.md`, background in `docs/FELADATKIIRAS_NOTES.md`. Send it
+   to the konzulens today; he uploads it by 2026-10-09 24:00. Fill in the adatlap by 2026-10-16.
 3. Delete the Azure resource group `wf-thesis` once no site needs recollecting
    (the obfs4 arm depends on that bridge). `az` is not installed on the laptop.

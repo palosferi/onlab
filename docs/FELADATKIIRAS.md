@@ -10,63 +10,68 @@ Konzulens: Dr. Sonkoly Balázs (TMIT)
 
 ## A feladat leírása
 
-A Tor hálózat célja, hogy elrejtse, melyik weboldalt keresi fel a felhasználó,
-de a titkosított forgalom mérete és időzítése így is mintázatot hagy, amelyből
-egy hálózati megfigyelő mélytanulással (pl. Deep Fingerprinting, DF) nagy
-pontossággal visszaállíthatja a meglátogatott oldalt. A publikált támadásokat
-jellemzően egyetlen, azonos körülmények között gyűjtött adathalmazon értékelik.
-Kevésbé ismert, hogy egy ilyen modell mennyire marad hatékony, ha a forgalom
-más Tor-átvitelen (pluggable transport) érkezik. Ez a cenzúrát megkerülő
-felhasználók esetében gyakorlati kérdés.
+A Tor hálózat elrejti, hogy a felhasználó melyik weboldalt látogatja meg, de a
+titkosított forgalom mérete, iránya és időzítése így is árulkodó. Erre épül a
+weboldal-ujjlenyomatozás (website fingerprinting): a felhasználó és a Tor
+hálózat közötti forgalmat lehallgató fél gépi tanulással felismeri a
+meglátogatott oldalt. A legismertebb mélytanulás-alapú változat, a Deep
+Fingerprinting (DF) konvolúciós neurális háló, amely kísérleti környezetben
+98%-os pontosságot ért el. Az ilyen támadásokat jellemzően egyetlen, egységes
+körülmények között gyűjtött adathalmazon mérik. Kevésbé ismert, mennyire
+működnek, ha a forgalom álcázott kapcsolaton (pluggable transport, pl. obfs4
+híd vagy Snowflake) jut be a Tor hálózatba; ezeket a cenzúrázott hálózatokból
+csatlakozó felhasználók használják.
 
-A hallgató feladata a DF-támadás általánosíthatóságának vizsgálata három
-átvitel között: sima Tor, obfs4 híd és Snowflake. A mérés valódi Tor Browser
-forgalmon történik. A hallgató feladatai:
+A hallgató feladata annak vizsgálata, hogy a DF-támadás mennyire általánosít
+három kapcsolódási mód között: közvetlen Tor-kapcsolat, obfs4 híd és
+Snowflake. A hallgató feladatai:
 
-1. A témához kapcsolódó irodalom áttekintése (weboldal-ujjlenyomatozás,
-   Deep Fingerprinting, Tor pluggable transportok, általánosítási problémák).
-2. Automatizált adatgyűjtő környezet kialakítása és üzemeltetése: Tor Browser
-   vezérlése Selenium-mal, a három átvitel váltogatva ugyanabban az ütemezésben,
-   hálózati forgalom rögzítése és feldolgozása. Az adathalmaz 50 megfigyelt
-   oldalt, 500 nem megfigyelt oldalt és egy háttérfüles (background tab) kísérletet
-   tartalmaz.
-3. A DF-modell implementálása és kiértékelése: zárt világ, átvitelek közötti
-   (cross-transport) 3×3 mátrix, leave-one-out és közös (pooled) tanítás,
-   valamint nyílt világ TPR/FPR értékekkel. A felosztás időrendi, az eredmények
-   több futtatás (seed) átlaga és szórása.
-4. Az átvitelek közötti teljesítménycsökkenés okainak elemzése (csomag- és
-   cella-alapú reprezentáció, szekvenciahossz, átvitelenkénti forgalmi
-   jellemzők), valamint a háttérfül hatásának vizsgálata.
-5. Az eredmények értékelése, a módszer korlátainak és az etikai szempontoknak a
-   bemutatása, továbbfejlesztési lehetőségek (pl. időbeli drift) megfogalmazása.
+1. A szakirodalom áttekintése: weboldal-ujjlenyomatozás, Deep Fingerprinting,
+   a Tor álcázott kapcsolódási módjai.
+2. Automatizált mérőkörnyezet kialakítása, amely a valódi Tor Browsert vezérelve
+   látogat meg weboldalakat a három kapcsolódási módon felváltva, és rögzíti a
+   keletkező hálózati forgalmat. A mérés 50 kiválasztott (megfigyelt) weboldalt
+   és 500 további népszerű oldalt fed le, valamint olyan látogatásokat, amelyek
+   közben egy második böngészőlapon egy másik oldal is töltődik.
+3. A DF-modell implementálása és kiértékelése: mennyire ismeri fel az oldalakat
+   ugyanazon a kapcsolódási módon, illetve egy másik mód forgalmán tanítva;
+   javít-e, ha a tanítóadat több módot is tartalmaz; és mennyire működik akkor,
+   ha a felhasználó a megfigyelt oldalakon kívül bármit meglátogathat.
+4. A kapcsolódási módok közötti teljesítménycsökkenés okainak elemzése a
+   forgalom jellemzői alapján, valamint a párhuzamosan töltődő második oldal
+   hatásának vizsgálata.
+5. Az eredmények értékelése, a módszer korlátainak és etikai szempontjainak
+   bemutatása, továbbfejlesztési lehetőségek megfogalmazása.
 
 ---
 
 ## Task description (English)
 
-The Tor network hides which website a user visits, but the size and timing of
-the encrypted traffic still leave patterns that a network observer can exploit
-with deep learning (e.g. Deep Fingerprinting, DF). Published attacks are
-usually evaluated on a single dataset collected under uniform conditions. How
-well such a model transfers to traffic carried over a different Tor pluggable
-transport is much less studied, although it matters for users in censored
-networks.
+Tor hides which website a user visits, but the size, direction and timing of
+the encrypted traffic still give it away. Website fingerprinting exploits this:
+an observer between the user and the Tor network recognizes the visited page
+with machine learning. The best-known deep-learning variant, Deep
+Fingerprinting (DF), is a convolutional neural network that reached 98%
+accuracy in a lab setting. Such attacks are usually evaluated on one dataset
+collected under uniform conditions. Much less is known about how well they
+work when traffic enters Tor through a disguised connection (a pluggable
+transport such as an obfs4 bridge or Snowflake), which is what users in
+censored networks rely on.
 
-The student investigates how well a DF attack generalizes across three
-transports: plain Tor, obfs4 and Snowflake, using traffic from the real Tor
-Browser. Tasks:
+The student investigates how well DF generalizes across three ways of
+connecting: direct Tor, an obfs4 bridge and Snowflake. Tasks:
 
-1. Review the literature on website fingerprinting, Deep Fingerprinting, Tor
-   pluggable transports and generalization issues.
-2. Build and operate an automated collection environment: Tor Browser driven by
-   Selenium, the three transports interleaved in one schedule, traffic capture
-   and processing. The dataset covers 50 monitored sites, 500 unmonitored sites
-   and a background-tab experiment.
-3. Implement and evaluate DF: closed world, a 3x3 cross-transport matrix,
-   leave-one-out and pooled training, and open world with TPR/FPR. Splits are
-   chronological; results are reported as mean and standard deviation over seeds.
-4. Analyse the causes of the cross-transport drop (packet- vs cell-based
-   representation, sequence length, per-transport traffic characteristics) and
-   the effect of a background tab.
+1. Review the literature on website fingerprinting, Deep Fingerprinting and
+   Tor's disguised connection methods.
+2. Build an automated measurement setup that drives the real Tor Browser to
+   visit websites over the three connection methods in turn and records the
+   resulting traffic. It covers 50 selected (monitored) websites, 500 further
+   popular sites, and visits during which a second site loads in another tab.
+3. Implement and evaluate DF: how well it recognizes pages on the same
+   connection method and when trained on another one; whether training on
+   several methods helps; and how well it works when the user may visit any
+   site, not only the monitored ones.
+4. Analyse why accuracy drops between connection methods, based on traffic
+   characteristics, and the effect of a second page loading in parallel.
 5. Evaluate the results, discuss limitations and ethical aspects, and outline
-   future work (e.g. temporal drift).
+   future work.
