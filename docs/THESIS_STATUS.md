@@ -95,7 +95,7 @@ traces and is not meaningful; `tb-main` fixes that.
   first (`systemctl --user status wf-df-tbmain`, `tail logs/transport_tb-main.log`).
   If it was killed, rerun the same command; it resumes after the last finished seed.
 - Features are not in git. From a Fedora laptop or Codespace:
-  `rsync -a palos@100.102.24.16:onlab/tor_dataset/tb/tb-main/{features,manifest.csv} tor_dataset/tb/tb-main/`.
+  `rsync -a ferencpalos@100.102.24.16:onlab/tor_dataset/tb/tb-main/{features,manifest.csv} tor_dataset/tb/tb-main/`.
   The Windows laptop must not reach the server: move the folder there by other
   means (disk or cloud drive). The manifest holds the obfs4 bridge IP; do not commit it.
 - `git pull` on `szakdolgozat-drift`; `.venv` needs torch, pandas, scikit-learn.
@@ -112,10 +112,13 @@ traces and is not meaningful; `tb-main` fixes that.
    as a second, targeted site set. Add R1-R4: target-transport data budget,
    monitored-set size, precision at realistic base rates, learning curve.
    Email to the konzulens drafted 2026-10-10.
-4. Collection host moving from Mint to Debian 13 (2026-10-10), before S2.
-   Backups: laptop `~/fujitsu-backup-2026-10-10/home`, full archive on the WD
-   Elements drive (`fujitsu-mint-2026-10-10/`). Rebuild with
-   `scripts/collection/setup_host.sh`, then a pilot before S2. The arms now run
-   the Expert Bundle tor 0.4.9.12 (tb-main: Mint's 0.4.8.10).
+4. Collection host moved from Mint to Debian 13 on 2026-10-10 (user
+   `ferencpalos`, same Tailscale IP). Rebuilt with
+   `scripts/collection/setup_host.sh`; pilot `tb-pilot-debian` 30/30 ok on all
+   three arms. Arms now run the Expert Bundle tor 0.4.9.12 (tb-main: Mint's
+   0.4.8.10) and the baseline guard is now Intrepid `8C7A9811` (tb-main:
+   `F5612A75`); both are recorded per capture in the manifest. Backups: laptop
+   `~/fujitsu-backup-2026-10-10/home`, full archive on the WD Elements drive,
+   old system unpacked on the server at `/srv/mint-old`.
 5. Delete the Azure resource group `wf-thesis` once no site needs recollecting
    (the obfs4 arm depends on that bridge). `az` is not installed on the laptop.

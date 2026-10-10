@@ -93,6 +93,13 @@ for arm in $ARMS; do
 done
 
 step "waiting for the three arms to bootstrap"
+# A Tor started on a restored DataDirectory reads the old last-activity time
+# from its state file and goes dormant at once, stuck at 25%. A request through
+# its SOCKS port counts as activity and wakes it.
+for arm in $ARMS; do
+	port="$(awk '/^SocksPort/ {print $2}' "$RUNTIME_DIR/$arm/torrc")"
+	curl -s -o /dev/null --max-time 170 --socks5-hostname "127.0.0.1:$port" https://check.torproject.org/ &
+done
 failed=0
 for arm in $ARMS; do
 	for _ in $(seq 1 90); do
@@ -110,7 +117,7 @@ done
 step "versions"
 echo "  $(LD_LIBRARY_PATH="$TOR_DIR" "$TOR_DIR/tor" --version | head -1)"
 echo "  obfs4proxy $(dpkg-query -W -f='${Version}' obfs4proxy)"
-echo "  Tor Browser $(cat "$TB_DIR/tor-browser/Browser/TorBrowser/Docs/ChangeLog.txt" 2>/dev/null | head -1 || echo '?')"
+echo "  $(sed -n 1p "$TB_DIR/tor-browser/Browser/TorBrowser/Docs/ChangeLog.txt" 2>/dev/null)"
 echo "  $("$TB_DIR/geckodriver" --version | head -1)"
 
 step "tests"

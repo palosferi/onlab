@@ -6,7 +6,9 @@ obfs4, Snowflake). Thesis work happens on the `szakdolgozat-drift` branch.
 
 ## Machines, and which may reach the collection host
 
-Collection runs on a home server (`fujitsu`), reached over Tailscale. **Server
+Collection runs on a home server (`fujitsu`, Debian 13 since 2026-10-10, user
+`ferencpalos`; it was Mint with user `palos` before), reached over Tailscale.
+A fresh install is rebuilt with `scripts/collection/setup_host.sh`. **Server
 work — deploys, rounds, preflight, reading logs — happens only from the Fedora
 laptop or a GitHub Codespace.**
 
@@ -16,7 +18,7 @@ copy of `tor_dataset/extracted_features`, which is everything the analysis needs
 Move code between machines through git, not by copying to the server from here.
 
 The server's checkout is deployed by copying files (`rsync -a scripts src tests
-palos@100.102.24.16:onlab/`, never with `--delete`), so its git HEAD lags. Treat
+ferencpalos@100.102.24.16:onlab/`, never with `--delete`), so its git HEAD lags. Treat
 GitHub as the source of truth, and **diff the server's files against the repo
 before deploying**: code has been edited on the server directly before, and a
 blind copy would have overwritten it.
