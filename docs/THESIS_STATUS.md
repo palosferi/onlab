@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-09. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-10. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -78,8 +78,15 @@ traces and is not meaningful; `tb-main` fixes that.
 ## Next tasks
 
 1. Collect the DF results, write them up as mean ± sd and check the open-world FPR.
-2. Feladatkiírás draft (rewritten for non-specialist readers 2026-10-09) is in
-   `docs/FELADATKIIRAS.md`, background in `docs/FELADATKIIRAS_NOTES.md`. Send it
-   to the konzulens today; he uploads it by 2026-10-09 24:00. Fill in the adatlap by 2026-10-16.
-3. Delete the Azure resource group `wf-thesis` once no site needs recollecting
+2. Feladatkiírás sent to the konzulens on 2026-10-09 (text as in
+   `docs/FELADATKIIRAS.md`, background in `docs/FELADATKIIRAS_NOTES.md`); he
+   uploads it. Fill in the adatlap by 2026-10-16.
+3. Decide the monitored/unmonitored site sets. The konzulens and the student had agreed
+   on the 50 most popular sites; tb-main instead used the 35 spring sites plus
+   15 new ones, and neither choice is settled. Options: keep tb-main and frame
+   it as a targeted threat model (sensitive sites), or recollect a screened
+   popular top-50 for a coverage threat model. Promised the konzulens a
+   separate email on this on 2026-10-09, possibly asking his advice; not sent
+   yet. The discussion so far is in `docs/SITE_SETS.md`.
+4. Delete the Azure resource group `wf-thesis` once no site needs recollecting
    (the obfs4 arm depends on that bridge). `az` is not installed on the laptop.

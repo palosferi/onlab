@@ -4,6 +4,23 @@ Background for `FELADATKIIRAS.md`: what each term means and why the draft is
 phrased the way it is. The kiírás itself stays non-technical; these details
 belong in the thesis.
 
+## Structure
+
+Balázs asked for (2026-10-09, to paste into the department template): one
+intro paragraph, one sentence "A hallgató feladata ...", then about seven
+one-sentence bullets under "A hallgató feladatának a következőkre kell
+kiterjednie:". Hungarian only; he did not ask for an English version.
+
+How the bullets map to the work:
+
+1. Literature: WF, DF, pluggable transports.
+2. Measurement setup: `collect_tb.py` / `run_tb.sh`.
+3. Dataset: 50 monitored, 500 unmonitored, second-tab visits.
+4. Closed world: 3x3 matrix, leave-one-out, pooled.
+5. Open world.
+6. Analysis: why the cross-transport drop happens; the second tab's effect.
+7. Evaluation, limitations, ethics, future work.
+
 ## Deep Fingerprinting
 
 Sirinam et al., CCS 2018. A 1D CNN (four convolutional blocks, two fully
@@ -76,8 +93,5 @@ All three check that the cross-transport drop is real. The kiírás says only
 
 ## Removed from the draft
 
-- "Ez a cenzúrát megkerülő felhasználók esetében gyakorlati kérdés" became the
-  sentence on who uses pluggable transports.
-- "(pl. időbeli drift)": not needed; future work is a standard closing task.
 - Selenium, TPR/FPR, leave-one-out, pooled, seeds, cells: too technical for a
   kiírás.
