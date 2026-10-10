@@ -1,8 +1,8 @@
-# Monitored / unmonitored site sets: open decision
+# Monitored / unmonitored site sets
 
-Status 2026-10-10: undecided. This is task 3 in `THESIS_STATUS.md`. The
-student promised the konzulens (Balázs) an email on 2026-10-09 about this,
-possibly asking his advice. It has not been sent yet.
+Decided 2026-10-10: **S2 + R1-R4** (see "Decision" at the end). Task 3 in
+`THESIS_STATUS.md`. The email to the konzulens (Balázs), promised for
+2026-10-09, was drafted on 2026-10-10.
 
 ## What happened
 
@@ -79,3 +79,23 @@ then draft the second email to him.
 
 Keep the Azure resource group `wf-thesis` (obfs4 bridge) until this is decided:
 a recollection needs it.
+
+## Decision (2026-10-10)
+
+The student chose to collect a new main dataset and to add the attacker-cost
+analyses, all on the time and compute available before 2026-12-11.
+
+- **S2**: screened popular top-50 as the monitored set (coverage threat model,
+  the plan agreed with the konzulens). The 500 unmonitored are the screened top
+  of Tranco today, so they are redrawn from further down the list and
+  collected again; S2 is a full collection (~8500 captures, 4-5 days).
+- **tb-main stays** as a second, targeted site set, so the cross-transport
+  result is tested on two site sets.
+- **R1** target-transport data budget: train on baseline plus k traces per
+  site from obfs4 / Snowflake, k = 0, 1, 3, 5, 10, all.
+- **R2** monitored-set size: k = 5, 10, 20, 50 monitored, the rest unmonitored.
+- **R3** precision at realistic base rates, from the open-world threshold sweep.
+- **R4** learning curve: traces per site against accuracy.
+
+The feladatkiírás says "50 kiválasztott (megfigyelt)", so either set satisfies it.
+

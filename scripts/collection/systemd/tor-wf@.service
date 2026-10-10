@@ -9,7 +9,10 @@ Wants=network-online.target
 # PID file.
 Type=forking
 PIDFile=%h/tor_wf_runtime/%i/tor.pid
-ExecStart=/usr/bin/tor -f %h/tor_wf_runtime/%i/torrc
+# The tor from the Tor Expert Bundle (fetch_pt_bundle.sh), the version Tor
+# Browser ships, rather than the distribution's.
+Environment=LD_LIBRARY_PATH=%h/tor_wf_runtime/pt/tor
+ExecStart=%h/tor_wf_runtime/pt/tor/tor -f %h/tor_wf_runtime/%i/torrc
 # A Tor that dies mid-study silently costs a week of data, so restart it.
 Restart=on-failure
 RestartSec=30

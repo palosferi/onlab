@@ -14,6 +14,10 @@ works on another. On tor_dataset/tb/<collection>/features this runs, per seed:
                  data (earliest share of them) tested on the rest;
   open_world     per arm, monitored + unmonitored, TPR/FPR over a threshold sweep.
 
+A full run takes many hours, so the results so far are saved after every seed
+to <out>.partial.json. Started again with the same settings, the script skips
+the seeds already in that file; the file is removed once the run completes.
+
 Every test split is the same set of latest traces whichever model is scored on
 it, so the numbers in one row of the matrix are directly comparable.
 
@@ -41,6 +45,9 @@ FIGURES_DIR = os.path.join(REPO_ROOT, "figures")
 ARMS = ("baseline", "obfs4", "snowflake")
 UNMONITORED = "unmonitored"
 ALL_SCENARIOS = {"closed_world", "cross", "leave_one_out", "pooled", "background", "open_world"}
+# Settings that change the numbers; a partial file from other settings is not resumed.
+RESUME_KEYS = ("collection", "mode", "length", "epochs", "val_size", "patience", "min_epochs",
+               "test_size", "scenarios", "min_visits")
 
 
 class Split:
@@ -175,7 +182,16 @@ def main():
     if bg is not None:
         print(f"  baseline   background {len(bg):5d} traces")
 
-    runs, matrix_runs = {}, []
+    runs, matrix_runs, done = {}, [], []
+    partial = os.path.splitext(out)[0] + ".partial.json"
+    if os.path.exists(partial):
+        with open(partial, encoding="utf-8") as f:
+            saved = json.load(f)
+        changed = [k for k in RESUME_KEYS if saved["config"].get(k) != vars(args).get(k)]
+        if changed:
+            sys.exit(f"{partial} was made with different {', '.join(changed)}; move it away to start over")
+        runs, matrix_runs, done = saved["runs"], saved["matrix_runs"], saved["seeds_done"]
+        print(f"  resuming from {partial}: seeds {done} already done")
 
     def record(name, result, seed):
         if result:
@@ -183,6 +199,8 @@ def main():
             runs.setdefault(name, []).append(result)
 
     for seed in seeds:
+        if seed in done:
+            continue
         print(f"\n########## seed {seed} ##########")
         models = {}
         if wanted & {"closed_world", "cross", "background"}:
@@ -242,6 +260,13 @@ def main():
                 print(f"  -> TPR {res['tpr_at_zero_threshold']:.4f} FPR {res['fpr_at_zero_threshold']:.4f}")
                 record(f"open_world_{a}", res, seed)
 
+        done.append(seed)
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        with open(partial + ".tmp", "w", encoding="utf-8") as f:
+            json.dump({"config": vars(args), "seeds_done": done, "runs": runs,
+                       "matrix_runs": matrix_runs}, f, indent=2)
+        os.replace(partial + ".tmp", partial)
+
     results = {
         "config": vars(args),
         "provenance": provenance(),
@@ -272,6 +297,8 @@ def main():
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
+    if os.path.exists(partial):
+        os.remove(partial)
     print(f"\nwrote {out}")
 
 

@@ -43,7 +43,32 @@ no usable visits at all). 43 of 50 monitored sites remain, 33+ visits each.
 **DF on tb-main** started 2026-10-08 on the Fedora laptop:
 `python src/evaluate_transport.py --collection tb-main --mode cells --length 10000
 --min-visits 30 --threads 12`, log `logs/transport_tb-main.log`, output
-`figures/metrics_transport_tb-main_cells.json`. Results pending.
+`figures/metrics_transport_tb-main_cells.json`. **Killed 2026-10-10 ~06:00**
+(the laptop lost power) during seed 44, so no JSON was written. Seeds 42 and 43
+finished in the log, at about 13.5 h per seed. Accuracies from the log, mean ±
+sd over those two seeds only:
+
+| | |
+|---|---|
+| closed world baseline / obfs4 / Snowflake | 95.3 ± 0.4 / 93.9 ± 0.6 / 92.5 ± 0.6 |
+| baseline -> obfs4 / -> Snowflake | 52.7 ± 1.9 / 63.8 ± 0.0 |
+| obfs4 -> baseline / -> Snowflake | 49.9 ± 4.6 / 70.7 ± 3.5 |
+| Snowflake -> baseline / -> obfs4 | 89.0 ± 1.3 / 62.5 ± 12.4 |
+| leave-one-out: held-out baseline / obfs4 / Snowflake | 78.0 ± 3.4 / 50.1 ± 0.4 / 80.0 ± 1.2 |
+| pooled on baseline / obfs4 / Snowflake | 95.2 ± 1.3 / 97.3 ± 0.8 / 93.5 ± 0.8 |
+| background test: clean / background-aware model | 18.2 ± 1.7 / 30.3 ± 0.8 |
+| open world TPR / FPR (argmax), baseline | 91.8 ± 0.6 / 32.9 ± 8.3 |
+| open world TPR / FPR, obfs4 | 91.5 ± 0.2 / 34.7 ± 5.8 |
+| open world TPR / FPR, Snowflake | 88.5 ± 4.2 / 43.5 ± 1.7 |
+
+These need a rerun before they are quotable. That log is kept as
+`logs/transport_tb-main_killed-2026-10-10.log`.
+
+**Rerun started 2026-10-10 15:45** on the Fedora laptop as user unit
+`wf-df-tbmain` (same command, wrapped in `systemd-inhibit`), log
+`logs/transport_tb-main.log`, ~40 h. `evaluate_transport.py` now saves after
+every seed to `figures/metrics_transport_tb-main_cells.partial.json`; if the run
+dies, start the same command again and it skips the finished seeds.
 
 The drift timer `tor-wf-round.timer` is disabled and stays off (drift deferred).
 
@@ -67,8 +92,8 @@ traces and is not meaningful; `tb-main` fixes that.
 
 - The DF run above lives on the Fedora laptop and writes
   `figures/metrics_transport_tb-main_cells.json` only when it ends. Check there
-  first (`pgrep -f evaluate_transport`, `tail logs/transport_tb-main.log`). If it
-  was killed, rerun the same command; it does not resume.
+  first (`systemctl --user status wf-df-tbmain`, `tail logs/transport_tb-main.log`).
+  If it was killed, rerun the same command; it resumes after the last finished seed.
 - Features are not in git. From a Fedora laptop or Codespace:
   `rsync -a palos@100.102.24.16:onlab/tor_dataset/tb/tb-main/{features,manifest.csv} tor_dataset/tb/tb-main/`.
   The Windows laptop must not reach the server: move the folder there by other
@@ -81,12 +106,16 @@ traces and is not meaningful; `tb-main` fixes that.
 2. Feladatkiírás sent to the konzulens on 2026-10-09 (text as in
    `docs/FELADATKIIRAS.md`, background in `docs/FELADATKIIRAS_NOTES.md`); he
    uploads it. Fill in the adatlap by 2026-10-16.
-3. Decide the monitored/unmonitored site sets. The konzulens and the student had agreed
-   on the 50 most popular sites; tb-main instead used the 35 spring sites plus
-   15 new ones, and neither choice is settled. Options: keep tb-main and frame
-   it as a targeted threat model (sensitive sites), or recollect a screened
-   popular top-50 for a coverage threat model. Promised the konzulens a
-   separate email on this on 2026-10-09, possibly asking his advice; not sent
-   yet. The discussion so far is in `docs/SITE_SETS.md`.
-4. Delete the Azure resource group `wf-thesis` once no site needs recollecting
+3. Site sets, decided 2026-10-10 (`docs/SITE_SETS.md`): collect **S2**, a
+   screened popular top-50 monitored set (coverage threat model) with a fresh
+   500 unmonitored from further down Tranco, as the main dataset; tb-main stays
+   as a second, targeted site set. Add R1-R4: target-transport data budget,
+   monitored-set size, precision at realistic base rates, learning curve.
+   Email to the konzulens drafted 2026-10-10.
+4. Collection host moving from Mint to Debian 13 (2026-10-10), before S2.
+   Backups: laptop `~/fujitsu-backup-2026-10-10/home`, full archive on the WD
+   Elements drive (`fujitsu-mint-2026-10-10/`). Rebuild with
+   `scripts/collection/setup_host.sh`, then a pilot before S2. The arms now run
+   the Expert Bundle tor 0.4.9.12 (tb-main: Mint's 0.4.8.10).
+5. Delete the Azure resource group `wf-thesis` once no site needs recollecting
    (the obfs4 arm depends on that bridge). `az` is not installed on the laptop.
