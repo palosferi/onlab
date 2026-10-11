@@ -43,6 +43,14 @@ pkill -f "tor-browser/Browser/firefox" 2>/dev/null || true
 pkill -x geckodriver 2>/dev/null || true
 sleep 1
 
+# An idle Tor goes dormant, and the Snowflake arm then holds no WebRTC sockets,
+# so collect_tb.py cannot find its peers and stops. One request per arm wakes it.
+for port in "${TOR_WF_BASELINE_SOCKS_PORT:-9050}" "${TOR_WF_OBFS4_SOCKS_PORT:-9052}" \
+	"${TOR_WF_SNOWFLAKE_SOCKS_PORT:-9064}"; do
+	curl -s -o /dev/null --max-time 120 --socks5-hostname "127.0.0.1:$port" https://check.torproject.org/ &
+done
+wait
+
 echo "===== collection start $(date -Is) ====="
 "$TB_PY" scripts/collection/collect_tb.py "$@"
 echo "===== extracting features $(date -Is) ====="
