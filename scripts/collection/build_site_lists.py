@@ -21,6 +21,9 @@ infrastructure or a duplicate, then --reserves more in the same order to stand
 in for monitored sites that fail in Tor Browser (name those with
 --pilot-failed), then the open-world pools below them. Everything left out of
 the monitored range goes to sites/<set>/dropped.csv, with the reason.
+Every site is listed at the URL it landed on in the screen (query dropped):
+the collector rejects a visit that ends on another domain, so twitter.com has
+to be visited as x.com.
 
     python scripts/collection/build_site_lists.py --list-id Y8YJG --from-screening \
         --screening scripts/collection/sites/screening_s2.csv --site-set s2
@@ -143,9 +146,9 @@ def select_site_set(results, n_monitored, n_reserves, n_unmonitored, n_backgroun
             if hit:
                 dropped.append((rank, dom, landed, *hit))
             else:
-                chosen.append((rank, dom))
+                chosen.append((rank, dom, landing_url(final, dom)))
         elif not (hit and hit[0] == "duplicate") and not ({reg, landed} & pool_excluded):
-            pool.append((rank, dom))
+            pool.append((rank, dom, landing_url(final, dom)))
     need = n_unmonitored + n_background
     if len(chosen) < n_chosen or len(pool) < need:
         sys.exit(f"only {len(chosen)} monitored candidates and {len(pool)} pool sites; "
@@ -161,6 +164,14 @@ def read_screening(path):
         return [((int(r["rank"]), r["domain"]), r["ok"] == "1", r["reason"],
                  (r["final_url"].split() or [""])[-1])
                 for r in csv.DictReader(fh)]
+
+
+def landing_url(final, domain):
+    """https://<host><path> of where the screen landed, without port, query or fragment."""
+    u = urlparse(final)
+    if not u.hostname:
+        return f"https://{domain}"
+    return f"https://{u.hostname}{u.path or '/'}"
 
 
 def label_for(domain):
@@ -260,8 +271,8 @@ def build_site_set(args, results, header):
                         ("background", bg)):
         with open(os.path.join(out, f"{name}.txt"), "w", encoding="utf-8") as fh:
             fh.write(header)
-            for rank, dom in chunk:
-                fh.write(f"{label_for(dom)} https://{dom}  # {rank}\n")
+            for rank, dom, url in chunk:
+                fh.write(f"{label_for(dom)} {url}  # {rank}\n")
     with open(os.path.join(out, "dropped.csv"), "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh, lineterminator="\n")
         w.writerow(["rank", "domain", "landed", "category", "note"])

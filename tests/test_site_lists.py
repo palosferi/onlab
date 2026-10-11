@@ -82,7 +82,7 @@ def main():
 
     mon, res, unmon, bg, dropped = bsl.select_site_set(
         SCREENING, 4, 1, 2, 1, excluded, pool_excluded={"telex.hu"})
-    doms = lambda chunk: [d for _, d in chunk]  # noqa: E731
+    doms = lambda chunk: [c[1] for c in chunk]  # noqa: E731
     results.append(check("monitored", doms(mon), ["google.com", "youtube.com", "vk.com", "bbc.com"]))
     results.append(check("reserves", doms(res), ["reserve.example"]))
     results.append(check("unmonitored", doms(unmon), ["pool-a.example", "fastly.net"]))
@@ -90,6 +90,15 @@ def main():
     results.append(check("dropped with reasons", [(d, c) for _, d, _, c, _ in dropped],
                          [("cloudflare.com", "cdn"), ("youtu.be", "same landing site"),
                           ("vk.ru", "duplicate")]))
+
+    results.append(check("listed at the landing URL", [c[2] for c in mon][:2],
+                         ["https://google.com/", "https://youtube.com/"]))
+    for final, expected in [("https://x.com/", "https://x.com/"),
+                            ("https://www.snapchat.com:443/", "https://www.snapchat.com/"),
+                            ("https://www.nature.com/?error=cookies_not_supported", "https://www.nature.com/"),
+                            ("https://www.blogger.com/about/?bpli=1", "https://www.blogger.com/about/"),
+                            ("", "https://t.me")]:
+        results.append(check(f"landing_url {final or '(none)'}", bsl.landing_url(final, "t.me"), expected))
 
     excluded["vk.com"] = ("pilot", "failed in Tor Browser")
     mon, res, *_ = bsl.select_site_set(SCREENING, 4, 1, 2, 1, excluded, pool_excluded={"telex.hu"})
