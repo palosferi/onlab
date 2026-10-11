@@ -13,6 +13,17 @@ form a separate pool for the background-tab ablation, so the noise tab never
 loads a site that is also an open-world test sample.
 
     python scripts/collection/build_site_lists.py --tranco top-1m.csv --list-id Y8YJG
+
+--site-set builds a whole site set into sites/<set>/ from a screening, the
+monitored list included (S2, the coverage threat model): the first --monitored
+passing sites in Tranco order that sites/excluded.csv does not mark as
+infrastructure or a duplicate, then --reserves more in the same order to stand
+in for monitored sites that fail in Tor Browser (name those with
+--pilot-failed), then the open-world pools below them. Everything left out of
+the monitored range goes to sites/<set>/dropped.csv, with the reason.
+
+    python scripts/collection/build_site_lists.py --list-id Y8YJG --from-screening \
+        --screening scripts/collection/sites/screening_s2.csv --site-set s2
 """
 
 import argparse
@@ -96,6 +107,53 @@ def select(results, unmonitored, background):
     return picked[:unmonitored], picked[unmonitored:need]
 
 
+def read_excluded(path):
+    """sites/excluded.csv as {registrable domain: (category, note)}."""
+    with open(path, newline="", encoding="utf-8") as fh:
+        rows = csv.DictReader(line for line in fh if not line.startswith("#"))
+        return {sites.registrable(r["domain"]): (r["category"], r["note"]) for r in rows}
+
+
+def select_site_set(results, n_monitored, n_reserves, n_unmonitored, n_background,
+                    excluded, pool_excluded=()):
+    """Split a screening into monitored, reserves, unmonitored and background.
+
+    Sites are taken in Tranco order and deduplicated on where they land, as in
+    select(). Inside the monitored range (monitored plus reserves) an excluded
+    domain is dropped and recorded; below it the pools take every distinct
+    passing site except duplicates of a monitored one and `pool_excluded` (the
+    other site set's monitored domains, so either set's model can be tested on
+    these pools).
+    """
+    seen, dropped, chosen, pool = set(), [], [], []
+    n_chosen = n_monitored + n_reserves
+    pool_excluded = set(pool_excluded)
+    for (rank, dom), ok, _, final in results:
+        if not ok or EXCLUDE_RE.search(dom):
+            continue
+        reg = sites.registrable(dom)
+        landed = sites.registrable(urlparse(final).hostname or dom)
+        if landed in seen or reg in seen:
+            if len(chosen) < n_chosen:
+                dropped.append((rank, dom, landed, "same landing site", ""))
+            continue
+        seen.update({reg, landed})
+        hit = excluded.get(reg) or excluded.get(landed)
+        if len(chosen) < n_chosen:
+            if hit:
+                dropped.append((rank, dom, landed, *hit))
+            else:
+                chosen.append((rank, dom))
+        elif not (hit and hit[0] == "duplicate") and not ({reg, landed} & pool_excluded):
+            pool.append((rank, dom))
+    need = n_unmonitored + n_background
+    if len(chosen) < n_chosen or len(pool) < need:
+        sys.exit(f"only {len(chosen)} monitored candidates and {len(pool)} pool sites; "
+                 f"need {n_chosen} and {need}: screen further down the ranking")
+    return (chosen[:n_monitored], chosen[n_monitored:], pool[:n_unmonitored],
+            pool[n_unmonitored:need], dropped)
+
+
 def read_screening(path):
     with open(path, newline="", encoding="utf-8") as fh:
         # split()[-1]: screens before the content-type fix stored
@@ -122,15 +180,26 @@ def main():
     p.add_argument("--socks-port", type=int, default=cfg.env_int("TOR_WF_BASELINE_SOCKS_PORT", 9060))
     p.add_argument("--workers", type=int, default=16)
     p.add_argument("--timeout", type=int, default=45)
+    p.add_argument("--screening", default=os.path.join(sites.SITES_DIR, "screening.csv"),
+                   help="screening CSV to write, or to read with --from-screening")
+    p.add_argument("--screen-only", action="store_true",
+                   help="screen and write the CSV, keeping the monitored domains among the "
+                        "candidates, and build no pools (S2 picks its monitored set from it)")
+    p.add_argument("--site-set", default="",
+                   help="build a whole site set, monitored list included, into sites/<set>/")
+    p.add_argument("--monitored", type=int, default=50)
+    p.add_argument("--reserves", type=int, default=15)
+    p.add_argument("--pilot-failed", default="",
+                   help="comma separated domains that failed the Tor Browser pilot (--site-set)")
     args = p.parse_args()
 
-    screening_csv = os.path.join(sites.SITES_DIR, "screening.csv")
+    screening_csv = args.screening
     if args.from_screening:
         results = read_screening(screening_csv)
     else:
         if not args.tranco:
             sys.exit("--tranco is required unless --from-screening")
-        taken = sites.monitored_domains()
+        taken = set() if args.screen_only or args.site_set else sites.monitored_domains()
         candidates = []
         with open(args.tranco, encoding="utf-8") as fh:
             for rank, domain in csv.reader(fh):
@@ -147,9 +216,9 @@ def main():
         with ThreadPoolExecutor(args.workers) as pool:
             results = list(pool.map(lambda c: (c, *screen(c[1], args.socks_port, args.timeout)),
                                     candidates))
-        os.makedirs(sites.SITES_DIR, exist_ok=True)
+        os.makedirs(os.path.dirname(os.path.abspath(screening_csv)), exist_ok=True)
         with open(screening_csv, "w", newline="", encoding="utf-8") as fh:
-            w = csv.writer(fh)
+            w = csv.writer(fh, lineterminator="\n")
             w.writerow(["rank", "domain", "ok", "reason", "final_url"])
             for (rank, dom), ok, reason, final in results:
                 w.writerow([rank, dom, int(ok), reason, final])
@@ -159,10 +228,15 @@ def main():
         key = "ok" if ok else reason.split(" ")[0]
         reasons[key] = reasons.get(key, 0) + 1
     print(f"{reasons.get('ok', 0)}/{len(results)} passed the screen; {reasons}")
-    unmon, bg = select(results, args.unmonitored, args.background)
-
+    if args.screen_only:
+        return
     header = (f"# Tranco list {args.list_id} (https://tranco-list.eu/list/{args.list_id}), "
               f"screened over Tor by build_site_lists.py.\n# label url  # tranco rank\n")
+    if args.site_set:
+        build_site_set(args, results, header)
+        return
+    unmon, bg = select(results, args.unmonitored, args.background)
+
     for name, chunk in (("unmonitored", unmon), ("background", bg)):
         with open(os.path.join(sites.SITES_DIR, f"{name}.txt"), "w", encoding="utf-8") as fh:
             fh.write(header)
@@ -171,6 +245,30 @@ def main():
 
     print(f"wrote {len(unmon)} unmonitored and {len(bg)} background sites "
           f"(ranks up to {bg[-1][0] if bg else unmon[-1][0]})")
+
+
+def build_site_set(args, results, header):
+    excluded = read_excluded(os.path.join(sites.SITES_DIR, "excluded.csv"))
+    for dom in filter(None, (d.strip() for d in args.pilot_failed.split(","))):
+        excluded[sites.registrable(dom)] = ("pilot", "failed in Tor Browser")
+    mon, res, unmon, bg, dropped = select_site_set(
+        results, args.monitored, args.reserves, args.unmonitored, args.background,
+        excluded, pool_excluded=sites.monitored_domains())
+    out = os.path.join(sites.SITES_DIR, args.site_set)
+    os.makedirs(out, exist_ok=True)
+    for name, chunk in (("monitored", mon), ("reserves", res), ("unmonitored", unmon),
+                        ("background", bg)):
+        with open(os.path.join(out, f"{name}.txt"), "w", encoding="utf-8") as fh:
+            fh.write(header)
+            for rank, dom in chunk:
+                fh.write(f"{label_for(dom)} https://{dom}  # {rank}\n")
+    with open(os.path.join(out, "dropped.csv"), "w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh, lineterminator="\n")
+        w.writerow(["rank", "domain", "landed", "category", "note"])
+        w.writerows(dropped)
+    print(f"wrote {args.site_set}: {len(mon)} monitored (ranks to {mon[-1][0]}), "
+          f"{len(res)} reserves, {len(unmon)} unmonitored and {len(bg)} background "
+          f"(ranks {unmon[0][0]}-{bg[-1][0] if bg else unmon[-1][0]}), {len(dropped)} dropped")
 
 
 if __name__ == "__main__":

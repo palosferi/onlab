@@ -1,0 +1,17 @@
+# Tranco list Y8YJG (https://tranco-list.eu/list/Y8YJG), screened over Tor by build_site_lists.py.
+# label url  # tranco rank
+endpoints.news https://endpoints.news  # 221
+ubuntu.com https://ubuntu.com  # 225
+twitch.tv https://twitch.tv  # 228
+mit.edu https://mit.edu  # 231
+android.com https://android.com  # 234
+nist.gov https://nist.gov  # 239
+who.int https://who.int  # 269
+linktr.ee https://linktr.ee  # 273
+launchpad.net https://launchpad.net  # 280
+ibm.com https://ibm.com  # 285
+salesforce.com https://salesforce.com  # 293
+hp.com https://hp.com  # 300
+nature.com https://nature.com  # 303
+steampowered.com https://steampowered.com  # 305
+www.gov.uk https://www.gov.uk  # 308

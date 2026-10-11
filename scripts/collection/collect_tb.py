@@ -33,6 +33,7 @@ Two collection details replace fixed sleeps:
 Usage (via run_tb.sh, which sets the environment):
     collect_tb.py --collection tb-2026-10 --repeats 40 --bg-repeats 20
     collect_tb.py --collection tb-pilot --repeats 2 --only wikipedia,bbc --unmonitored-limit 5
+    collect_tb.py --collection s2-main --site-set s2 --repeats 40 --bg-repeats 20
 """
 
 import argparse
@@ -382,6 +383,8 @@ def main():
     p.add_argument("--bg-repeats", type=int, default=20,
                    help="background-tab visits per monitored site (baseline only; 0 = off)")
     p.add_argument("--unmonitored-limit", type=int, default=0, help="use only the first N (0 = all)")
+    p.add_argument("--site-set", default="",
+                   help="read all site lists from sites/<set>/ (e.g. s2); default: tb-main's")
     p.add_argument("--only", default="", help="comma separated monitored sites, for pilots")
     p.add_argument("--seed", default="thesis", help="schedule seed; keep it fixed to resume")
     p.add_argument("--max-attempts", type=int, default=2)
@@ -391,15 +394,15 @@ def main():
     p.add_argument("--dry-run", action="store_true")
     args = p.parse_args()
 
-    monitored = dict(sites.MONITORED)
+    monitored = sites.load_monitored(args.site_set)
     if args.only:
         wanted = [s.strip() for s in args.only.split(",") if s.strip()]
         unknown = [s for s in wanted if s not in monitored]
         if unknown:
             sys.exit(f"unknown monitored site(s): {', '.join(unknown)}")
         monitored = {s: monitored[s] for s in wanted}
-    unmonitored = sites.load_pool("unmonitored")
-    background = sites.load_pool("background")
+    unmonitored = sites.load_pool("unmonitored", args.site_set)
+    background = sites.load_pool("background", args.site_set)
     if args.unmonitored_limit:
         unmonitored = dict(list(unmonitored.items())[:args.unmonitored_limit])
     if not unmonitored:

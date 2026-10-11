@@ -99,3 +99,42 @@ analyses, all on the time and compute available before 2026-12-11.
 
 The feladatkiírás says "50 kiválasztott (megfigyelt)", so either set satisfies it.
 
+
+## S2 selection rule (decided 2026-10-11)
+
+Screened Tranco Y8YJG top 6000 over the baseline arm
+(`sites/screening_s2.csv`, 2226 of 5647 pass). Then, in Tranco order and
+deduplicated on where a site lands:
+
+1. **Monitored (50):** drop domains whose main job is infrastructure (CDNs, DNS,
+   time service, certificates, ad tech and analytics, APIs, domain registrars,
+   link redirectors) and duplicates of a service already in the set. The list
+   with categories is `sites/excluded.csv`, classified by hand down to rank
+   ~400. Result: `sites/s2/monitored.txt`, ranks 1-220.
+2. **Reserves (15):** the next 15 by the same rule (ranks 221-308). A monitored
+   site that fails in Tor Browser is named with `--pilot-failed` and the next
+   reserve moves up, so the set stays "the top 50 that work over Tor".
+3. **Unmonitored (500) and background (100):** every distinct passing site
+   below the reserves (ranks 310-2082), not filtered for infrastructure (the
+   open world only needs distinct pages), minus duplicates of a monitored site
+   and minus tb-main's monitored sites, so tb-main models can be tested on the
+   S2 open world as well.
+
+Everything left out of the monitored range, with its reason, is in
+`sites/s2/dropped.csv` (54 rows: 18 same landing site, 10 API, 7 ad tech, 5
+CDN, 3 registrar, 3 redirect, 2 DNS, 2 certificates, 2 duplicate, 1 time, 1
+network). That file is the appendix table.
+
+Rebuild: `build_site_lists.py --list-id Y8YJG --from-screening --screening
+scripts/collection/sites/screening_s2.csv --site-set s2 [--pilot-failed a,b]`.
+
+Draft for the methods chapter:
+
+> A megfigyelt halmaz a Tranco-lista (Y8YJG) népszerűségi sorrendjét követi.
+> A lista a forgalom alapján rangsorol, ezért az élén sok olyan domain áll,
+> amelyet senki nem nyit meg böngészőben, hanem más oldalak töltenek be
+> (CDN-ek, DNS- és időszolgáltatások, tanúsítványkiadók, hirdetési és mérési
+> szolgáltatások, API-k, domainregisztrátorok, linkrövidítők). Ezeket, valamint
+> egy már szereplő szolgáltatás másodpéldányait (pl. vk.ru a vk.com mellett)
+> kihagytam, és a Tor-on szűrt sorrendből megmaradó első 50 oldalt vettem
+> megfigyeltnek. A kihagyott domaineket és az okot a függelék sorolja fel.

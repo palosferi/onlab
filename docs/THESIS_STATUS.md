@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-10. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-11. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -69,6 +69,28 @@ These need a rerun before they are quotable. That log is kept as
 `logs/transport_tb-main.log`, ~40 h. `evaluate_transport.py` now saves after
 every seed to `figures/metrics_transport_tb-main_cells.partial.json`; if the run
 dies, start the same command again and it skips the finished seeds.
+
+**Seed 42 of the rerun finished 2026-10-11 ~07:40** (about 16 h) and matches
+the killed run's seed 42 on every number. Seeds 43 and 44 should end around
+2026-10-12 late afternoon.
+
+**S2 screening started 2026-10-11 09:19** on the Debian server as user unit
+`wf-screen-s2`: `build_site_lists.py --screen-only` over the first 6000 of
+Tranco Y8YJG (`logs/tranco_Y8YJG_top6000.csv`, 5647 domains after the adult
+filter and registrable dedup), through the baseline arm, 16 workers. Log
+`logs/screen_s2.log`, output `scripts/collection/sites/screening_s2.csv`, written
+only at the end. `--screen-only` keeps the tb-main monitored domains among the
+candidates and builds no pools; `sites/screening.csv` (tb-main's screen, ranks
+up to 2822) is left as it was. **Finished 10:36**: 2226 of 5647 passed (3206
+http errors/timeouts, 171 too small, 33 challenge pages, 11 not HTML); 1985
+distinct sites after deduplicating on where they land, so the 50th lands at rank
+142 and 650 sites reach rank ~1900. The raw top 50 is full of infrastructure
+domains whose landing page is a corporate site (cloudflare, fastly, gandi,
+digicert, ntp.org, nginx.org, sentry, b-cdn, criteo, cloudflare-dns), so the
+monitored set needs a stated filtering rule. **Rule decided and S2 built
+2026-10-11** (`docs/SITE_SETS.md`, "S2 selection rule"): `sites/s2/` holds 50
+monitored (ranks 1-220), 15 reserves, 500 unmonitored and 100 background, and
+`dropped.csv` for the appendix. `collect_tb.py --site-set s2` collects it.
 
 The drift timer `tor-wf-round.timer` is disabled and stays off (drift deferred).
 

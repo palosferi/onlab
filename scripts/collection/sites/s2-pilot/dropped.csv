@@ -1,0 +1,55 @@
+rank,domain,landed,category,note
+2,cloudflare.com,cloudflare.com,cdn,
+8,amazonaws.com,amazon.com,api,AWS service endpoints
+28,azure.com,microsoft.com,same landing site,
+36,fastly.net,fastly.com,cdn,
+38,doubleclick.net,google.com,same landing site,
+45,gandi.net,gandi.net,registrar,
+46,youtu.be,youtube.com,same landing site,
+47,digicert.com,digicert.com,certificates,
+50,x.com,x.com,same landing site,
+58,googledomains.com,domains.google,registrar,discontinued registrar
+60,googlesyndication.com,google.com,same landing site,
+71,ntp.org,ntp.org,time,NTP pool
+76,cloudflare-dns.com,one.one,dns,1.1.1.1 DNS-over-HTTPS
+80,workers.dev,cloudflare.com,same landing site,
+83,yandex.net,ya.ru,cdn,Yandex static and API host
+92,sentry.io,sentry.io,api,error-reporting SDK endpoint
+93,windows.com,microsoft.com,same landing site,
+108,b-cdn.net,bunny.net,cdn,Bunny CDN
+116,google-analytics.com,google.com,same landing site,
+117,bit.ly,bitly.com,redirect,link shortener
+126,github.io,github.com,same landing site,
+132,criteo.com,criteo.com,ad-tech,
+139,triplinkintl.com,triplinkintl.com,api,Trip.com service host
+149,afternic.com,afternic.com,registrar,domain marketplace and parking
+154,gravatar.com,gravatar.com,api,avatar images embedded in other sites
+161,one.one,one.com,same landing site,
+164,adtrafficquality.google,google.com,same landing site,
+169,adobe.io,adobe.com,api,
+170,discord.com,discord.com,same landing site,
+178,vk.ru,vk.ru,duplicate,of vk.com
+180,lencr.org,letsencrypt.org,certificates,Let's Encrypt OCSP and CRL
+188,telekom.net,telekom.com,network,Deutsche Telekom network host names
+215,doi.org,doi.org,redirect,DOI resolver
+223,taboola.com,taboola.com,ad-tech,
+233,pages.dev,cloudflare.com,same landing site,
+235,userapi.com,vk.com,same landing site,
+236,bbc.co.uk,bbc.co.uk,duplicate,of bbc.com
+238,stripe.com,stripe.com,api,payment API and js.stripe.com
+240,gmail.com,google.com,same landing site,
+250,telegram.org,telegram.org,same landing site,
+251,wikimedia.org,wikimedia.org,cdn,upload.wikimedia.org serves Wikipedia's media
+252,miui.com,miui.com,api,Xiaomi device services
+255,pubmatic.com,pubmatic.com,ad-tech,
+256,scorecardresearch.com,scorecardresearch.com,ad-tech,audience measurement
+264,hubspot.com,hubspot.com,ad-tech,marketing tracking embedded in other sites
+265,adsrvr.org,adsrvr.org,ad-tech,The Trade Desk
+272,hcaptcha.com,hcaptcha.com,api,captcha widget
+290,dnsmadeeasy.com,dnsmadeeasy.com,dns,
+292,samsungcloud.com,samsungcloud.com,api,device cloud service
+295,mzstatic.com,apple.com,same landing site,
+296,telegram.me,telegram.org,same landing site,
+297,tinyurl.com,tinyurl.com,redirect,link shortener
+298,ipify.org,ipify.org,api,IP lookup API
+307,inmobi.com,inmobi.com,ad-tech,

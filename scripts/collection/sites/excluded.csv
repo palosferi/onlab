@@ -1,0 +1,53 @@
+# Domains kept out of a generated monitored set (build_site_lists.py --site-set).
+# Rule (decided 2026-10-11): take the screened Tranco order and drop domains whose
+# main job is infrastructure -- CDNs, DNS, time service, certificates, ad tech and
+# analytics, APIs, domain registrars, link redirectors -- plus duplicates of a
+# service already in the set. Tranco ranks these high for the traffic they carry
+# inside other pages, not because people browse to them. Classified by hand for
+# the screened range down to Tranco rank ~400; the open-world pools are not
+# filtered, since they only need distinct pages.
+domain,category,note
+cloudflare.com,cdn,
+fastly.net,cdn,
+b-cdn.net,cdn,Bunny CDN
+yandex.net,cdn,Yandex static and API host
+wikimedia.org,cdn,upload.wikimedia.org serves Wikipedia's media
+cloudflare-dns.com,dns,1.1.1.1 DNS-over-HTTPS
+dnsmadeeasy.com,dns,
+opendns.com,dns,
+ntp.org,time,NTP pool
+telekom.net,network,Deutsche Telekom network host names
+digicert.com,certificates,
+lencr.org,certificates,Let's Encrypt OCSP and CRL
+gandi.net,registrar,
+googledomains.com,registrar,discontinued registrar
+afternic.com,registrar,domain marketplace and parking
+bit.ly,redirect,link shortener
+tinyurl.com,redirect,link shortener
+doi.org,redirect,DOI resolver
+criteo.com,ad-tech,
+taboola.com,ad-tech,
+pubmatic.com,ad-tech,
+scorecardresearch.com,ad-tech,audience measurement
+adsrvr.org,ad-tech,The Trade Desk
+casalemedia.com,ad-tech,Index Exchange
+media.net,ad-tech,
+smartadserver.com,ad-tech,Equativ
+doubleverify.com,ad-tech,
+inmobi.com,ad-tech,
+hubspot.com,ad-tech,marketing tracking embedded in other sites
+amplitude.com,ad-tech,product analytics SDK
+amazonaws.com,api,AWS service endpoints
+adobe.io,api,
+sentry.io,api,error-reporting SDK endpoint
+datadoghq.com,api,monitoring telemetry
+triplinkintl.com,api,Trip.com service host
+gravatar.com,api,avatar images embedded in other sites
+hcaptcha.com,api,captcha widget
+stripe.com,api,payment API and js.stripe.com
+ipify.org,api,IP lookup API
+ip-api.com,api,IP lookup API
+samsungcloud.com,api,device cloud service
+miui.com,api,Xiaomi device services
+vk.ru,duplicate,of vk.com
+bbc.co.uk,duplicate,of bbc.com

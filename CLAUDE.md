@@ -6,8 +6,9 @@ obfs4, Snowflake). Thesis work happens on the `szakdolgozat-drift` branch.
 
 ## Machines, and which may reach the collection host
 
-Collection runs on a home server (`fujitsu`, Debian 13 since 2026-10-10, user
-`ferencpalos`; it was Mint with user `palos` before), reached over Tailscale.
+Collection runs on a home server, called the Debian server (hostname
+`fujitsu-debian-server`, Debian 13 since 2026-10-10, user `ferencpalos`; it was
+Mint with user `palos` before), reached over Tailscale.
 A fresh install is rebuilt with `scripts/collection/setup_host.sh`. **Server
 work — deploys, rounds, preflight, reading logs — happens only from the Fedora
 laptop or a GitHub Codespace.**
