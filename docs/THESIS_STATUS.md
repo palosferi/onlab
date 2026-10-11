@@ -92,6 +92,21 @@ monitored set needs a stated filtering rule. **Rule decided and S2 built
 monitored (ranks 1-220), 15 reserves, 500 unmonitored and 100 background, and
 `dropped.csv` for the appendix. `collect_tb.py --site-set s2` collects it.
 
+**S2 pilot started 2026-10-11 11:27** on the Debian server as user unit
+`wf-s2-pilot`: `run_tb.sh --collection s2-pilot --site-set s2-pilot --repeats 3
+--bg-repeats 0 --unmonitored-limit 5`, i.e. the 50 monitored plus 15 reserves,
+3 visits on each of the three arms (600 captures, ~7 h), log
+`logs/s2-pilot.log`. A monitored site that fails in Tor Browser on any arm goes
+into `--pilot-failed` and the next reserve moves up; then rebuild `sites/s2/`
+and start the full S2 run (`--site-set s2 --repeats 40 --bg-repeats 20`).
+
+**R1-R4 script ready, not yet run:** `src/evaluate_budget.py` (budget = R1,
+set_size = R2, curve = R4; `--precision-from` = R3). Smoke-tested on 4 sites.
+Run it on the laptop once the tb-main DF run is done, e.g.
+`python src/evaluate_budget.py --collection tb-main --min-visits 30 --threads 12`
+(about 20 trainings per seed). R3 on seed 42 of tb-main alone (not quotable):
+at a 1% base rate the best precision with TPR >= 50% is 7.5-8.3% on every arm.
+
 The drift timer `tor-wf-round.timer` is disabled and stays off (drift deferred).
 
 ## Results so far (spring dataset, Chromium, 3 seeds, mean ± sd)
