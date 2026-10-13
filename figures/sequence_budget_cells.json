@@ -1,0 +1,404 @@
+{
+  "lengths": [
+    5000,
+    8000,
+    10000,
+    12000,
+    16000,
+    20000
+  ],
+  "arms": [
+    {
+      "arm": "tb-main/baseline/background",
+      "directory": "tor_dataset/tb/tb-main/features/baseline/background",
+      "n_traces": 875,
+      "packets_median": 12184,
+      "packets_p90": 34881,
+      "packets_max": 146027,
+      "bytes_median": 6262576,
+      "median_packet_size": 514.0,
+      "duration_s_median": 19.6,
+      "outgoing_share_median": 0.088,
+      "coverage": [
+        {
+          "length": 5000,
+          "traces_fully_covered": 161,
+          "traces_fully_covered_pct": 18.4,
+          "median_packets_kept_pct": 41.0,
+          "median_bytes_kept_pct": 41.0
+        },
+        {
+          "length": 8000,
+          "traces_fully_covered": 280,
+          "traces_fully_covered_pct": 32.0,
+          "median_packets_kept_pct": 65.7,
+          "median_bytes_kept_pct": 65.7
+        },
+        {
+          "length": 10000,
+          "traces_fully_covered": 356,
+          "traces_fully_covered_pct": 40.7,
+          "median_packets_kept_pct": 82.1,
+          "median_bytes_kept_pct": 82.1
+        },
+        {
+          "length": 12000,
+          "traces_fully_covered": 431,
+          "traces_fully_covered_pct": 49.3,
+          "median_packets_kept_pct": 98.5,
+          "median_bytes_kept_pct": 98.5
+        },
+        {
+          "length": 16000,
+          "traces_fully_covered": 550,
+          "traces_fully_covered_pct": 62.9,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 20000,
+          "traces_fully_covered": 636,
+          "traces_fully_covered_pct": 72.7,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        }
+      ]
+    },
+    {
+      "arm": "tb-main/baseline/monitored",
+      "directory": "tor_dataset/tb/tb-main/features/baseline/monitored",
+      "n_traces": 1755,
+      "packets_median": 7456,
+      "packets_p90": 24784,
+      "packets_max": 79555,
+      "bytes_median": 3832384,
+      "median_packet_size": 514.0,
+      "duration_s_median": 16.6,
+      "outgoing_share_median": 0.092,
+      "coverage": [
+        {
+          "length": 5000,
+          "traces_fully_covered": 682,
+          "traces_fully_covered_pct": 38.9,
+          "median_packets_kept_pct": 67.1,
+          "median_bytes_kept_pct": 67.1
+        },
+        {
+          "length": 8000,
+          "traces_fully_covered": 941,
+          "traces_fully_covered_pct": 53.6,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 10000,
+          "traces_fully_covered": 1090,
+          "traces_fully_covered_pct": 62.1,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 12000,
+          "traces_fully_covered": 1216,
+          "traces_fully_covered_pct": 69.3,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 16000,
+          "traces_fully_covered": 1399,
+          "traces_fully_covered_pct": 79.7,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 20000,
+          "traces_fully_covered": 1536,
+          "traces_fully_covered_pct": 87.5,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        }
+      ]
+    },
+    {
+      "arm": "tb-main/baseline/unmonitored",
+      "directory": "tor_dataset/tb/tb-main/features/baseline/unmonitored",
+      "n_traces": 424,
+      "packets_median": 8245,
+      "packets_p90": 25509,
+      "packets_max": 147303,
+      "bytes_median": 4237930,
+      "median_packet_size": 514.0,
+      "duration_s_median": 17.5,
+      "outgoing_share_median": 0.092,
+      "coverage": [
+        {
+          "length": 5000,
+          "traces_fully_covered": 140,
+          "traces_fully_covered_pct": 33.0,
+          "median_packets_kept_pct": 60.6,
+          "median_bytes_kept_pct": 60.6
+        },
+        {
+          "length": 8000,
+          "traces_fully_covered": 208,
+          "traces_fully_covered_pct": 49.1,
+          "median_packets_kept_pct": 97.0,
+          "median_bytes_kept_pct": 97.0
+        },
+        {
+          "length": 10000,
+          "traces_fully_covered": 247,
+          "traces_fully_covered_pct": 58.3,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 12000,
+          "traces_fully_covered": 282,
+          "traces_fully_covered_pct": 66.5,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 16000,
+          "traces_fully_covered": 338,
+          "traces_fully_covered_pct": 79.7,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 20000,
+          "traces_fully_covered": 357,
+          "traces_fully_covered_pct": 84.2,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        }
+      ]
+    },
+    {
+      "arm": "tb-main/obfs4/monitored",
+      "directory": "tor_dataset/tb/tb-main/features/obfs4/monitored",
+      "n_traces": 1739,
+      "packets_median": 8257,
+      "packets_p90": 26953,
+      "packets_max": 81149,
+      "bytes_median": 4244098,
+      "median_packet_size": 514.0,
+      "duration_s_median": 11.4,
+      "outgoing_share_median": 0.142,
+      "coverage": [
+        {
+          "length": 5000,
+          "traces_fully_covered": 594,
+          "traces_fully_covered_pct": 34.2,
+          "median_packets_kept_pct": 60.6,
+          "median_bytes_kept_pct": 60.6
+        },
+        {
+          "length": 8000,
+          "traces_fully_covered": 844,
+          "traces_fully_covered_pct": 48.5,
+          "median_packets_kept_pct": 96.9,
+          "median_bytes_kept_pct": 96.9
+        },
+        {
+          "length": 10000,
+          "traces_fully_covered": 1041,
+          "traces_fully_covered_pct": 59.9,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 12000,
+          "traces_fully_covered": 1111,
+          "traces_fully_covered_pct": 63.9,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 16000,
+          "traces_fully_covered": 1317,
+          "traces_fully_covered_pct": 75.7,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 20000,
+          "traces_fully_covered": 1477,
+          "traces_fully_covered_pct": 84.9,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        }
+      ]
+    },
+    {
+      "arm": "tb-main/obfs4/unmonitored",
+      "directory": "tor_dataset/tb/tb-main/features/obfs4/unmonitored",
+      "n_traces": 427,
+      "packets_median": 9193,
+      "packets_p90": 28160,
+      "packets_max": 170883,
+      "bytes_median": 4725202,
+      "median_packet_size": 514.0,
+      "duration_s_median": 11.8,
+      "outgoing_share_median": 0.145,
+      "coverage": [
+        {
+          "length": 5000,
+          "traces_fully_covered": 120,
+          "traces_fully_covered_pct": 28.1,
+          "median_packets_kept_pct": 54.4,
+          "median_bytes_kept_pct": 54.4
+        },
+        {
+          "length": 8000,
+          "traces_fully_covered": 192,
+          "traces_fully_covered_pct": 45.0,
+          "median_packets_kept_pct": 87.0,
+          "median_bytes_kept_pct": 87.0
+        },
+        {
+          "length": 10000,
+          "traces_fully_covered": 226,
+          "traces_fully_covered_pct": 52.9,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 12000,
+          "traces_fully_covered": 257,
+          "traces_fully_covered_pct": 60.2,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 16000,
+          "traces_fully_covered": 311,
+          "traces_fully_covered_pct": 72.8,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 20000,
+          "traces_fully_covered": 353,
+          "traces_fully_covered_pct": 82.7,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        }
+      ]
+    },
+    {
+      "arm": "tb-main/snowflake/monitored",
+      "directory": "tor_dataset/tb/tb-main/features/snowflake/monitored",
+      "n_traces": 1774,
+      "packets_median": 8526,
+      "packets_p90": 27547,
+      "packets_max": 104372,
+      "bytes_median": 4382364,
+      "median_packet_size": 514.0,
+      "duration_s_median": 16.7,
+      "outgoing_share_median": 0.094,
+      "coverage": [
+        {
+          "length": 5000,
+          "traces_fully_covered": 591,
+          "traces_fully_covered_pct": 33.3,
+          "median_packets_kept_pct": 58.6,
+          "median_bytes_kept_pct": 58.6
+        },
+        {
+          "length": 8000,
+          "traces_fully_covered": 834,
+          "traces_fully_covered_pct": 47.0,
+          "median_packets_kept_pct": 93.8,
+          "median_bytes_kept_pct": 93.8
+        },
+        {
+          "length": 10000,
+          "traces_fully_covered": 997,
+          "traces_fully_covered_pct": 56.2,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 12000,
+          "traces_fully_covered": 1103,
+          "traces_fully_covered_pct": 62.2,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 16000,
+          "traces_fully_covered": 1328,
+          "traces_fully_covered_pct": 74.9,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 20000,
+          "traces_fully_covered": 1463,
+          "traces_fully_covered_pct": 82.5,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        }
+      ]
+    },
+    {
+      "arm": "tb-main/snowflake/unmonitored",
+      "directory": "tor_dataset/tb/tb-main/features/snowflake/unmonitored",
+      "n_traces": 427,
+      "packets_median": 9507,
+      "packets_p90": 28891,
+      "packets_max": 166472,
+      "bytes_median": 4886598,
+      "median_packet_size": 514.0,
+      "duration_s_median": 17.5,
+      "outgoing_share_median": 0.099,
+      "coverage": [
+        {
+          "length": 5000,
+          "traces_fully_covered": 123,
+          "traces_fully_covered_pct": 28.8,
+          "median_packets_kept_pct": 52.6,
+          "median_bytes_kept_pct": 52.6
+        },
+        {
+          "length": 8000,
+          "traces_fully_covered": 187,
+          "traces_fully_covered_pct": 43.8,
+          "median_packets_kept_pct": 84.1,
+          "median_bytes_kept_pct": 84.1
+        },
+        {
+          "length": 10000,
+          "traces_fully_covered": 226,
+          "traces_fully_covered_pct": 52.9,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 12000,
+          "traces_fully_covered": 256,
+          "traces_fully_covered_pct": 60.0,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 16000,
+          "traces_fully_covered": 315,
+          "traces_fully_covered_pct": 73.8,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        },
+        {
+          "length": 20000,
+          "traces_fully_covered": 351,
+          "traces_fully_covered_pct": 82.2,
+          "median_packets_kept_pct": 100.0,
+          "median_bytes_kept_pct": 100.0
+        }
+      ]
+    }
+  ]
+}
