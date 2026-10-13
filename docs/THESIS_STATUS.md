@@ -134,6 +134,18 @@ Kaggle CLI login on the laptop (`kaggle auth login`, CLI in
 `~/.local/share/kaggle-cli`) and the features uploaded as a private dataset
 (steps in `scripts/kaggle/push_job.py`).
 
+**Kaggle check done 2026-10-13**: dataset `ferencpalos/wf-tb-main` (private),
+kernel `wf-tbmain-transport-s42` at 40c5d2a ran tb-main seed 42 in 53 min on a
+Tesla T4 (torch 2.11.0+cu128), against 10-16 h per seed on the laptop CPU.
+`figures/metrics_transport_tb-main_cells_gpu_s42.json`. Its numbers differ from
+CPU seed 42 by about as much as CPU seeds differ from each other (e.g. closed
+world 94.1 / 94.1 / 92.6 vs 94.9 ± 0.7 / 93.4 ± 1.0 / 92.2 ± 0.7; leave-out
+obfs4 46.0 vs 52.4 ± 4.0), and every qualitative finding is the same. So same
+seed on other hardware is just another draw: no table may mix the two. Next:
+tb-main transport (3 seeds, ~3 h) and R1/R2/R4 (3 seeds, ~6 h est.) as two
+Kaggle jobs. Pushing to Kaggle needs the user (the permission classifier blocks
+it for Claude).
+
 The drift timer `tor-wf-round.timer` is disabled and stays off (drift deferred).
 
 ## Results so far (spring dataset, Chromium, 3 seeds, mean ± sd)
