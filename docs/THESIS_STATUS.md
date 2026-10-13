@@ -11,7 +11,7 @@ Topic posted on the BME portal by the konzulens (Dr. Sonkoly Balázs, TMIT):
 
 | Date | What | Who |
 |---|---|---|
-| 2026-10-05 – 10-16 | adatlap on the portal | student |
+| 2026-10-05 – 10-16 | adatlap on the portal (done 2026-10-13) | student |
 | 2026-10-09 24:00 | feladatkiírás upload | konzulens (student sends him a draft first) |
 | 2026-10-19 | feladatkiírás hitelesítés | |
 | 2026-12-11 12:00 | thesis submission | student |
@@ -168,7 +168,7 @@ traces and is not meaningful; `tb-main` fixes that.
 1. Write up the tb-main DF results (done, in the table above) and run R1, R2, R4.
 2. Feladatkiírás sent to the konzulens on 2026-10-09 (text as in
    `docs/FELADATKIIRAS.md`, background in `docs/FELADATKIIRAS_NOTES.md`); he
-   uploads it. Fill in the adatlap by 2026-10-16.
+   uploads it. Adatlap filled in 2026-10-13.
 3. Site sets, decided 2026-10-10 (`docs/SITE_SETS.md`): collect **S2**, a
    screened popular top-50 monitored set (coverage threat model) with a fresh
    500 unmonitored from further down Tranco, as the main dataset; tb-main stays
