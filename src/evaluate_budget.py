@@ -200,6 +200,7 @@ def main():
     p.add_argument("--min-epochs", type=int, default=50)
     p.add_argument("--seeds", default="42,43,44")
     p.add_argument("--threads", type=int, default=0)
+    p.add_argument("--device", default="cpu", help="cpu or cuda; seeds of one run never mix the two")
     p.add_argument("--test-size", type=float, default=0.2)
     p.add_argument("--min-visits", type=int, default=0,
                    help="drop monitored sites with fewer ok visits than this in any arm")

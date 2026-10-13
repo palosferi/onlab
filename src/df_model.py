@@ -107,6 +107,11 @@ def train_df(
         torch.set_num_threads(threads)
     torch.manual_seed(seed)
     np.random.seed(seed)
+    if str(device).startswith("cuda"):
+        # cuDNN otherwise picks convolution algorithms per run, and some of them
+        # sum in a nondeterministic order: the same seed would then not repeat.
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
     model = DFNet(n_classes, input_length=X_train.shape[1]).to(device)
     optimizer = torch.optim.Adamax(model.parameters(), lr=lr)
@@ -193,7 +198,9 @@ def train_df(
 
 
 @torch.no_grad()
-def predict_proba(model, X, batch_size=256, device="cpu"):
+def predict_proba(model, X, batch_size=256, device=None):
+    if device is None:
+        device = next(model.parameters()).device
     model.eval()
     out = []
     X = torch.from_numpy(X).unsqueeze(1)

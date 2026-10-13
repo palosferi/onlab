@@ -64,8 +64,8 @@ def provenance():
     """Facts that explain why two runs of the same seed can differ.
 
     Reduction order in the convolution kernels depends on the thread count and
-    the CPU, so results are only bit-comparable between machines when these
-    match. Recording them keeps a surprising number honest.
+    the CPU (or the GPU and CUDA version), so results are only bit-comparable
+    between machines when these match. Recording them keeps a surprising number honest.
     """
     import torch
 
@@ -75,6 +75,8 @@ def provenance():
         "host": platform.node(),
         "machine": platform.machine(),
         "python": platform.python_version(),
+        "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
+        "cuda": torch.version.cuda,
     }
 
 
@@ -126,6 +128,7 @@ def fit(X, y_enc, y, stamps, train_idx, n_classes, args, seed):
         patience=args.patience,
         min_epochs=args.min_epochs,
         threads=args.threads or None,
+        device=getattr(args, "device", "cpu"),
     )
     info["n_fit"] = int(len(fit_idx))
     info["n_val"] = int(len(val_idx))
