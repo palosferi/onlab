@@ -1,8 +1,5 @@
 # Tranco list Y8YJG (https://tranco-list.eu/list/Y8YJG), screened over Tor by build_site_lists.py.
 # label url  # tranco rank
-weibo.com https://passport.weibo.com/visitor/visitor  # 310
-drom.ru https://www.drom.ru/  # 311
-crpt.ru https://crpt.ru/  # 312
 ok.ru https://ok.ru/  # 314
 amplitude.com https://amplitude.com/  # 315
 alibaba.com https://www.alibaba.com/  # 316
@@ -500,3 +497,6 @@ filmyfly.soy https://filmyfly.care/  # 1775
 kolkataff.tv https://kolkataff.tv/  # 1776
 ico.org.uk https://ico.org.uk/  # 1778
 hover.com https://www.hover.com/  # 1779
+home.pl https://home.pl/  # 1783
+overwolf.com https://www.overwolf.com/  # 1784
+enable-javascript.com https://www.enable-javascript.com/  # 1786

@@ -15,7 +15,6 @@ wordpress.org https://wordpress.org/  # 48
 skype.com https://teams.live.com/free  # 51
 icloud.com https://www.icloud.com/  # 52
 tiktok.com https://www.tiktok.com/  # 53
-pinterest.com https://www.pinterest.com/  # 56
 roblox.com https://www.roblox.com/  # 61
 msn.com https://www.msn.com/sv-se  # 69
 qq.com https://www.qq.com/  # 72
@@ -30,9 +29,7 @@ blogspot.com https://www.blogger.com/about/  # 105
 reddit.com https://www.reddit.com/  # 109
 ui.com https://ui.com/  # 111
 amazonvideo.com https://www.primevideo.com/offers/nonprimehomepage  # 121
-snapchat.com https://www.snapchat.com/  # 127
 apache.org https://apache.org/  # 129
-vk.com https://vk.com/  # 130
 dropbox.com https://www.dropbox.com/  # 135
 kaspersky.com https://www.kaspersky.fr/  # 140
 discord.gg https://discord.com/  # 142
@@ -50,3 +47,6 @@ theguardian.com https://www.theguardian.com/europe  # 203
 t-online.de https://www.t-online.de/  # 210
 forbes.com https://www.forbes.com/  # 219
 bbc.com https://www.bbc.com/  # 220
+endpoints.news https://endpoints.news/  # 221
+ubuntu.com https://ubuntu.com/  # 225
+twitch.tv https://www.twitch.tv/  # 228

@@ -1,8 +1,5 @@
 # Tranco list Y8YJG (https://tranco-list.eu/list/Y8YJG), screened over Tor by build_site_lists.py.
 # label url  # tranco rank
-home.pl https://home.pl/  # 1783
-overwolf.com https://www.overwolf.com/  # 1784
-enable-javascript.com https://www.enable-javascript.com/  # 1786
 avira.com https://www.avira.com/  # 1787
 akismet.com https://akismet.com/  # 1789
 cmu.edu https://www.cmu.edu/  # 1795
@@ -100,3 +97,6 @@ aniview.com https://aniview.com/  # 2070
 mashable.com https://mashable.com/  # 2071
 hola.com https://www.hola.com/us/  # 2079
 ticketmaster.com https://www.ticketmaster.com/  # 2082
+mirtesen.ru https://mirtesen.ru/  # 2083
+metamask.io https://metamask.io/  # 2084
+ufl.edu https://www.ufl.edu/  # 2100

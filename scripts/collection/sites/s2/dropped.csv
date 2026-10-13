@@ -8,6 +8,7 @@ rank,domain,landed,category,note
 46,youtu.be,youtube.com,same landing site,
 47,digicert.com,digicert.com,certificates,
 50,x.com,x.com,same landing site,
+56,pinterest.com,pinterest.com,pilot,failed in Tor Browser
 58,googledomains.com,domains.google,registrar,discontinued registrar
 60,googlesyndication.com,google.com,same landing site,
 71,ntp.org,ntp.org,time,NTP pool
@@ -20,6 +21,8 @@ rank,domain,landed,category,note
 116,google-analytics.com,google.com,same landing site,
 117,bit.ly,bitly.com,redirect,link shortener
 126,github.io,github.com,same landing site,
+127,snapchat.com,snapchat.com,pilot,failed in Tor Browser
+130,vk.com,vk.com,pilot,failed in Tor Browser
 132,criteo.com,criteo.com,ad-tech,
 139,triplinkintl.com,triplinkintl.com,api,Trip.com service host
 149,afternic.com,afternic.com,registrar,domain marketplace and parking
