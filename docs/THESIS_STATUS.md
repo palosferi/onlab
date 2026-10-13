@@ -153,7 +153,7 @@ traces and is not meaningful; `tb-main` fixes that.
   `rsync -a ferencpalos@100.102.24.16:onlab/tor_dataset/tb/tb-main/{features,manifest.csv} tor_dataset/tb/tb-main/`.
   The Windows laptop must not reach the server: move the folder there by other
   means (disk or cloud drive). The manifest holds the obfs4 bridge IP; do not commit it.
-- `git pull` on `szakdolgozat-drift`; `.venv` needs torch, pandas, scikit-learn.
+- `git pull` on `szakdolgozat` (renamed from `szakdolgozat-drift` on 2026-10-13: `git fetch origin; git branch -m szakdolgozat-drift szakdolgozat; git branch -u origin/szakdolgozat szakdolgozat`); `.venv` needs torch, pandas, scikit-learn.
 
 ## Next tasks
 

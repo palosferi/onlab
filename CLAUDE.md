@@ -2,7 +2,7 @@
 
 Tor website fingerprinting. A BSc szakdolgozat continuing a completed önlab: how
 well a modern deep-learning attack generalizes across Tor transports (plain Tor,
-obfs4, Snowflake). Thesis work happens on the `szakdolgozat-drift` branch.
+obfs4, Snowflake). Thesis work happens on the `szakdolgozat` branch (named `szakdolgozat-drift` until 2026-10-13).
 
 ## Machines, and which may reach the collection host
 
