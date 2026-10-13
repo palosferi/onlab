@@ -52,7 +52,13 @@ def main():
     import torch
 
     if not torch.cuda.is_available():
-        sys.exit("no GPU: the kernel needs an accelerator (push_job.py asks for a T4)")
+        smi = subprocess.run("nvidia-smi -L", shell=True, capture_output=True, text=True)
+        net = subprocess.run(["git", "ls-remote", "-q", REPO, "HEAD"], capture_output=True, text=True)
+        sys.exit(f"no GPU: torch {torch.__version__} (CUDA {torch.version.cuda}), "
+                 f"nvidia-smi: {(smi.stdout or smi.stderr).strip()!r}, "
+                 f"internet {'ok' if net.returncode == 0 else 'blocked'}, "
+                 f"image {os.environ.get('KAGGLE_DOCKER_IMAGE', '?')}. Kaggle gives an "
+                 "accelerator only to phone-verified accounts.")
     torch.zeros(1, device="cuda")  # fails here, not mid-run, if this torch lacks the GPU's arch
     print(f"GPU {torch.cuda.get_device_name(0)}, torch {torch.__version__}, "
           f"python {platform.python_version()}", flush=True)
