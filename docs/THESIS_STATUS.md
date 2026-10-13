@@ -146,6 +146,12 @@ tb-main transport (3 seeds, ~3 h) and R1/R2/R4 (3 seeds, ~6 h est.) as two
 Kaggle jobs. Pushing to Kaggle needs the user (the permission classifier blocks
 it for Claude).
 
+**Pushed 2026-10-13 ~14:30** at affd553: `wf-tbmain-budget` (evaluate_budget.py,
+3 seeds, out `figures/metrics_budget_tb-main_cells_gpu.json`) running, and
+`wf-tbmain-transport` (evaluate_transport.py, 3 seeds, out
+`figures/metrics_transport_tb-main_cells_gpu.json`) queued behind it. Fetch with
+`kaggle kernels output ferencpalos/<slug> -p <dir>`.
+
 The drift timer `tor-wf-round.timer` is disabled and stays off (drift deferred).
 
 ## Results so far (spring dataset, Chromium, 3 seeds, mean ± sd)
