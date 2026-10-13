@@ -126,6 +126,14 @@ the ~20 ms per trace-epoch of tb-main seed 44 that is ~14 h per seed, ~2 days
 for three seeds on an idle laptop (seed 43, with the laptop in use, ran 65%
 slower).
 
+**Plan since 2026-10-13: all thesis DF runs on a Kaggle T4** (`scripts/kaggle/`,
+`--device cuda`): first tb-main seed 42 as a timing and agreement check against
+the CPU run above, then tb-main transport + R1/R2/R4 for three seeds, later S2.
+The CPU tb-main results stay as a cross-hardware reproduction. Waiting on: the
+Kaggle CLI login on the laptop (`kaggle auth login`, CLI in
+`~/.local/share/kaggle-cli`) and the features uploaded as a private dataset
+(steps in `scripts/kaggle/push_job.py`).
+
 The drift timer `tor-wf-round.timer` is disabled and stays off (drift deferred).
 
 ## Results so far (spring dataset, Chromium, 3 seeds, mean ± sd)
