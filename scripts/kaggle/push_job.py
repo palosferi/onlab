@@ -20,8 +20,10 @@ holds the obfs4 bridge address, and the evaluation does not read it):
     kaggle datasets init -p ~/wf-kaggle    # set "id" to USER/wf-tb-main, "title" to wf-tb-main
     kaggle datasets create -p ~/wf-kaggle  # private unless --public
 
-A Kaggle session ends after 12 h and keeps its output only if it finishes, so
-size each job to finish well inside that; seeds are independent jobs.
+A Kaggle session ends after 12 h, and a session cut off there may not keep its
+output (the runner copies the per-seed .partial.json every 5 minutes in case it
+does). Size each job to finish well inside 12 h: seeds are independent jobs,
+and evaluate_budget.py on tb-main needs one job per seed (3 seeds took > 10 h).
 """
 
 import argparse

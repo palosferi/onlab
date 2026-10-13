@@ -85,10 +85,17 @@ def main():
         with open(log_path, "w", encoding="utf-8") as log:
             proc = subprocess.Popen(argv, cwd=CODE, env=env, stdout=subprocess.PIPE,
                                     stderr=subprocess.STDOUT, text=True)
+            last_copy = time.time()
             for line in proc.stdout:
                 log.write(line)
                 log.flush()
                 print(line, end="", flush=True)
+                # The scripts save a .partial.json after every seed; keep it in
+                # the output, so a session cut off at 12 h still leaves the
+                # finished seeds to resume from.
+                if time.time() - last_copy > 300:
+                    collect_outputs(start)
+                    last_copy = time.time()
             proc.wait()
         record["commands"].append({"argv": cmd, "returncode": proc.returncode,
                                    "seconds": round(time.time() - t0)})

@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-13. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-14. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -151,6 +151,34 @@ it for Claude).
 `wf-tbmain-transport` (evaluate_transport.py, 3 seeds, out
 `figures/metrics_transport_tb-main_cells_gpu.json`) queued behind it. Fetch with
 `kaggle kernels output ferencpalos/<slug> -p <dir>`.
+
+**tb-main transport on Kaggle: done 2026-10-13 21:22** (9537 s on a T4, at
+affd553), `figures/metrics_transport_tb-main_cells_gpu.json`. Its seed 42 equals
+the `wf-tbmain-transport-s42` test in all 20 scenarios, so GPU runs repeat.
+**These are the thesis numbers** (mean ± sd over seeds 42/43/44, 43 classes):
+
+| | |
+|---|---|
+| closed world baseline / obfs4 / Snowflake | 94.6 ± 0.9 / 92.8 ± 1.3 / 92.5 ± 0.3 |
+| baseline -> obfs4 / -> Snowflake | 55.2 ± 5.3 / 64.8 ± 2.0 |
+| obfs4 -> baseline / -> Snowflake | 45.5 ± 5.8 / 68.5 ± 4.9 |
+| Snowflake -> baseline / -> obfs4 | 88.5 ± 1.0 / 61.3 ± 6.6 |
+| leave-one-out: held-out baseline / obfs4 / Snowflake | 77.4 ± 2.8 / 52.6 ± 6.3 / 77.5 ± 0.6 |
+| pooled on baseline / obfs4 / Snowflake | 94.6 ± 0.2 / 96.8 ± 1.0 / 92.7 ± 0.8 |
+| background test: clean / background-aware model | 19.0 ± 1.2 / 28.2 ± 1.7 |
+| open world TPR / FPR (argmax), baseline | 92.8 ± 0.9 / 30.6 ± 2.4 |
+| open world TPR / FPR, obfs4 | 89.5 ± 1.2 / 32.5 ± 5.6 |
+| open world TPR / FPR, Snowflake | 88.7 ± 1.3 / 42.0 ± 3.8 |
+
+Every row agrees with the CPU run above within the seed spread; the CPU run is
+the cross-hardware reproduction. R3 from it
+(`figures/metrics_transport_tb-main_cells_gpu_precision.json`): best precision
+with TPR >= 50% at base rate 5% / 1% / 0.1% is 33.1 / 8.7 / 0.9% baseline, 41.0
+/ 12.1 / 1.4% obfs4, 34.1 / 9.0 / 1.0% Snowflake (upper bounds, WPR taken as 0).
+
+**R1/R2/R4 on Kaggle still running at 2026-10-14 00:40**, ~10 h in, against an
+estimate of 6 h; the 12 h session limit falls around 02:30. If it is cut off,
+rerun as one kernel per seed (`--seeds 42`, `43`, `44`).
 
 The drift timer `tor-wf-round.timer` is disabled and stays off (drift deferred).
 
