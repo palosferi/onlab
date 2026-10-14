@@ -11,13 +11,12 @@ Topic posted on the BME portal by the konzulens (Dr. Sonkoly Balázs, TMIT):
 
 | Date | What | Who |
 |---|---|---|
-| 2026-10-05 – 10-16 | adatlap on the portal (done 2026-10-13) | student |
-| 2026-10-09 24:00 | feladatkiírás upload | konzulens (student sends him a draft first) |
+| 2026-10-05 – 10-16 | adatlap on the portal (done 2026-10-13; no konzulens approval needed, no nyilatkozat or melléklet) | student |
+| 2026-10-09 24:00 | feladatkiírás upload (done in time) | konzulens |
 | 2026-10-19 | feladatkiírás hitelesítés | |
 | 2026-12-11 12:00 | thesis submission | student |
 
-The portal also lists an *elbocsátó-befogadó nyilatkozat* awaiting upload; it
-is only needed if the specialization is not at TMIT. Ask the konzulens.
+No *elbocsátó-befogadó nyilatkozat* is needed (confirmed 2026-10-14).
 
 ## Scope
 
@@ -238,15 +237,18 @@ traces and is not meaningful; `tb-main` fixes that.
 ## Next tasks
 
 1. Write up the tb-main DF results (done, in the table above) and run R1, R2, R4.
-2. Feladatkiírás sent to the konzulens on 2026-10-09 (text as in
-   `docs/FELADATKIIRAS.md`, background in `docs/FELADATKIIRAS_NOTES.md`); he
-   uploads it. Adatlap filled in 2026-10-13.
+2. Admin done: feladatkiírás uploaded by the konzulens in time (text as in
+   `docs/FELADATKIIRAS.md`, background in `docs/FELADATKIIRAS_NOTES.md`),
+   adatlap filled in 2026-10-13, no nyilatkozat needed. Only the 10-19
+   hitelesítés is left, which needs nothing from the student.
 3. Site sets, decided 2026-10-10 (`docs/SITE_SETS.md`): collect **S2**, a
    screened popular top-50 monitored set (coverage threat model) with a fresh
    500 unmonitored from further down Tranco, as the main dataset; tb-main stays
    as a second, targeted site set. Add R1-R4: target-transport data budget,
    monitored-set size, precision at realistic base rates, learning curve.
-   Email to the konzulens sent (S2 plan, R1-R4, 2-seed results); no reply recorded yet.
+   Email to the konzulens sent (S2 plan, R1-R4, 2-seed results); no reply as of
+   2026-10-14. A status update with the final results waits (user's call);
+   a draft is in the 2026-10-14 conversation, numbers from the tables above.
 4. Collection host moved from Mint to Debian 13 on 2026-10-10 (user
    `ferencpalos`, same Tailscale IP). Rebuilt with
    `scripts/collection/setup_host.sh`; pilot `tb-pilot-debian` 30/30 ok on all
