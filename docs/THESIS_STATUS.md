@@ -176,9 +176,35 @@ the cross-hardware reproduction. R3 from it
 with TPR >= 50% at base rate 5% / 1% / 0.1% is 33.1 / 8.7 / 0.9% baseline, 41.0
 / 12.1 / 1.4% obfs4, 34.1 / 9.0 / 1.0% Snowflake (upper bounds, WPR taken as 0).
 
-**R1/R2/R4 on Kaggle still running at 2026-10-14 00:40**, ~10 h in, against an
-estimate of 6 h; the 12 h session limit falls around 02:30. If it is cut off,
-rerun as one kernel per seed (`--seeds 42`, `43`, `44`).
+**R1/R2/R4 on Kaggle: done 2026-10-14 08:56** (13523 s on a T4; the kernel
+showed RUNNING while it waited for a GPU, so wall time is no guide),
+`figures/metrics_budget_tb-main_cells_gpu.json`. Mean ± sd over 3 seeds. Its
+k = 0, n = all and k = all points equal the transport run above exactly.
+
+| R1: baseline + k target traces per site | -> obfs4 | -> Snowflake |
+|---|---|---|
+| k = 0 (zero shot) | 55.2 ± 5.3 | 64.8 ± 2.0 |
+| k = 1 | 82.3 ± 1.1 | 65.5 ± 1.5 |
+| k = 3 | 86.5 ± 1.3 | 73.2 ± 0.8 |
+| k = 5 | 86.6 ± 0.5 | 74.0 ± 2.2 |
+| k = 10 | 89.6 ± 1.1 | 81.4 ± 1.1 |
+| k = all (pair pooled) | 94.3 ± 0.5 | 94.2 ± 0.3 |
+
+| R2: open world, baseline, k monitored sites | TPR | FPR, unseen pool | FPR, demoted sites | best precision at b = 1% |
+|---|---|---|---|---|
+| 5 | 86.3 ± 5.9 | 3.5 | 0.3 | 100% (0 false positives in ~85 pool traces: FPR < ~3.5%) |
+| 10 | 93.3 ± 1.9 | 8.6 | 1.7 | 19.2% |
+| 20 | 93.1 ± 3.1 | 19.6 | 3.1 | 19.2% |
+| 43 (all) | 92.8 ± 0.9 | 30.6 | - | 8.7% |
+
+R4, baseline closed world on n training traces per site: 5 -> 73.1 ± 2.3,
+10 -> 83.0 ± 1.0, 15 -> 89.0 ± 0.5, 20 -> 89.7 ± 1.1, all (~28) -> 94.6 ± 0.9;
+still rising at the end, so more traces per site would still help.
+
+Precision (R3) now uses the FPR on the held-out unmonitored pool when a sweep
+records it (`fpr_pool`): the summary's pooled FPR is pulled down by the demoted
+sites, which the model saw in training, and gave 46/38% at b = 1% for 10/20
+sites before the fix.
 
 The drift timer `tor-wf-round.timer` is disabled and stays off (drift deferred).
 

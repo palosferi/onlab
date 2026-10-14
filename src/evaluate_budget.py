@@ -159,7 +159,11 @@ def precision_table(path, rates=BASE_RATES):
             for r in runs:
                 prec = []
                 for row in r["sweep"]:
-                    denom = b * (row["tpr"] + row.get("wpr", 0.0)) + (1 - b) * row["fpr"]
+                    # Out in the world, unmonitored visits go to sites the attacker never
+                    # trained on: the FPR on the held-out pool, not the pooled one that the
+                    # demoted (seen-in-training) sites pull down.
+                    fpr = row.get("fpr_pool", row["fpr"])
+                    denom = b * (row["tpr"] + row.get("wpr", 0.0)) + (1 - b) * fpr
                     prec.append((b * row["tpr"] / denom if denom else 0.0, row["tpr"], row["threshold"]))
                 at_zero.append(prec[0][0])
                 # The best threshold that still finds at least half the monitored visits.

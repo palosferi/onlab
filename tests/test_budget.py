@@ -71,6 +71,21 @@ def main():
                          f"{table['best_precision_mean']} vs {best}"))
     results.append(check("best threshold", table["best_thresholds"] == [0.5], str(table["best_thresholds"])))
 
+    # A set_size sweep carries fpr_pool (sites never trained on); precision uses it.
+    sweep = [{"threshold": 0.0, "tpr": 0.9, "fpr": 0.05, "fpr_pool": 0.2, "fpr_demoted": 0.01}]
+    fake = {"scenarios": {"set_size_x": {"runs": [{"seed": 1, "sweep": sweep}]}}}
+    with tempfile.TemporaryDirectory() as d:
+        path = os.path.join(d, "fake.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(fake, f)
+        eb.precision_table(path, rates=(0.01,))
+        with open(os.path.join(d, "fake_precision.json"), encoding="utf-8") as f:
+            table = json.load(f)["scenarios"]["set_size_x"]["base_rates"]["0.01"]
+    pool = 0.01 * 0.9 / (0.01 * 0.9 + 0.99 * 0.2)
+    results.append(check("precision from the held-out pool's FPR",
+                         abs(table["precision_at_zero_mean"] - pool) < 1e-12,
+                         f"{table['precision_at_zero_mean']} vs {pool}"))
+
     print(f"\n{sum(results)}/{len(results)} passed")
     return 0 if all(results) else 1
 
