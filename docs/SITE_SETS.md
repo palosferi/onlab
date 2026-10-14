@@ -114,6 +114,14 @@ deduplicated on where a site lands:
 2. **Reserves (15):** the next 15 by the same rule (ranks 221-308). A monitored
    site that fails in Tor Browser is named with `--pilot-failed` and the next
    reserve moves up, so the set stays "the top 50 that work over Tor".
+   Once the full collection is running there are no more swaps: a site added
+   mid-run would not span the same weeks as the others, and the chronological
+   split would test it on a different period. A site that turns unreliable
+   during the run is handled by the same cut as in tb-main, `--min-visits 30`
+   on every arm at evaluation time, and the thesis reports how many of the 50
+   that leaves. (Decided 2026-10-14 for kaspersky.com, which is listed at
+   kaspersky.fr and lands on usa.kaspersky.com from some exits: 3 of its first
+   8 baseline visits.)
 3. **Unmonitored (500) and background (100):** every distinct passing site
    below the reserves (ranks 310-2082), not filtered for infrastructure (the
    open world only needs distinct pages), minus duplicates of a monitored site

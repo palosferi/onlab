@@ -246,7 +246,7 @@ traces and is not meaningful; `tb-main` fixes that.
    500 unmonitored from further down Tranco, as the main dataset; tb-main stays
    as a second, targeted site set. Add R1-R4: target-transport data budget,
    monitored-set size, precision at realistic base rates, learning curve.
-   Email to the konzulens drafted 2026-10-10.
+   Email to the konzulens sent (S2 plan, R1-R4, 2-seed results); no reply recorded yet.
 4. Collection host moved from Mint to Debian 13 on 2026-10-10 (user
    `ferencpalos`, same Tailscale IP). Rebuilt with
    `scripts/collection/setup_host.sh`; pilot `tb-pilot-debian` 30/30 ok on all
