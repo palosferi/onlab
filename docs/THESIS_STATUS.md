@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-14. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-15. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -123,9 +123,17 @@ batch. (2) **The obfs4 bridge (Azure, `wfthesis`) has been down since
 2026-10-14 21:57**: Tor marks the guard down and its address refuses TCP. Cause: the
 Azure for Students credit expired and Microsoft disabled the subscription
 (email 2026-10-14 22:34); its data is kept until 2027-01-17, and upgrading to
-pay-as-you-go resumes it. The
-run is **paused** (`wf-s2` stopped ~10:45) so obfs4 visits do not burn their
-attempts and the arms stay interleaved. Before resuming: bring the bridge back
+pay-as-you-go resumes it. It was the 12-month term, not the money: the subscription had
+been created 2025-10-14 (an earlier course), so it expired on its first
+anniversary with 6.57 EUR used. **Renewed by the user 2026-10-15** (same
+subscription, new 12 months and $100); the VM restarted ~23:15 at the same
+static IP (Standard SKU), Tor marks the bridge up again. The 3 obfs4 rows
+written while it was down were set aside in
+`manifest_excluded_bridgedown_2026-10-15.csv` (backup `manifest.csv.bak-2026-10-15b`)
+and **S2 resumed 2026-10-15 ~23:20**, ~50 h to go, so it should end around
+2026-10-18 late. The
+run was paused (`wf-s2` stopped ~10:45) so obfs4 visits would not burn their
+attempts and the arms stayed interleaved. Before resuming: bring the bridge back
 (if the VM was deallocated its public IP may have changed, and the bridge line
 on the server with it), set aside the 3 obfs4 `load_error` rows written after
 the restart the same way, then rerun the same `run_tb.sh` command. 4011 ok
