@@ -40,8 +40,10 @@ import argparse
 import csv
 import os
 import random
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime
 from urllib.parse import urlparse
@@ -53,6 +55,12 @@ import wf_config as cfg  # noqa: E402
 
 TB_DIR = os.path.expanduser(os.getenv("TOR_WF_TB_DIR", "~/tor_wf_runtime/tb/tor-browser"))
 GECKODRIVER = os.path.expanduser(os.getenv("TOR_WF_GECKODRIVER", "~/tor_wf_runtime/tb/geckodriver"))
+# Selenium copies the Tor Browser profile into a new tempfile.mkdtemp() at every
+# launch and never removes it, not on driver.quit() and not when the launch
+# fails: ~830 KB a visit, which filled the collection host's 3.9 GB /tmp tmpfs
+# after ~5000 visits and failed every launch from then on (s2, 2026-10-14).
+# The copies go to this directory instead, emptied before each launch.
+PROFILE_TMP = os.path.expanduser(os.getenv("TOR_WF_PROFILE_TMP", "~/tor_wf_runtime/profile_tmp"))
 TB_ROOT = os.getenv("TOR_WF_TB_OUT", os.path.join(cfg.REPO_ROOT, "tor_dataset", "tb"))
 
 # One timeout for every arm, so no transport is censored earlier than another;
@@ -146,6 +154,11 @@ def launch_browser(arm):
     from tbselenium.tbdriver import TorBrowserDriver
     import tbselenium.common as cm
 
+    # One collector at a time (run_tb.sh holds a lock), and the previous
+    # browser has quit, so nothing in here is still in use.
+    shutil.rmtree(PROFILE_TMP, ignore_errors=True)
+    os.makedirs(PROFILE_TMP)
+    tempfile.tempdir = PROFILE_TMP
     driver = TorBrowserDriver(
         TB_DIR,
         tor_cfg=cm.USE_RUNNING_TOR,
