@@ -111,6 +111,23 @@ baseline), ~94 h at 40 s each, so it should end around 2026-10-17. Log
 `logs/s2.log` (the unit's stdout via `-p StandardOutput=append:`). Re-running
 the same command resumes from the manifest.
 
+**S2 incidents, 2026-10-14/15.** (1) From 2026-10-14 19:25 every browser
+launch failed: Selenium leaked an ~830 KB profile copy into /tmp per visit and
+the 3.9 GB tmpfs filled (5070 copies). Fixed in db1f010 (copies go to
+`~/tor_wf_runtime/profile_tmp`, emptied before each launch), leaked copies
+removed. The 206 launch failures used up their visits' attempts, so they were
+moved to `tor_dataset/tb/s2/manifest_excluded_tmpfull_2026-10-14.csv` (full
+manifest backed up as `manifest.csv.bak-2026-10-15`) and the run restarted
+2026-10-15 ~10:35; retried visits come about a day after the rest of their
+batch. (2) **The obfs4 bridge (Azure, `wfthesis`) has been down since
+2026-10-14 21:57**: Tor marks the guard down and its address refuses TCP. The
+run is **paused** (`wf-s2` stopped ~10:45) so obfs4 visits do not burn their
+attempts and the arms stay interleaved. Before resuming: bring the bridge back
+(if the VM was deallocated its public IP may have changed, and the bridge line
+on the server with it), set aside the 3 obfs4 `load_error` rows written after
+the restart the same way, then rerun the same `run_tb.sh` command. 4011 ok
+visits so far, 4474 to go (~50 h).
+
 **R3 done 2026-10-13** on the final tb-main results
 (`figures/metrics_transport_tb-main_cells_precision.json`): best precision with
 TPR >= 50% at base rate 5% / 1% / 0.1% is 29.2 / 7.3 / 0.8% baseline, 34.1 /
