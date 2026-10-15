@@ -120,7 +120,10 @@ moved to `tor_dataset/tb/s2/manifest_excluded_tmpfull_2026-10-14.csv` (full
 manifest backed up as `manifest.csv.bak-2026-10-15`) and the run restarted
 2026-10-15 ~10:35; retried visits come about a day after the rest of their
 batch. (2) **The obfs4 bridge (Azure, `wfthesis`) has been down since
-2026-10-14 21:57**: Tor marks the guard down and its address refuses TCP. The
+2026-10-14 21:57**: Tor marks the guard down and its address refuses TCP. Cause: the
+Azure for Students credit expired and Microsoft disabled the subscription
+(email 2026-10-14 22:34); its data is kept until 2027-01-17, and upgrading to
+pay-as-you-go resumes it. The
 run is **paused** (`wf-s2` stopped ~10:45) so obfs4 visits do not burn their
 attempts and the arms stay interleaved. Before resuming: bring the bridge back
 (if the VM was deallocated its public IP may have changed, and the bridge line
