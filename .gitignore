@@ -26,23 +26,10 @@ build/
 dist/
 *.egg-info/
 
-# Local datasets and generated data artifacts.
-# PCAPs and feature CSVs stay out of git, but the longitudinal provenance files
-# (manifest.csv, round_meta.json) are tracked: they are the record of what was
-# collected when, and they are small.
-tor_dataset/*
-!tor_dataset/longitudinal/
-tor_dataset/longitudinal/*
-!tor_dataset/longitudinal/*/
-tor_dataset/longitudinal/*/*
-!tor_dataset/longitudinal/*/manifest.csv
-!tor_dataset/longitudinal/*/round_meta.json
-!tor_dataset/tb/
-tor_dataset/tb/*
-!tor_dataset/tb/*/
-tor_dataset/tb/*/*
-!tor_dataset/tb/*/manifest.csv
-!tor_dataset/tb/*/run_*.json
+# Local datasets and generated data artifacts, all of it. The provenance files
+# (manifest.csv, round_meta.json, run_*.json) used to be let through, but each of
+# them records the private obfs4 bridge's IP and fingerprint for the obfs4 arm.
+tor_dataset/
 tor_dataset_release_2026-06-01/
 
 # Collection host configuration (may contain a bridge line)
