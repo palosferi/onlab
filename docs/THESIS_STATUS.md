@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-15. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-19. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -139,6 +139,70 @@ on the server with it), set aside the 3 obfs4 `load_error` rows written after
 the restart the same way, then rerun the same `run_tb.sh` command. 4011 ok
 visits so far, 4474 to go (~50 h).
 
+**S2 finished 2026-10-17 13:04** (features extracted by the same run, 2.2 GB
+under `tor_dataset/tb/s2/features`; copied to the Fedora laptop 2026-10-18,
+all 8385 ok captures). Ok
+visits: monitored 1988 baseline / 1985 obfs4 / 1985 Snowflake, unmonitored
+478 / 481 / 478, background 990. All 50 monitored sites have at least 33 ok
+visits on every arm (lowest: base.org 33 on obfs4, skype and soundcloud 36), so
+`--min-visits 30` keeps all 50; kaspersky.com came out at 39/40/39. Snowflake
+had the most load timeouts (41 monitored).
+
+**S2 DF on Kaggle: done 2026-10-19** at cbf7fd3, dataset `ferencpalos/wf-tb-s2`
+(private, features only), Tesla T4, torch 2.11.0+cu128: `wf-s2-transport`
+(evaluate_transport.py, 10947 s, `figures/metrics_transport_s2_cells_gpu.json`)
+and `wf-s2-budget` (evaluate_budget.py, 15182 s,
+`figures/metrics_budget_s2_cells_gpu.json` and its `_precision.json`). The first
+push (version 1) went out before the dataset had finished processing and ran
+without it. `--min-visits 30` kept all 50 sites. Mean ± sd over seeds 42/43/44,
+50 classes, tb-main (GPU, 43 classes) beside it; the table is
+`src/compare_collections.py` on the two transport files:
+
+| | S2 | tb-main |
+|---|---|---|
+| closed world baseline / obfs4 / Snowflake | 97.7 ± 0.6 / 96.7 ± 0.8 / 92.0 ± 1.3 | 94.6 / 92.8 / 92.5 |
+| baseline -> obfs4 / -> Snowflake | 39.2 ± 0.8 / 42.4 ± 2.1 | 55.2 / 64.8 |
+| obfs4 -> baseline / -> Snowflake | 47.4 ± 4.6 / 51.0 ± 1.5 | 45.5 / 68.5 |
+| Snowflake -> baseline / -> obfs4 | 71.4 ± 2.3 / 41.8 ± 3.8 | 88.5 / 61.3 |
+| leave-one-out: held-out baseline / obfs4 / Snowflake | 73.4 ± 4.8 / 42.9 ± 9.0 / 54.9 ± 1.0 | 77.4 / 52.6 / 77.5 |
+| pooled on baseline / obfs4 / Snowflake | 97.2 ± 0.1 / 98.5 ± 0.3 / 94.0 ± 0.5 | 94.6 / 96.8 / 92.7 |
+| background test: clean / background-aware model | 16.0 ± 0.9 / 19.8 ± 1.0 | 19.0 / 28.2 |
+| open world TPR / FPR (argmax), baseline | 94.3 ± 1.9 / 34.7 ± 1.2 | 92.8 / 30.6 |
+| open world TPR / FPR, obfs4 | 92.7 ± 1.1 / 34.0 ± 5.3 | 89.5 / 32.5 |
+| open world TPR / FPR, Snowflake | 89.1 ± 1.0 / 49.3 ± 7.4 | 88.7 / 42.0 |
+
+So on the popular site set DF is at least as good within a transport and much
+worse across them: zero-shot transfer drops 16-22 points in every direction
+except obfs4 -> baseline (unchanged, already low), and Snowflake -> baseline is
+no longer close to free (71 vs 88.5). Open-world FPR is over 96 unmonitored
+test traces per arm.
+
+| R1 on S2: baseline + k target traces per site | -> obfs4 | -> Snowflake |
+|---|---|---|
+| k = 0 (zero shot) | 39.2 ± 0.8 | 42.4 ± 2.1 |
+| k = 1 | 79.7 ± 1.2 | 47.7 ± 2.9 |
+| k = 3 | 88.8 ± 1.6 | 55.3 ± 1.8 |
+| k = 5 | 91.9 ± 0.6 | 64.0 ± 0.4 |
+| k = 10 | 93.8 ± 0.5 | 72.1 ± 1.1 |
+| k = all (pair pooled) | 97.4 ± 0.5 | 92.9 ± 0.2 |
+
+obfs4 recovers with a handful of target traces as on tb-main; Snowflake needs
+far more than on tb-main (10 traces give 72 vs 81).
+
+| R2 on S2: open world, baseline, k monitored sites | TPR | FPR, unseen pool | FPR, demoted sites | best precision at b = 1% |
+|---|---|---|---|---|
+| 5 | 90.0 ± 11.5 | 0.3 | 0.5 | 82.4% |
+| 10 | 87.8 ± 0.8 | 4.5 | 0.8 | 38.6% |
+| 20 | 94.5 ± 3.2 | 16.0 | 1.3 | 46.6% |
+| 50 (all) | 94.3 ± 1.9 | 34.7 | - | 17.6% |
+
+R4 on S2, baseline closed world on n training traces per site: 5 -> 80.7 ±
+1.4, 10 -> 91.0 ± 0.9, 15 -> 94.0 ± 0.4, 20 -> 95.6 ± 1.5, all -> 97.7 ± 0.6.
+
+Still to do on S2: R3 on the transport file (`--precision-from`), then
+`src/thesis_figures.py --collection s2` (needs that file for the precision
+figure).
+
 **R3 done 2026-10-13** on the final tb-main results
 (`figures/metrics_transport_tb-main_cells_precision.json`): best precision with
 TPR >= 50% at base rate 5% / 1% / 0.1% is 29.2 / 7.3 / 0.8% baseline, 34.1 /
@@ -259,7 +323,8 @@ traces and is not meaningful; `tb-main` fixes that.
 - Features are not in git. From a Fedora laptop or Codespace:
   `rsync -a ferencpalos@100.102.24.16:onlab/tor_dataset/tb/tb-main/{features,manifest.csv} tor_dataset/tb/tb-main/`.
   The Windows laptop must not reach the server: move the folder there by other
-  means (disk or cloud drive). The manifest holds the obfs4 bridge IP; do not commit it.
+  means (disk or cloud drive). The manifest holds the obfs4 bridge IP; all of `tor_dataset/` is git-ignored
+  for that reason (so are `run_*.json` and `round_meta.json`).
 - `git pull` on `szakdolgozat` (renamed from `szakdolgozat-drift` on 2026-10-13: `git fetch origin; git branch -m szakdolgozat-drift szakdolgozat; git branch -u origin/szakdolgozat szakdolgozat`); `.venv` needs torch, pandas, scikit-learn.
 
 ## Next tasks
