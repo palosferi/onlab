@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-19. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-21. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -199,9 +199,27 @@ far more than on tb-main (10 traces give 72 vs 81).
 R4 on S2, baseline closed world on n training traces per site: 5 -> 80.7 ±
 1.4, 10 -> 91.0 ± 0.9, 15 -> 94.0 ± 0.4, 20 -> 95.6 ± 1.5, all -> 97.7 ± 0.6.
 
-Still to do on S2: R3 on the transport file (`--precision-from`), then
-`src/thesis_figures.py --collection s2` (needs that file for the precision
-figure).
+**R3 on S2 done 2026-10-21** (`figures/metrics_transport_s2_cells_gpu_precision.json`):
+best precision with TPR >= 50% at base rate 5% / 1% / 0.1% is 50.9 / 17.6 ±
+8.0 / 2.1% baseline, 53.7 / 18.3 ± 2.0 / 2.2% obfs4, 53.8 / 21.2 ± 15.2 / 2.9%
+Snowflake (upper bounds, WPR taken as 0), about twice tb-main's but with a wide
+spread. **Caveat for both collections:** the sweep in `evaluate_transport.py`
+stops at threshold 0.95, and at b = 1% the best point sits at 0.95 in 16 of
+the 18 seed-arm runs of the two collections, with TPR still 57-80%, so a stricter threshold would likely give more
+precision; and one false positive in ~96 pool traces is already ~1% FPR. Both
+limits come from the run (confidences are not saved), so a finer grid needs a
+rerun on Kaggle.
+
+Thesis figures for S2 written 2026-10-21 by `src/thesis_figures.py --collection
+s2`: `figures/thesis/s2_{cross_matrix,budget,curve,precision}.pdf`.
+
+**Baseline guard, checked 2026-10-21** on the server manifests: tb-main and S2
+both went through `F5612A75` (S2: 3551 of 3553 baseline rows, the other 2 via
+`1F322949` right after the 10-15 restart). `8C7A9811` was used only by
+`tb-pilot-debian` (10-10) and `s2-pilot-b` (10-11 evening), with `s2-pilot`
+(10-11 morning) on `F5612A75` in between: the unpinned Tor moves between its
+primary guards, so the guard is a per-capture fact from the manifest, not a
+setting.
 
 **R3 done 2026-10-13** on the final tb-main results
 (`figures/metrics_transport_tb-main_cells_precision.json`): best precision with
@@ -346,8 +364,9 @@ traces and is not meaningful; `tb-main` fixes that.
    `ferencpalos`, same Tailscale IP). Rebuilt with
    `scripts/collection/setup_host.sh`; pilot `tb-pilot-debian` 30/30 ok on all
    three arms. Arms now run the Expert Bundle tor 0.4.9.12 (tb-main: Mint's
-   0.4.8.10) and the baseline guard is now Intrepid `8C7A9811` (tb-main:
-   `F5612A75`); both are recorded per capture in the manifest. Backups: laptop
+   0.4.8.10); the baseline guard varies (see "Baseline guard, checked
+   2026-10-21": S2, like tb-main, ran on `F5612A75`). Both are recorded per
+   capture in the manifest. Backups: laptop
    `~/fujitsu-backup-2026-10-10/home`, full archive on the WD Elements drive,
    old system unpacked on the server at `/srv/mint-old`.
 5. Delete the Azure resource group `wf-thesis` once no site needs recollecting

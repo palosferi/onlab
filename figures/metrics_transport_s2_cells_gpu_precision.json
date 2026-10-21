@@ -1,0 +1,211 @@
+{
+  "source": "metrics_transport_s2_cells_gpu.json",
+  "formula": "b*TPR / (b*(TPR+WPR) + (1-b)*FPR)",
+  "base_rates": [
+    0.5,
+    0.2,
+    0.05,
+    0.01,
+    0.001
+  ],
+  "scenarios": {
+    "open_world_baseline": {
+      "n_seeds": 3,
+      "wpr_recorded": false,
+      "base_rates": {
+        "0.5": {
+          "precision_at_zero_mean": 0.7309177512897067,
+          "precision_at_zero_sd": 0.005985275677421333,
+          "best_precision_mean": 0.9480360818056006,
+          "best_precision_sd": 0.023799390190394332,
+          "best_tpr_mean": 0.7495812395309883,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        },
+        "0.2": {
+          "precision_at_zero_mean": 0.404485653957702,
+          "precision_at_zero_sd": 0.007320635329537919,
+          "best_precision_mean": 0.8231447996099336,
+          "best_precision_sd": 0.07210808360966624,
+          "best_tpr_mean": 0.7495812395309883,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        },
+        "0.05": {
+          "precision_at_zero_mean": 0.1251234450864767,
+          "precision_at_zero_sd": 0.0033230165038854653,
+          "best_precision_mean": 0.5091096296638712,
+          "best_precision_sd": 0.13146034514757493,
+          "best_tpr_mean": 0.7495812395309883,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        },
+        "0.01": {
+          "precision_at_zero_mean": 0.026716282358629957,
+          "precision_at_zero_sd": 0.0007890081036865431,
+          "best_precision_mean": 0.17558470158061432,
+          "best_precision_sd": 0.07992320718831097,
+          "best_tpr_mean": 0.7495812395309883,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        },
+        "0.001": {
+          "precision_at_zero_mean": 0.0027128943136711034,
+          "precision_at_zero_sd": 8.208705826915605e-05,
+          "best_precision_mean": 0.021335334538991415,
+          "best_precision_sd": 0.011675051747443505,
+          "best_tpr_mean": 0.7495812395309883,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        }
+      }
+    },
+    "open_world_obfs4": {
+      "n_seeds": 3,
+      "wpr_recorded": false,
+      "base_rates": {
+        "0.5": {
+          "precision_at_zero_mean": 0.7325423130345069,
+          "precision_at_zero_sd": 0.02918749288430664,
+          "best_precision_mean": 0.9564457767782719,
+          "best_precision_sd": 0.005453639233222049,
+          "best_tpr_mean": 0.7610693400167085,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        },
+        "0.2": {
+          "precision_at_zero_mean": 0.40762008814285206,
+          "precision_at_zero_sd": 0.03668737287938889,
+          "best_precision_mean": 0.8460806479160129,
+          "best_precision_sd": 0.017055932011647963,
+          "best_tpr_mean": 0.7610693400167085,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        },
+        "0.05": {
+          "precision_at_zero_mean": 0.12702129022583816,
+          "precision_at_zero_sd": 0.01711399452622076,
+          "best_precision_mean": 0.5373262579899781,
+          "best_precision_sd": 0.032584580906707135,
+          "best_tpr_mean": 0.7610693400167085,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        },
+        "0.01": {
+          "precision_at_zero_mean": 0.027208452613256218,
+          "precision_at_zero_sd": 0.004106444346125917,
+          "best_precision_mean": 0.1828694274507621,
+          "best_precision_sd": 0.019589256396291492,
+          "best_tpr_mean": 0.7610693400167085,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        },
+        "0.001": {
+          "precision_at_zero_mean": 0.0027651697805550278,
+          "precision_at_zero_sd": 0.00042835571568498654,
+          "best_precision_mean": 0.021735916371678873,
+          "best_precision_sd": 0.002787108177465959,
+          "best_tpr_mean": 0.7610693400167085,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        }
+      }
+    },
+    "open_world_snowflake": {
+      "n_seeds": 3,
+      "wpr_recorded": false,
+      "base_rates": {
+        "0.5": {
+          "precision_at_zero_mean": 0.6450375085256345,
+          "precision_at_zero_sd": 0.03240890697359743,
+          "best_precision_mean": 0.9485702279352785,
+          "best_precision_sd": 0.03529959513486213,
+          "best_tpr_mean": 0.5887772194304858,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.9
+          ]
+        },
+        "0.2": {
+          "precision_at_zero_mean": 0.31332572395802466,
+          "precision_at_zero_sd": 0.030012749548117317,
+          "best_precision_mean": 0.8283284323800898,
+          "best_precision_sd": 0.10723880527008171,
+          "best_tpr_mean": 0.5887772194304858,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.9
+          ]
+        },
+        "0.05": {
+          "precision_at_zero_mean": 0.08787504369052686,
+          "precision_at_zero_sd": 0.011064215841130631,
+          "best_precision_mean": 0.5375658236709697,
+          "best_precision_sd": 0.2081547466956813,
+          "best_tpr_mean": 0.5887772194304858,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.9
+          ]
+        },
+        "0.01": {
+          "precision_at_zero_mean": 0.018169774823816685,
+          "precision_at_zero_sd": 0.002454389774886615,
+          "best_precision_mean": 0.21237982504411954,
+          "best_precision_sd": 0.15244555744384422,
+          "best_tpr_mean": 0.5887772194304858,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.9
+          ]
+        },
+        "0.001": {
+          "precision_at_zero_mean": 0.001830949800327941,
+          "precision_at_zero_sd": 0.000251245201057105,
+          "best_precision_mean": 0.028944329611090457,
+          "best_precision_sd": 0.025804574060088556,
+          "best_tpr_mean": 0.5887772194304858,
+          "best_thresholds": [
+            0.95,
+            0.95,
+            0.9
+          ]
+        }
+      }
+    }
+  }
+}
