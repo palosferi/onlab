@@ -12,7 +12,8 @@ works on another. On tor_dataset/tb/<collection>/features this runs, per seed:
   background     the clean baseline model tested on background-tab visits,
                  and a model trained with background visits in its training
                  data (earliest share of them) tested on the rest;
-  open_world     per arm, monitored + unmonitored, TPR/FPR over a threshold sweep.
+  open_world     per arm, monitored + unmonitored, TPR/WPR/FPR over a threshold
+                 sweep, and each test trace's confidence for any other threshold.
 
 A full run takes many hours, so the results so far are saved after every seed
 to <out>.partial.json. Started again with the same settings, the script skips
@@ -48,6 +49,11 @@ ALL_SCENARIOS = {"closed_world", "cross", "leave_one_out", "pooled", "background
 # Settings that change the numbers; a partial file from other settings is not resumed.
 RESUME_KEYS = ("collection", "mode", "length", "epochs", "val_size", "patience", "min_epochs",
                "test_size", "scenarios", "min_visits", "device")
+# Open-world thresholds: steps of 0.05, then finer near 1, where a well-trained
+# model's useful thresholds are (a grid ending at 0.95 left the best point at
+# its edge). The per-trace scores are saved too, for any other threshold.
+THRESHOLDS = np.concatenate([np.round(np.arange(20) * 0.05, 2),
+                             [0.97, 0.98, 0.99, 0.995, 0.999, 0.9999, 0.99999]])
 
 
 class Split:
@@ -111,26 +117,52 @@ def open_world(mon, unmon, args, seed):
     unmon_id = classes.index(UNMONITORED)
     model, info = fit(X, y_enc, y, t, train_idx, len(classes), args, seed)
 
-    proba = predict_proba(model, X[test_idx])
-    truth, pred, conf = y_enc[test_idx], proba.argmax(1), proba.max(1)
-    is_mon, said_mon = truth != unmon_id, pred != unmon_id
-    sweep = []
-    for thr in np.round(np.arange(0.0, 1.0, 0.05), 2):
-        accept = said_mon & (conf >= thr)
-        sweep.append({
-            "threshold": float(thr),
-            "tpr": float((accept & is_mon & (pred == truth)).sum() / max(is_mon.sum(), 1)),
-            "fpr": float((accept & ~is_mon).sum() / max((~is_mon).sum(), 1)),
-        })
+    proba = predict_proba(model, X[test_idx], double=True)
+    truth = y_enc[test_idx]
+    scores = open_world_scores(proba, truth, unmon_id, np.where(truth != unmon_id, "mon", "pool"))
+    sweep = sweep_from_scores(scores)
     return {
         "seed": seed,
         "n_train": int(len(train_idx)), "n_test": int(len(test_idx)),
         "n_monitored_classes": len(classes) - 1,
         "n_monitored_traces": int(len(mon)), "n_unmonitored_traces": int(len(unmon)),
-        "n_unmonitored_test": int((~is_mon).sum()),
+        "n_unmonitored_test": int((truth == unmon_id).sum()),
         "tpr_at_zero_threshold": sweep[0]["tpr"], "fpr_at_zero_threshold": sweep[0]["fpr"],
-        "sweep": sweep, **info,
+        "sweep": sweep, "scores": scores, **info,
     }
+
+
+def open_world_scores(proba, truth, unmon_id, group):
+    """Per test trace: its confidence, whether it was called monitored, whether
+    the site is right, and its group ("mon", or the kind of unmonitored trace).
+    Saved with the run, so precision can be taken at any threshold later."""
+    pred = proba.argmax(1)
+    return {"conf": proba.max(1).astype(float).tolist(),
+            "said_mon": (pred != unmon_id).astype(int).tolist(),
+            "right_site": (pred == truth).astype(int).tolist(),
+            "group": [str(g) for g in group]}
+
+
+def sweep_from_scores(scores, thresholds=THRESHOLDS):
+    """TPR, WPR (monitored, accepted under the wrong site) and FPR at each
+    threshold; FPR overall and per unmonitored group as fpr_<group>."""
+    conf = np.asarray(scores["conf"], dtype=float)
+    said_mon = np.asarray(scores["said_mon"], dtype=bool)
+    right = np.asarray(scores["right_site"], dtype=bool)
+    group = np.asarray(scores["group"])
+    is_mon = group == "mon"
+    sweep = []
+    for thr in thresholds:
+        accept = said_mon & (conf >= thr)
+        row = {"threshold": float(thr),
+               "tpr": float((accept & is_mon & right).sum() / max(is_mon.sum(), 1)),
+               "wpr": float((accept & is_mon & ~right).sum() / max(is_mon.sum(), 1))}
+        for name in sorted(set(group[~is_mon])):
+            mask = group == name
+            row[f"fpr_{name}"] = float((accept & mask).sum() / max(mask.sum(), 1))
+        row["fpr"] = float((accept & ~is_mon).sum() / max((~is_mon).sum(), 1))
+        sweep.append(row)
+    return sweep
 
 
 def main():

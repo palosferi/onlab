@@ -198,7 +198,11 @@ def train_df(
 
 
 @torch.no_grad()
-def predict_proba(model, X, batch_size=256, device=None):
+def predict_proba(model, X, batch_size=256, device=None, double=False):
+    """Softmax over the classes. double=True takes it in float64: in float32 a
+    confident model's top probabilities all round to 1.0, and an open-world
+    threshold can no longer tell them apart. Training keeps float32, so its
+    validation loss and early stopping are unchanged."""
     if device is None:
         device = next(model.parameters()).device
     model.eval()
@@ -206,5 +210,7 @@ def predict_proba(model, X, batch_size=256, device=None):
     X = torch.from_numpy(X).unsqueeze(1)
     for i in range(0, len(X), batch_size):
         logits = model(X[i : i + batch_size].to(device))
+        if double:
+            logits = logits.double()
         out.append(torch.softmax(logits, dim=1).cpu().numpy())
     return np.concatenate(out) if out else np.zeros((0, 0), dtype=np.float32)

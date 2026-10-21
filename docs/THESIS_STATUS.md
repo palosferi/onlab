@@ -210,6 +210,21 @@ precision; and one false positive in ~96 pool traces is already ~1% FPR. Both
 limits come from the run (confidences are not saved), so a finer grid needs a
 rerun on Kaggle.
 
+**Open-world rerun, decided 2026-10-21.** Since then `evaluate_transport.py`
+and `evaluate_budget.py` save every open-world test trace's confidence (taken in
+float64, as float32 rounds a confident model's top scores to 1.0), sweep finer
+above 0.95, and record WPR; `--precision-from` tries every distinct confidence as
+a threshold and records the FPR at the best point (`best_fprs`: 0 means the
+precision is only as high as the ~96-trace pool can show). Training is
+unchanged, so the threshold-0 TPR/FPR of the rerun must equal the old files
+exactly: that is the check. Jobs, per collection, only the open-world parts:
+`evaluate_transport.py --scenarios open_world --out
+figures/metrics_openworld_<c>_cells_gpu.json` and `evaluate_budget.py
+--scenarios set_size --out figures/metrics_setsize_<c>_cells_gpu.json`.
+`thesis_figures.py` takes R3 from `metrics_openworld_<c>_cells_gpu_precision.json`
+when it exists. Until then the R3 numbers above and the R2 precision column
+are provisional: held down by the grid, held up by WPR taken as 0.
+
 Thesis figures for S2 written 2026-10-21 by `src/thesis_figures.py --collection
 s2`: `figures/thesis/s2_{cross_matrix,budget,curve,precision}.pdf`.
 
@@ -347,27 +362,48 @@ traces and is not meaningful; `tb-main` fixes that.
 
 ## Next tasks
 
-1. Write up the tb-main DF results (done, in the table above) and run R1, R2, R4.
-2. Admin done: feladatkiírás uploaded by the konzulens in time (text as in
-   `docs/FELADATKIIRAS.md`, background in `docs/FELADATKIIRAS_NOTES.md`),
-   adatlap filled in 2026-10-13, no nyilatkozat needed. Only the 10-19
-   hitelesítés is left, which needs nothing from the student.
-3. Site sets, decided 2026-10-10 (`docs/SITE_SETS.md`): collect **S2**, a
-   screened popular top-50 monitored set (coverage threat model) with a fresh
-   500 unmonitored from further down Tranco, as the main dataset; tb-main stays
-   as a second, targeted site set. Add R1-R4: target-transport data budget,
-   monitored-set size, precision at realistic base rates, learning curve.
-   Email to the konzulens sent (S2 plan, R1-R4, 2-seed results); no reply as of
-   2026-10-14. A status update with the final results waits (user's call);
-   a draft is in the 2026-10-14 conversation, numbers from the tables above.
-4. Collection host moved from Mint to Debian 13 on 2026-10-10 (user
-   `ferencpalos`, same Tailscale IP). Rebuilt with
-   `scripts/collection/setup_host.sh`; pilot `tb-pilot-debian` 30/30 ok on all
-   three arms. Arms now run the Expert Bundle tor 0.4.9.12 (tb-main: Mint's
-   0.4.8.10); the baseline guard varies (see "Baseline guard, checked
-   2026-10-21": S2, like tb-main, ran on `F5612A75`). Both are recorded per
-   capture in the manifest. Backups: laptop
-   `~/fujitsu-backup-2026-10-10/home`, full archive on the WD Elements drive,
-   old system unpacked on the server at `/srv/mint-old`.
-5. Delete the Azure resource group `wf-thesis` once no site needs recollecting
-   (the obfs4 arm depends on that bridge). `az` is not installed on the laptop.
+Rewritten 2026-10-21. Done before that: tb-main and S2 collected, DF transport
++ R1/R2/R4 on both on Kaggle, R3 and figures on both, admin (feladatkiírás,
+adatlap; the 10-19 hitelesítés needed nothing from the student).
+
+1. **Push `szakdolgozat`** (user: Claude's `git push` has no GitHub
+   credentials). The Kaggle jobs run a pushed commit.
+2. **Open-world rerun on Kaggle** (user pushes; see "Open-world rerun" above).
+   Two kernels, one per collection, about 2 h each on a T4:
+
+       python scripts/kaggle/push_job.py --dataset ferencpalos/wf-tb-s2 --collection s2 --slug wf-s2-openworld \
+         --cmd "src/evaluate_transport.py --collection s2 --mode cells --length 10000 --min-visits 30 --scenarios open_world --out figures/metrics_openworld_s2_cells_gpu.json" \
+         --cmd "src/evaluate_budget.py --collection s2 --min-visits 30 --scenarios set_size --out figures/metrics_setsize_s2_cells_gpu.json"
+       python scripts/kaggle/push_job.py --dataset ferencpalos/wf-tb-main --collection tb-main --slug wf-tbmain-openworld \
+         --cmd "src/evaluate_transport.py --collection tb-main --mode cells --length 10000 --min-visits 30 --scenarios open_world --out figures/metrics_openworld_tb-main_cells_gpu.json" \
+         --cmd "src/evaluate_budget.py --collection tb-main --min-visits 30 --scenarios set_size --out figures/metrics_setsize_tb-main_cells_gpu.json"
+
+3. **After the rerun:** fetch (`kaggle kernels output ferencpalos/<slug> -p
+   figures/kaggle/<slug>`), check that threshold-0 TPR/FPR equal the old files
+   exactly, run `--precision-from` on the four new files, replace the R3 lines
+   and the R2 precision column above, rerun `thesis_figures.py` for both
+   collections, commit.
+4. **Write the thesis** (submission 2026-12-11 12:00). Nothing written yet;
+   `docs/SZAKDOLGOZAT_temavazlat.md` still describes the drift plan, and its
+   schedule had a zeroth draft to the konzulens by the end of November. Points
+   the text must carry:
+   - S2 vs tb-main differs in more than the site set: S2 ran on the Debian
+     server with tor 0.4.9.12, tb-main on Mint with 0.4.8.10 (same baseline
+     guard). The cross-transport drop between them cannot be put on the site
+     set alone.
+   - R3's "best threshold" is chosen on the test set (an oracle operating
+     point), and the ~96-trace unmonitored pool cannot show an FPR below ~1%.
+   - Guard, tor version and bridge are per capture in the manifest; the bridge
+     address never goes into the thesis or the repository.
+5. **Status email to the konzulens** with the final results (user's call;
+   the 2026-10-14 draft predates S2, so it needs the S2 tables).
+6. **Delete the Azure resource group `wf-thesis`** once no site needs
+   recollecting (the obfs4 arm depends on that bridge; the renewed
+   subscription runs to 2027-10). `az` is not installed on the laptop.
+
+Collection host: Debian 13 since 2026-10-10 (user `ferencpalos`, same
+Tailscale IP), rebuilt with `scripts/collection/setup_host.sh`. Arms run the
+Expert Bundle tor 0.4.9.12 (tb-main: Mint's 0.4.8.10); the baseline guard
+varies (see "Baseline guard, checked 2026-10-21"). Backups: laptop
+`~/fujitsu-backup-2026-10-10/home`, full archive on the WD Elements drive, old
+system unpacked on the server at `/srv/mint-old`. The drift timer stays off.

@@ -20,8 +20,10 @@ precision at a base rate b, the share of page loads that go to a monitored site:
 
     precision = b * TPR / (b * (TPR + WPR) + (1 - b) * FPR)
 
-WPR is the rate of monitored traces accepted under the wrong site; the sweeps
-of evaluate_transport.py do not record it, and it is taken as 0 for them.
+WPR is the rate of monitored traces accepted under the wrong site; results
+from before 2026-10-21 lack it in evaluate_transport.py's sweeps, and it is taken
+as 0 for them. A run that saved its per-trace scores is swept at every distinct
+confidence, so the best threshold is found exactly, not at a grid point.
 
 Every test split is the one evaluate_transport.py uses (the latest traces of
 each site), so budget k = 0 and k = all, set_size k = all and curve n = all
@@ -44,14 +46,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from df_dataset import chronological_split  # noqa: E402
 from df_model import predict_proba  # noqa: E402
 from evaluate_df import aggregate, encode, fit, provenance  # noqa: E402
-from evaluate_transport import (ARMS, FIGURES_DIR, RESUME_KEYS, TB_ROOT, UNMONITORED,  # noqa: E402
-                                Split, load_arm, score)
+from evaluate_transport import (ARMS, FIGURES_DIR, RESUME_KEYS, TB_ROOT, THRESHOLDS,  # noqa: E402
+                                UNMONITORED, Split, load_arm, open_world_scores, score,
+                                sweep_from_scores)
 
 ALL_SCENARIOS = {"budget", "set_size", "curve"}
 BUDGET_RESUME_KEYS = RESUME_KEYS + ("source", "targets", "budget_ks", "set_size_arms",
                                     "set_size_ks", "curve_arms", "curve_ns", "limit_sites")
 BASE_RATES = (0.5, 0.2, 0.05, 0.01, 0.001)
-THRESHOLDS = np.round(np.arange(0.0, 1.0, 0.05), 2)
 
 
 def parse_counts(text):
@@ -86,23 +88,6 @@ def subset(split, keep_sites, test_size):
     return Split(split.X[m], split.y[m], split.t[m], test_size)
 
 
-def open_world_sweep(proba, truth, unmon_id, groups):
-    """TPR, WPR and one FPR per unmonitored group over the threshold sweep."""
-    pred, conf = proba.argmax(1), proba.max(1)
-    is_mon, said_mon = truth != unmon_id, pred != unmon_id
-    sweep = []
-    for thr in THRESHOLDS:
-        accept = said_mon & (conf >= thr)
-        row = {"threshold": float(thr),
-               "tpr": float((accept & is_mon & (pred == truth)).sum() / max(is_mon.sum(), 1)),
-               "wpr": float((accept & is_mon & (pred != truth)).sum() / max(is_mon.sum(), 1))}
-        for name, mask in groups.items():
-            row[f"fpr_{name}"] = float((accept & mask).sum() / max(mask.sum(), 1))
-        row["fpr"] = float((accept & ~is_mon).sum() / max((~is_mon).sum(), 1))
-        sweep.append(row)
-    return sweep
-
-
 def set_size_run(mon, unmon, k, args, seed):
     """Open world with k monitored sites; the remaining monitored sites are demoted."""
     sites = sorted(set(mon.y))
@@ -126,19 +111,17 @@ def set_size_run(mon, unmon, k, args, seed):
     classes = sorted(chosen) + [UNMONITORED]
     y_enc = encode(y, classes)
     model, info = fit(X, y_enc, y, t, train_idx, len(classes), args, seed)
-    proba = predict_proba(model, X[test_idx])
+    proba = predict_proba(model, X[test_idx], double=True)
     g = group[test_idx]
-    groups = {"pool": g == "pool"}
-    if len(rest):
-        groups["demoted"] = g == "demoted"
-    sweep = open_world_sweep(proba, y_enc[test_idx], classes.index(UNMONITORED), groups)
+    scores = open_world_scores(proba, y_enc[test_idx], classes.index(UNMONITORED), g)
+    sweep = sweep_from_scores(scores)
     return {
         "seed": seed, "k": len(chosen), "monitored_sites": sorted(chosen),
         "n_train": int(len(train_idx)), "n_test": int(len(test_idx)),
         "n_monitored_classes": len(chosen),
         "n_unmonitored_test": int((g != "mon").sum()),
         "tpr_at_zero_threshold": sweep[0]["tpr"], "fpr_at_zero_threshold": sweep[0]["fpr"],
-        "sweep": sweep, **info,
+        "sweep": sweep, "scores": scores, **info,
     }
 
 
@@ -157,14 +140,17 @@ def precision_table(path, rates=BASE_RATES):
         for b in rates:
             at_zero, best = [], []
             for r in runs:
+                rows = r["sweep"]
+                if "scores" in r:
+                    rows = sweep_from_scores(r["scores"], np.union1d(THRESHOLDS, r["scores"]["conf"]))
                 prec = []
-                for row in r["sweep"]:
+                for row in rows:
                     # Out in the world, unmonitored visits go to sites the attacker never
                     # trained on: the FPR on the held-out pool, not the pooled one that the
                     # demoted (seen-in-training) sites pull down.
                     fpr = row.get("fpr_pool", row["fpr"])
                     denom = b * (row["tpr"] + row.get("wpr", 0.0)) + (1 - b) * fpr
-                    prec.append((b * row["tpr"] / denom if denom else 0.0, row["tpr"], row["threshold"]))
+                    prec.append((b * row["tpr"] / denom if denom else 0.0, row["tpr"], row["threshold"], fpr))
                 at_zero.append(prec[0][0])
                 # The best threshold that still finds at least half the monitored visits.
                 usable = [p for p in prec if p[1] >= 0.5] or prec[:1]
@@ -172,10 +158,13 @@ def precision_table(path, rates=BASE_RATES):
             entry[str(b)] = {
                 "precision_at_zero_mean": float(np.mean(at_zero)),
                 "precision_at_zero_sd": float(np.std(at_zero, ddof=1)) if len(at_zero) > 1 else 0.0,
-                "best_precision_mean": float(np.mean([p for p, _, _ in best])),
-                "best_precision_sd": float(np.std([p for p, _, _ in best], ddof=1)) if len(best) > 1 else 0.0,
-                "best_tpr_mean": float(np.mean([t for _, t, _ in best])),
-                "best_thresholds": [th for _, _, th in best],
+                "best_precision_mean": float(np.mean([p for p, _, _, _ in best])),
+                "best_precision_sd": float(np.std([p for p, _, _, _ in best], ddof=1)) if len(best) > 1 else 0.0,
+                "best_tpr_mean": float(np.mean([t for _, t, _, _ in best])),
+                "best_thresholds": [th for _, _, th, _ in best],
+                # 0 here means no false positive among the test's unmonitored traces:
+                # the precision is then as high as that pool's size can show.
+                "best_fprs": [f for _, _, _, f in best],
             }
         table[name] = {"n_seeds": len(runs), "wpr_recorded": "wpr" in runs[0]["sweep"][0],
                        "base_rates": entry}

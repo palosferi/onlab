@@ -1,7 +1,8 @@
 """Thesis figures for one Tor Browser collection, from its GPU result files.
 
 Reads figures/metrics_transport_<c>_cells_gpu.json, the budget file next to it
-and their _precision.json (R3), and writes vector PDFs to figures/thesis/:
+and the R3 _precision.json (from the open-world rerun, metrics_openworld_*, when
+there is one), and writes vector PDFs to figures/thesis/:
 
   <c>_cross_matrix.pdf   train transport (rows) x test transport (columns), accuracy
   <c>_budget.pdf         R1: baseline plus k target traces per site, per target
@@ -173,7 +174,12 @@ def main():
     c, s = args.collection, args.suffix
     transport = load(f"metrics_transport_{c}_{s}.json")
     budget_run = load(f"metrics_budget_{c}_{s}.json")
-    prec = load(f"metrics_transport_{c}_{s}_precision.json")
+    # The open-world rerun of 2026-10 saved per-trace scores, so its R3 is not
+    # bounded by the old 0.95 grid; the transport file's is the fallback.
+    prec_name = f"metrics_openworld_{c}_{s}_precision.json"
+    if not os.path.exists(os.path.join(FIGURES, prec_name)):
+        prec_name = f"metrics_transport_{c}_{s}_precision.json"
+    prec = load(prec_name)
     if transport:
         cross_matrix(transport, c)
     if budget_run:

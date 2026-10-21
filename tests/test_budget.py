@@ -86,6 +86,49 @@ def main():
                          abs(table["precision_at_zero_mean"] - pool) < 1e-12,
                          f"{table['precision_at_zero_mean']} vs {pool}"))
 
+    # Per-trace scores: four monitored (one under the wrong site, one called
+    # unmonitored), two pool traces, one demoted.
+    scores = {"conf": [0.99, 0.6, 0.9, 0.8, 0.7, 0.3, 0.95],
+              "said_mon": [1, 1, 1, 0, 1, 1, 1],
+              "right_site": [1, 1, 0, 0, 0, 0, 0],
+              "group": ["mon", "mon", "mon", "mon", "pool", "pool", "demoted"]}
+    rows = {r["threshold"]: r for r in eb.sweep_from_scores(scores, [0.0, 0.65])}
+    want = {0.0: (0.5, 0.25, 1.0, 1.0, 1.0), 0.65: (0.25, 0.25, 0.5, 1.0, 2 / 3)}
+    for thr, (tpr, wpr, fpr_pool, fpr_demoted, fpr) in want.items():
+        r = rows[thr]
+        got = (r["tpr"], r["wpr"], r["fpr_pool"], r["fpr_demoted"], r["fpr"])
+        results.append(check(f"sweep from scores at {thr}",
+                             np.allclose(got, (tpr, wpr, fpr_pool, fpr_demoted, fpr)), str(got)))
+
+    # With scores saved, the best threshold need not be a grid point: here every
+    # pool trace scores 0.9991 and the monitored ones 0.9993, so only a threshold
+    # between the two (none on the grid) keeps TPR at 100% with no false positive.
+    scores = {"conf": [0.9993] * 4 + [0.9991] * 2, "said_mon": [1] * 6,
+              "right_site": [1] * 4 + [0] * 2, "group": ["mon"] * 4 + ["pool"] * 2}
+    fake = {"scenarios": {"open_world_y": {"runs": [{"seed": 1, "scores": scores,
+                                                     "sweep": eb.sweep_from_scores(scores)}]}}}
+    with tempfile.TemporaryDirectory() as d:
+        path = os.path.join(d, "fake.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(fake, f)
+        eb.precision_table(path, rates=(0.01,))
+        with open(os.path.join(d, "fake_precision.json"), encoding="utf-8") as f:
+            table = json.load(f)["scenarios"]["open_world_y"]["base_rates"]["0.01"]
+    results.append(check("best threshold between grid points",
+                         table["best_thresholds"] == [0.9993] and table["best_precision_mean"] == 1.0
+                         and table["best_fprs"] == [0.0], str(table)))
+
+    # float32 rounds both of these confidences to 1.0; float64 keeps them apart.
+    import torch
+    model = torch.nn.Sequential(torch.nn.Flatten(), torch.nn.Linear(1, 2))
+    with torch.no_grad():
+        model[1].weight.copy_(torch.tensor([[0.0], [1.0]]))
+        model[1].bias.zero_()
+    X = np.array([[20.0], [25.0]], dtype=np.float32)
+    single, double = eb.predict_proba(model, X).max(1), eb.predict_proba(model, X, double=True).max(1)
+    results.append(check("float32 confidences tie at 1.0", single[0] == single[1] == 1.0, str(single)))
+    results.append(check("float64 confidences stay apart", double[0] < double[1] < 1.0, str(double)))
+
     print(f"\n{sum(results)}/{len(results)} passed")
     return 0 if all(results) else 1
 
