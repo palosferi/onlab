@@ -33,6 +33,7 @@ import argparse
 import csv
 import os
 import re
+import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -286,10 +287,14 @@ def build_site_set(args, results, header):
           f"{len(res)} reserves, {len(unmon)} unmonitored and {len(bg)} background "
           f"(ranks {unmon[0][0]}-{bg[-1][0] if bg else unmon[-1][0]}), {len(dropped)} dropped")
     if args.extra_set:
-        # Never trained on: collected later with --repeats 0, it only widens the
-        # open-world test pool, so the FPR can be measured below ~1%.
+        # Never trained on: collected later, it only widens the open-world test
+        # pool, so the FPR can be measured below ~1%. The monitored list is the
+        # set's own, for a few control visits in the same run (a later run may
+        # go through another guard; the controls show whether that matters).
         out = os.path.join(sites.SITES_DIR, args.extra_set)
         os.makedirs(out, exist_ok=True)
+        shutil.copyfile(os.path.join(sites.SITES_DIR, args.site_set, "monitored.txt"),
+                        os.path.join(out, "monitored.txt"))
         with open(os.path.join(out, "unmonitored.txt"), "w", encoding="utf-8") as fh:
             fh.write(header.replace("\n#", f" Extra open-world test pool of {args.site_set}: every "
                                     "pool site after its unmonitored and background.\n#", 1))
