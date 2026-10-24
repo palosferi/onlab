@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-21. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-24. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -225,6 +225,26 @@ figures/metrics_openworld_<c>_cells_gpu.json` and `evaluate_budget.py
 when it exists. Until then the R3 numbers above and the R2 precision column
 are provisional: held down by the grid, held up by WPR taken as 0.
 
+**Open-world rerun done 2026-10-24** (Kaggle `wf-s2-openworld` and
+`wf-tbmain-openworld` at fb4e34b, T4). Check passed: all 24 runs repeat the old
+ones exactly (best epoch, threshold-0 TPR/FPR, TPR/FPR at every old grid
+point). Files `figures/metrics_{openworld,setsize}_{s2,tb-main}_cells_gpu.json`
+and their `_precision.json`. The grid was holding precision down, but with
+exact thresholds the best point at b = 1% is decided by whether 0, 1 or 2 of
+the 85-96 pool traces get through, so the seeds scatter over almost the whole
+range:
+
+| best precision, b = 1% (per seed: FPR at the best point) | S2 | tb-main |
+|---|---|---|
+| open world baseline | 50.7 ± 42.7 (2.1, 2.1, 0%) | 25.1 ± 10.1 (1.2, 1.2, 3.5%) |
+| open world obfs4 | 100 ± 0 (0, 0, 0%) | 69.8 ± 52.3 (5.9, 0, 0%) |
+| open world Snowflake | 43.6 ± 49.0 (0, 2.1, 4.2%) | 9.9 ± 0.4 (4.7, 5.9, 4.7%) |
+
+A pool this size can only place precision at b = 1% between ~35% (one false
+positive) and 100% (none). **Undecided: how R3 is reported** (see Next tasks);
+the R3 lines and the R2 precision column above, and the precision figures, are
+not updated until then.
+
 Thesis figures for S2 written 2026-10-21 by `src/thesis_figures.py --collection
 s2`: `figures/thesis/s2_{cross_matrix,budget,curve,precision}.pdf`.
 
@@ -366,24 +386,13 @@ Rewritten 2026-10-21. Done before that: tb-main and S2 collected, DF transport
 + R1/R2/R4 on both on Kaggle, R3 and figures on both, admin (feladatkiírás,
 adatlap; the 10-19 hitelesítés needed nothing from the student).
 
-1. **Push `szakdolgozat`** (user: Claude's `git push` has no GitHub
-   credentials). The Kaggle jobs run a pushed commit.
-2. **Open-world rerun on Kaggle** (user pushes; see "Open-world rerun" above).
-   Two kernels, one per collection, about 2 h each on a T4:
-
-       python scripts/kaggle/push_job.py --dataset ferencpalos/wf-tb-s2 --collection s2 --slug wf-s2-openworld \
-         --cmd "src/evaluate_transport.py --collection s2 --mode cells --length 10000 --min-visits 30 --scenarios open_world --out figures/metrics_openworld_s2_cells_gpu.json" \
-         --cmd "src/evaluate_budget.py --collection s2 --min-visits 30 --scenarios set_size --out figures/metrics_setsize_s2_cells_gpu.json"
-       python scripts/kaggle/push_job.py --dataset ferencpalos/wf-tb-main --collection tb-main --slug wf-tbmain-openworld \
-         --cmd "src/evaluate_transport.py --collection tb-main --mode cells --length 10000 --min-visits 30 --scenarios open_world --out figures/metrics_openworld_tb-main_cells_gpu.json" \
-         --cmd "src/evaluate_budget.py --collection tb-main --min-visits 30 --scenarios set_size --out figures/metrics_setsize_tb-main_cells_gpu.json"
-
-3. **After the rerun:** fetch (`kaggle kernels output ferencpalos/<slug> -p
-   figures/kaggle/<slug>`), check that threshold-0 TPR/FPR equal the old files
-   exactly, run `--precision-from` on the four new files, replace the R3 lines
-   and the R2 precision column above, rerun `thesis_figures.py` for both
-   collections, commit.
-4. **Write the thesis** (submission 2026-12-11 12:00). Nothing written yet;
+1. Push `szakdolgozat` after each commit (user: Claude's `git push` has no
+   GitHub credentials).
+2. **Decide how R3 is reported** (open-world rerun done 2026-10-24, see
+   above): the ~96-trace unmonitored pool cannot resolve precision at b = 1%.
+   Then update the R3 lines, the R2 precision column and the precision figures
+   (`thesis_figures.py` already reads `metrics_openworld_*_precision.json`).
+3. **Write the thesis** (submission 2026-12-11 12:00). Nothing written yet;
    `docs/SZAKDOLGOZAT_temavazlat.md` still describes the drift plan, and its
    schedule had a zeroth draft to the konzulens by the end of November. Points
    the text must carry:
@@ -395,9 +404,9 @@ adatlap; the 10-19 hitelesítés needed nothing from the student).
      point), and the ~96-trace unmonitored pool cannot show an FPR below ~1%.
    - Guard, tor version and bridge are per capture in the manifest; the bridge
      address never goes into the thesis or the repository.
-5. **Status email to the konzulens** with the final results (user's call;
+4. **Status email to the konzulens** with the final results (user's call;
    the 2026-10-14 draft predates S2, so it needs the S2 tables).
-6. **Delete the Azure resource group `wf-thesis`** once no site needs
+5. **Delete the Azure resource group `wf-thesis`** once no site needs
    recollecting (the obfs4 arm depends on that bridge; the renewed
    subscription runs to 2027-10). `az` is not installed on the laptop.
 
