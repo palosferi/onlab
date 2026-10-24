@@ -174,11 +174,14 @@ def main():
     c, s = args.collection, args.suffix
     transport = load(f"metrics_transport_{c}_{s}.json")
     budget_run = load(f"metrics_budget_{c}_{s}.json")
-    # The open-world rerun of 2026-10 saved per-trace scores, so its R3 is not
-    # bounded by the old 0.95 grid; the transport file's is the fallback.
-    prec_name = f"metrics_openworld_{c}_{s}_precision.json"
-    if not os.path.exists(os.path.join(FIGURES, prec_name)):
-        prec_name = f"metrics_transport_{c}_{s}_precision.json"
+    # R3 from the best open-world run there is: with the extra test-only pool
+    # (S2), then the 2026-10 rerun with per-trace scores (not bounded by the old
+    # 0.95 grid), then the transport file.
+    for prec_name in (f"metrics_openworld_{c}_{s}_extra_precision.json",
+                      f"metrics_openworld_{c}_{s}_precision.json",
+                      f"metrics_transport_{c}_{s}_precision.json"):
+        if os.path.exists(os.path.join(FIGURES, prec_name)):
+            break
     prec = load(prec_name)
     if transport:
         cross_matrix(transport, c)

@@ -100,6 +100,21 @@ def main():
         results.append(check(f"sweep from scores at {thr}",
                              np.allclose(got, (tpr, wpr, fpr_pool, fpr_demoted, fpr)), str(got)))
 
+    # Extra (test-only) groups: tpr/wpr/fpr stay those of the run without them;
+    # fpr_unseen pools the held-out pool with the extra one, tpr_control is apart.
+    base = {"conf": [0.9, 0.9, 0.9, 0.9], "said_mon": [1, 0, 1, 0], "right_site": [1, 0, 0, 1],
+            "group": ["mon", "mon", "pool", "pool"]}
+    more = {"conf": [0.9] * 6, "said_mon": [1, 0, 0, 0, 1, 1], "right_site": [0, 1, 1, 1, 1, 0],
+            "group": ["extra", "extra", "extra", "extra", "control", "control"]}
+    both = {k: base[k] + more[k] for k in base}
+    r0, r1 = eb.sweep_from_scores(base, [0.0])[0], eb.sweep_from_scores(both, [0.0])[0]
+    results.append(check("extra groups leave tpr/wpr/fpr alone",
+                         all(r0[k] == r1[k] for k in ("tpr", "wpr", "fpr", "fpr_pool")), str(r1)))
+    results.append(check("fpr_extra, fpr_unseen, tpr_control",
+                         (r1["fpr_extra"], r1["fpr_unseen"], r1["tpr_control"], r1["wpr_control"])
+                         == (0.25, 2 / 6, 0.5, 0.5), str(r1)))
+    results.append(check("no fpr_control", "fpr_control" not in r1, str(r1)))
+
     # With scores saved, the best threshold need not be a grid point: here every
     # pool trace scores 0.9991 and the monitored ones 0.9993, so only a threshold
     # between the two (none on the grid) keeps TPR at 100% with no false positive.

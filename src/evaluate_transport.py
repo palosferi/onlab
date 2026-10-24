@@ -14,6 +14,10 @@ works on another. On tor_dataset/tb/<collection>/features this runs, per seed:
                  data (earliest share of them) tested on the rest;
   open_world     per arm, monitored + unmonitored, TPR/WPR/FPR over a threshold
                  sweep, and each test trace's confidence for any other threshold.
+                 --extra-unmonitored adds another collection's traces to the test
+                 only (never to training): its unmonitored pool (FPR on many more
+                 unseen pages) and its monitored control visits (TPR at the time
+                 and over the path of that collection).
 
 A full run takes many hours, so the results so far are saved after every seed
 to <out>.partial.json. Started again with the same settings, the script skips
@@ -48,7 +52,7 @@ UNMONITORED = "unmonitored"
 ALL_SCENARIOS = {"closed_world", "cross", "leave_one_out", "pooled", "background", "open_world"}
 # Settings that change the numbers; a partial file from other settings is not resumed.
 RESUME_KEYS = ("collection", "mode", "length", "epochs", "val_size", "patience", "min_epochs",
-               "test_size", "scenarios", "min_visits", "device")
+               "test_size", "scenarios", "min_visits", "device", "extra_unmonitored")
 # Open-world thresholds: steps of 0.05, then finer near 1, where a well-trained
 # model's useful thresholds are (a grid ending at 0.95 left the best point at
 # its edge). The per-trace scores are saved too, for any other threshold.
@@ -102,7 +106,7 @@ def train_on(parts, args, seed):
     return model, classes, info
 
 
-def open_world(mon, unmon, args, seed):
+def open_world(mon, unmon, args, seed, extra=None):
     X = np.concatenate([mon.X, unmon.X])
     y = np.concatenate([mon.y, unmon.y])
     t = np.concatenate([mon.t, unmon.t])
@@ -119,14 +123,23 @@ def open_world(mon, unmon, args, seed):
 
     proba = predict_proba(model, X[test_idx], double=True)
     truth = y_enc[test_idx]
-    scores = open_world_scores(proba, truth, unmon_id, np.where(truth != unmon_id, "mon", "pool"))
+    group = np.where(truth != unmon_id, "mon", "pool")
+    n_extra = {}
+    for name, part in (extra or {}).items():
+        # Test only, after training: the model is the one without them.
+        m = np.isin(part.y, classes)
+        proba = np.concatenate([proba, predict_proba(model, part.X[m], double=True)])
+        truth = np.concatenate([truth, encode(part.y[m], classes)])
+        group = np.concatenate([group, np.full(int(m.sum()), name)])
+        n_extra[f"n_{name}"] = int(m.sum())
+    scores = open_world_scores(proba, truth, unmon_id, group)
     sweep = sweep_from_scores(scores)
     return {
         "seed": seed,
         "n_train": int(len(train_idx)), "n_test": int(len(test_idx)),
         "n_monitored_classes": len(classes) - 1,
         "n_monitored_traces": int(len(mon)), "n_unmonitored_traces": int(len(unmon)),
-        "n_unmonitored_test": int((truth == unmon_id).sum()),
+        "n_unmonitored_test": int((group == "pool").sum()), **n_extra,
         "tpr_at_zero_threshold": sweep[0]["tpr"], "fpr_at_zero_threshold": sweep[0]["fpr"],
         "sweep": sweep, "scores": scores, **info,
     }
@@ -143,26 +156,65 @@ def open_world_scores(proba, truth, unmon_id, group):
             "group": [str(g) for g in group]}
 
 
+# Test-only groups from --extra-unmonitored: they get their own rates and stay
+# out of tpr/wpr/fpr, which therefore mean the same as in a run without them.
+EXTRA_GROUPS = ("extra", "control")
+
+
 def sweep_from_scores(scores, thresholds=THRESHOLDS):
     """TPR, WPR (monitored, accepted under the wrong site) and FPR at each
-    threshold; FPR overall and per unmonitored group as fpr_<group>."""
+    threshold; FPR overall and per unmonitored group as fpr_<group>. With an
+    extra pool, fpr_unseen is the FPR over every never-trained unmonitored
+    trace (pool + extra), and tpr_control the TPR on the control visits."""
     conf = np.asarray(scores["conf"], dtype=float)
     said_mon = np.asarray(scores["said_mon"], dtype=bool)
     right = np.asarray(scores["right_site"], dtype=bool)
     group = np.asarray(scores["group"])
     is_mon = group == "mon"
+    unmon = ~is_mon & ~np.isin(group, EXTRA_GROUPS)
+    control = group == "control"
+    unseen = np.isin(group, ("pool", "extra"))
     sweep = []
     for thr in thresholds:
         accept = said_mon & (conf >= thr)
         row = {"threshold": float(thr),
                "tpr": float((accept & is_mon & right).sum() / max(is_mon.sum(), 1)),
                "wpr": float((accept & is_mon & ~right).sum() / max(is_mon.sum(), 1))}
-        for name in sorted(set(group[~is_mon])):
+        for name in sorted(set(group[~is_mon & ~control])):
             mask = group == name
             row[f"fpr_{name}"] = float((accept & mask).sum() / max(mask.sum(), 1))
-        row["fpr"] = float((accept & ~is_mon).sum() / max((~is_mon).sum(), 1))
+        row["fpr"] = float((accept & unmon).sum() / max(unmon.sum(), 1))
+        if (group == "extra").any():
+            row["fpr_unseen"] = float((accept & unseen).sum() / unseen.sum())
+        if control.any():
+            row["tpr_control"] = float((accept & control & right).sum() / control.sum())
+            row["wpr_control"] = float((accept & control & ~right).sum() / control.sum())
         sweep.append(row)
     return sweep
+
+
+def load_extra(args, arms, keep_sites):
+    """Per arm, the test-only traces of --extra-unmonitored: its unmonitored
+    pool, and its monitored visits of the sites kept here (the controls)."""
+    if not args.extra_unmonitored:
+        return {}
+    features = os.path.join(TB_ROOT, args.extra_unmonitored, "features")
+    extra = {}
+    for a in arms:
+        parts = {}
+        u = load_arm(features, a, "unmonitored", args, force_label=UNMONITORED)
+        if u is not None:
+            parts["extra"] = u
+        c = load_arm(features, a, "monitored", args)
+        if c is not None:
+            m = np.isin(c.y, list(keep_sites))
+            if m.any():
+                parts["control"] = Split(c.X[m], c.y[m], c.t[m], args.test_size)
+        if parts:
+            extra[a] = parts
+            print(f"  {a:10s} extra (test only) from {args.extra_unmonitored}: "
+                  + ", ".join(f"{n} {len(p)}" for n, p in parts.items()))
+    return extra
 
 
 def main():
@@ -181,6 +233,8 @@ def main():
     p.add_argument("--scenarios", default="all", help=f"comma separated from {sorted(ALL_SCENARIOS)}")
     p.add_argument("--min-visits", type=int, default=0,
                    help="drop monitored sites with fewer ok visits than this in any arm")
+    p.add_argument("--extra-unmonitored", default=None, metavar="COLLECTION",
+                   help="open_world: test-only traces from this collection (e.g. s2-extra)")
     p.add_argument("--out", default="")
     args = p.parse_args()
     # evaluate_df.fit reads these.
@@ -208,6 +262,7 @@ def main():
     if "open_world" in wanted:
         unmon = {a: load_arm(features, a, "unmonitored", args, force_label=UNMONITORED) for a in mon}
         unmon = {a: s for a, s in unmon.items() if s is not None and len(s.test)}
+    extra = load_extra(args, list(unmon), set.union(*(set(s.y) for s in mon.values())))
     bg = load_arm(features, "baseline", "background", args) if "background" in wanted else None
     for a, s in mon.items():
         print(f"  {a:10s} monitored {len(s):5d} traces, {len(set(s.y))} sites"
@@ -289,8 +344,10 @@ def main():
         if "open_world" in wanted:
             for a in unmon:
                 print(f"[open world {a}]")
-                res = open_world(mon[a], unmon[a], args, seed)
-                print(f"  -> TPR {res['tpr_at_zero_threshold']:.4f} FPR {res['fpr_at_zero_threshold']:.4f}")
+                res = open_world(mon[a], unmon[a], args, seed, extra.get(a))
+                more = {k: v for k, v in res["sweep"][0].items() if k in ("fpr_extra", "tpr_control")}
+                print(f"  -> TPR {res['tpr_at_zero_threshold']:.4f} FPR {res['fpr_at_zero_threshold']:.4f}"
+                      + "".join(f" {k.upper()} {v:.4f}" for k, v in more.items()))
                 record(f"open_world_{a}", res, seed)
 
         done.append(seed)

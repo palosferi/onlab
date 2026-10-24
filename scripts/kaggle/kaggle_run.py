@@ -28,17 +28,18 @@ TB_ROOT = "/tmp/tb"
 
 
 def find_features(collection):
-    """The dataset's <collection>/features folder, unzipping the upload if needed."""
+    """The datasets' <collection>/features folder, unzipping the uploads if needed."""
     for root, dirs, _ in os.walk(INPUT):
         if root.endswith(os.path.join(collection, "features")) and "baseline" in dirs:
             return root
-    for path in glob.glob(os.path.join(INPUT, "**", "*.zip"), recursive=True):
-        print(f"unzipping {path}", flush=True)
-        with zipfile.ZipFile(path) as z:
-            z.extractall("/tmp/unzipped")
-        for root, dirs, _ in os.walk("/tmp/unzipped"):
-            if root.endswith(os.path.join(collection, "features")) and "baseline" in dirs:
-                return root
+    if not os.path.isdir("/tmp/unzipped"):
+        for path in glob.glob(os.path.join(INPUT, "**", "*.zip"), recursive=True):
+            print(f"unzipping {path}", flush=True)
+            with zipfile.ZipFile(path) as z:
+                z.extractall("/tmp/unzipped")
+    for root, dirs, _ in os.walk("/tmp/unzipped"):
+        if root.endswith(os.path.join(collection, "features")) and "baseline" in dirs:
+            return root
     sys.exit(f"no {collection} features folder or zip under {INPUT}")
 
 
@@ -66,11 +67,13 @@ def main():
     subprocess.run(["git", "clone", "-q", REPO, CODE], check=True)
     subprocess.run(["git", "-C", CODE, "checkout", "-q", JOB["commit"]], check=True)
 
-    features = find_features(JOB["collection"])
-    os.makedirs(os.path.join(TB_ROOT, JOB["collection"]), exist_ok=True)
-    link = os.path.join(TB_ROOT, JOB["collection"], "features")
-    if not os.path.exists(link):
-        os.symlink(features, link)
+    # Jobs pushed before 2026-10-24 name a single "collection".
+    for collection in JOB.get("collections") or [JOB["collection"]]:
+        features = find_features(collection)
+        os.makedirs(os.path.join(TB_ROOT, collection), exist_ok=True)
+        link = os.path.join(TB_ROOT, collection, "features")
+        if not os.path.exists(link):
+            os.symlink(features, link)
     env = {**os.environ, "TOR_WF_TB_OUT": TB_ROOT}
 
     record = {"job": JOB, "gpu": torch.cuda.get_device_name(0), "torch": torch.__version__,

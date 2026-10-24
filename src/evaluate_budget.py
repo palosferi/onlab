@@ -12,6 +12,8 @@ training procedure:
                   FPR is reported separately on the unmonitored pool (sites never
                   seen in training) and on the demoted sites (seen in training,
                   labelled unmonitored).
+                  --extra-unmonitored adds another collection's unmonitored
+                  traces to the test only, as in evaluate_transport.py.
   curve      (R4) closed world on the n earliest training traces per site.
 
 R3 needs no training: --precision-from reads the open-world threshold sweeps of
@@ -47,8 +49,8 @@ from df_dataset import chronological_split  # noqa: E402
 from df_model import predict_proba  # noqa: E402
 from evaluate_df import aggregate, encode, fit, provenance  # noqa: E402
 from evaluate_transport import (ARMS, FIGURES_DIR, RESUME_KEYS, TB_ROOT, THRESHOLDS,  # noqa: E402
-                                UNMONITORED, Split, load_arm, open_world_scores, score,
-                                sweep_from_scores)
+                                UNMONITORED, Split, load_arm, load_extra, open_world_scores,
+                                score, sweep_from_scores)
 
 ALL_SCENARIOS = {"budget", "set_size", "curve"}
 BUDGET_RESUME_KEYS = RESUME_KEYS + ("source", "targets", "budget_ks", "set_size_arms",
@@ -88,7 +90,7 @@ def subset(split, keep_sites, test_size):
     return Split(split.X[m], split.y[m], split.t[m], test_size)
 
 
-def set_size_run(mon, unmon, k, args, seed):
+def set_size_run(mon, unmon, k, args, seed, extra_unmon=None):
     """Open world with k monitored sites; the remaining monitored sites are demoted."""
     sites = sorted(set(mon.y))
     rng = np.random.default_rng(seed)
@@ -112,14 +114,20 @@ def set_size_run(mon, unmon, k, args, seed):
     y_enc = encode(y, classes)
     model, info = fit(X, y_enc, y, t, train_idx, len(classes), args, seed)
     proba = predict_proba(model, X[test_idx], double=True)
-    g = group[test_idx]
-    scores = open_world_scores(proba, y_enc[test_idx], classes.index(UNMONITORED), g)
+    g, truth = group[test_idx], y_enc[test_idx]
+    if extra_unmon is not None:
+        # Test only, after training, as in evaluate_transport.open_world.
+        proba = np.concatenate([proba, predict_proba(model, extra_unmon.X, double=True)])
+        truth = np.concatenate([truth, np.full(len(extra_unmon), classes.index(UNMONITORED))])
+        g = np.concatenate([g, np.full(len(extra_unmon), "extra")])
+    scores = open_world_scores(proba, truth, classes.index(UNMONITORED), g)
     sweep = sweep_from_scores(scores)
     return {
         "seed": seed, "k": len(chosen), "monitored_sites": sorted(chosen),
         "n_train": int(len(train_idx)), "n_test": int(len(test_idx)),
         "n_monitored_classes": len(chosen),
-        "n_unmonitored_test": int((g != "mon").sum()),
+        "n_unmonitored_test": int(((g != "mon") & (g != "extra")).sum()),
+        "n_extra": int((g == "extra").sum()),
         "tpr_at_zero_threshold": sweep[0]["tpr"], "fpr_at_zero_threshold": sweep[0]["fpr"],
         "sweep": sweep, "scores": scores, **info,
     }
@@ -146,25 +154,31 @@ def precision_table(path, rates=BASE_RATES):
                 prec = []
                 for row in rows:
                     # Out in the world, unmonitored visits go to sites the attacker never
-                    # trained on: the FPR on the held-out pool, not the pooled one that the
-                    # demoted (seen-in-training) sites pull down.
-                    fpr = row.get("fpr_pool", row["fpr"])
+                    # trained on: the FPR on the held-out pool (with the extra pool when a
+                    # run has one), not the pooled one that the demoted (seen-in-training)
+                    # sites pull down.
+                    fpr = row.get("fpr_unseen", row.get("fpr_pool", row["fpr"]))
                     denom = b * (row["tpr"] + row.get("wpr", 0.0)) + (1 - b) * fpr
-                    prec.append((b * row["tpr"] / denom if denom else 0.0, row["tpr"], row["threshold"], fpr))
+                    prec.append((b * row["tpr"] / denom if denom else 0.0, row["tpr"], row["threshold"], fpr,
+                                 row.get("tpr_control")))
                 at_zero.append(prec[0][0])
                 # The best threshold that still finds at least half the monitored visits.
                 usable = [p for p in prec if p[1] >= 0.5] or prec[:1]
-                best.append(max(usable))
+                best.append(max(usable, key=lambda x: x[:3]))
+            controls = [x[4] for x in best if x[4] is not None]
             entry[str(b)] = {
                 "precision_at_zero_mean": float(np.mean(at_zero)),
                 "precision_at_zero_sd": float(np.std(at_zero, ddof=1)) if len(at_zero) > 1 else 0.0,
-                "best_precision_mean": float(np.mean([p for p, _, _, _ in best])),
-                "best_precision_sd": float(np.std([p for p, _, _, _ in best], ddof=1)) if len(best) > 1 else 0.0,
-                "best_tpr_mean": float(np.mean([t for _, t, _, _ in best])),
-                "best_thresholds": [th for _, _, th, _ in best],
+                "best_precision_mean": float(np.mean([x[0] for x in best])),
+                "best_precision_sd": float(np.std([x[0] for x in best], ddof=1)) if len(best) > 1 else 0.0,
+                "best_tpr_mean": float(np.mean([x[1] for x in best])),
+                "best_thresholds": [x[2] for x in best],
                 # 0 here means no false positive among the test's unmonitored traces:
                 # the precision is then as high as that pool's size can show.
-                "best_fprs": [f for _, _, _, f in best],
+                "best_fprs": [x[3] for x in best],
+                # TPR on the extra collection's control visits at the same threshold:
+                # close to best_tpr_mean means its pool is scored like this one.
+                **({"best_tpr_control": controls} if controls else {}),
             }
         table[name] = {"n_seeds": len(runs), "wpr_recorded": "wpr" in runs[0]["sweep"][0],
                        "base_rates": entry}
@@ -206,6 +220,8 @@ def main():
     p.add_argument("--curve-arms", default="baseline")
     p.add_argument("--curve-ns", default="5,10,15,20,all", help="training traces per site")
     p.add_argument("--limit-sites", type=int, default=0, help="smoke tests: keep only the first N sites")
+    p.add_argument("--extra-unmonitored", default=None, metavar="COLLECTION",
+                   help="set_size: test-only unmonitored traces from this collection (e.g. s2-extra)")
     p.add_argument("--out", default="")
     args = p.parse_args()
     if args.precision_from:
@@ -238,6 +254,7 @@ def main():
             s = load_arm(features, a, "unmonitored", args, force_label=UNMONITORED)
             if s is not None and len(s.test):
                 unmon[a] = s
+    extra = load_extra(args, list(unmon), keep)
 
     runs, done = {}, []
     partial = os.path.splitext(out)[0] + ".partial.json"
@@ -286,7 +303,7 @@ def main():
             for a in unmon:
                 for k in parse_counts(args.set_size_ks):
                     print(f"[open world {a}, {label(k)} monitored sites]")
-                    res = set_size_run(mon[a], unmon[a], k, args, seed)
+                    res = set_size_run(mon[a], unmon[a], k, args, seed, extra.get(a, {}).get("extra"))
                     fprs = {key: v for key, v in res["sweep"][0].items() if key.startswith("fpr_")}
                     print(f"  -> TPR {res['tpr_at_zero_threshold']:.4f} "
                           + " ".join(f"{key.upper()} {v:.4f}" for key, v in fprs.items()))
