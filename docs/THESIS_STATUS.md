@@ -254,7 +254,12 @@ how the S2 models score traffic. **Collection `s2-extra` started 2026-10-24
 ~12:20** on the Debian server, user unit `wf-s2-extra`: obfs4 and Snowflake off
 (`--setenv TOR_WF_COLLECT_OBFS4=0 TOR_WF_COLLECT_SNOWFLAKE=0`), `run_tb.sh
 --collection s2-extra --site-set s2-extra --repeats 3 --bg-repeats 0`, 1413
-captures, ~16 h, log `logs/s2-extra.log`. The evaluation scores it as a
+captures, ~16 h, log `logs/s2-extra.log`. **Finished 2026-10-24 23:26** (features
+extracted, copied to the laptop): 1182 ok unmonitored pages of 1303 (37
+blocked, 32 load errors, 22 timeouts, 19 empty, 10 redirected), 145 ok control
+visits on 49 of the 50 monitored sites, all through guard 337911D5. No extra
+page lands on a monitored site or on a site of S2's own pools, and no two
+share a landing site. The evaluation scores it as a
 test-only pool (`--extra-unmonitored s2-extra`, ea4055c): the models are the
 same as before, so threshold-0 TPR/FPR must again equal the old runs;
 `fpr_unseen` (pool + extra) feeds precision, `tpr_control` is the check.
@@ -404,9 +409,9 @@ adatlap; the 10-19 hitelesítés needed nothing from the student).
 
 1. Push `szakdolgozat` after each commit (user: Claude's `git push` has no
    GitHub credentials).
-2. **Finish R3 with the extra pool** (collection `s2-extra` running, see
-   above). When it ends: copy its features to the laptop; the user uploads
-   them as a dataset and pushes the job (Claude may do neither):
+2. **Finish R3 with the extra pool** (collection `s2-extra` done and on the
+   laptop). The user uploads its features as a dataset and pushes the job
+   (Claude may do neither):
 
        mkdir -p ~/wf-kaggle-s2extra && (cd tor_dataset/tb && zip -qr ~/wf-kaggle-s2extra/s2-extra-features.zip s2-extra/features)
        printf '{"title": "wf-tb-s2-extra", "id": "ferencpalos/wf-tb-s2-extra", "licenses": [{"name": "CC0-1.0"}]}' > ~/wf-kaggle-s2extra/dataset-metadata.json
