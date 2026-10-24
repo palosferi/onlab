@@ -241,9 +241,25 @@ range:
 | open world Snowflake | 43.6 ± 49.0 (0, 2.1, 4.2%) | 9.9 ± 0.4 (4.7, 5.9, 4.7%) |
 
 A pool this size can only place precision at b = 1% between ~35% (one false
-positive) and 100% (none). **Undecided: how R3 is reported** (see Next tasks);
-the R3 lines and the R2 precision column above, and the precision figures, are
-not updated until then.
+positive) and 100% (none).
+
+**Decided 2026-10-24: a larger unmonitored test pool for S2.** `sites/s2-extra/`
+holds the 1263 screened sites S2 left over (same screen and rule, ranks
+2106-5995, disjoint from S2 and from tb-main's monitored sites;
+`build_site_lists.py ... --site-set s2 --extra-set s2-extra`). S2's baseline
+guard F5612A75 left the consensus on 2026-10-21 (Tor's state: `listed=0`), so
+this run goes through another guard (337911D5) and 1-2 weeks after S2; three
+control visits per monitored site, interleaved, measure whether that changes
+how the S2 models score traffic. **Collection `s2-extra` started 2026-10-24
+~12:20** on the Debian server, user unit `wf-s2-extra`: obfs4 and Snowflake off
+(`--setenv TOR_WF_COLLECT_OBFS4=0 TOR_WF_COLLECT_SNOWFLAKE=0`), `run_tb.sh
+--collection s2-extra --site-set s2-extra --repeats 3 --bg-repeats 0`, 1413
+captures, ~16 h, log `logs/s2-extra.log`. The evaluation scores it as a
+test-only pool (`--extra-unmonitored s2-extra`, ea4055c): the models are the
+same as before, so threshold-0 TPR/FPR must again equal the old runs;
+`fpr_unseen` (pool + extra) feeds precision, `tpr_control` is the check.
+R3 is then reported as a range from the false-positive counts, the S2 baseline
+one narrow enough to quote; obfs4, Snowflake and tb-main keep the wide one.
 
 Thesis figures for S2 written 2026-10-21 by `src/thesis_figures.py --collection
 s2`: `figures/thesis/s2_{cross_matrix,budget,curve,precision}.pdf`.
@@ -388,10 +404,22 @@ adatlap; the 10-19 hitelesítés needed nothing from the student).
 
 1. Push `szakdolgozat` after each commit (user: Claude's `git push` has no
    GitHub credentials).
-2. **Decide how R3 is reported** (open-world rerun done 2026-10-24, see
-   above): the ~96-trace unmonitored pool cannot resolve precision at b = 1%.
-   Then update the R3 lines, the R2 precision column and the precision figures
-   (`thesis_figures.py` already reads `metrics_openworld_*_precision.json`).
+2. **Finish R3 with the extra pool** (collection `s2-extra` running, see
+   above). When it ends: copy its features to the laptop; the user uploads
+   them as a dataset and pushes the job (Claude may do neither):
+
+       mkdir -p ~/wf-kaggle-s2extra && (cd tor_dataset/tb && zip -qr ~/wf-kaggle-s2extra/s2-extra-features.zip s2-extra/features)
+       printf '{"title": "wf-tb-s2-extra", "id": "ferencpalos/wf-tb-s2-extra", "licenses": [{"name": "CC0-1.0"}]}' > ~/wf-kaggle-s2extra/dataset-metadata.json
+       kaggle datasets create -p ~/wf-kaggle-s2extra
+       python scripts/kaggle/push_job.py --dataset ferencpalos/wf-tb-s2 --dataset ferencpalos/wf-tb-s2-extra \
+         --collection s2 --collection s2-extra --slug wf-s2-extra \
+         --cmd "src/evaluate_transport.py --collection s2 --mode cells --length 10000 --min-visits 30 --scenarios open_world --extra-unmonitored s2-extra --out figures/metrics_openworld_s2_cells_gpu_extra.json" \
+         --cmd "src/evaluate_budget.py --collection s2 --min-visits 30 --scenarios set_size --extra-unmonitored s2-extra --out figures/metrics_setsize_s2_cells_gpu_extra.json"
+
+   Then: check threshold-0 TPR/FPR against the old runs and the control TPR
+   against the test TPR, report R3 (and the R2 precision column) as ranges
+   from the false-positive counts, redraw the precision figures
+   (`thesis_figures.py` prefers the `_extra` file), commit.
 3. **Write the thesis** (submission 2026-12-11 12:00). Nothing written yet;
    `docs/SZAKDOLGOZAT_temavazlat.md` still describes the drift plan, and its
    schedule had a zeroth draft to the konzulens by the end of November. Points
