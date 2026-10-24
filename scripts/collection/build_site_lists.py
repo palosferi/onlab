@@ -118,7 +118,7 @@ def read_excluded(path):
 
 
 def select_site_set(results, n_monitored, n_reserves, n_unmonitored, n_background,
-                    excluded, pool_excluded=()):
+                    excluded, pool_excluded=(), with_rest=False):
     """Split a screening into monitored, reserves, unmonitored and background.
 
     Sites are taken in Tranco order and deduplicated on where they land, as in
@@ -126,7 +126,8 @@ def select_site_set(results, n_monitored, n_reserves, n_unmonitored, n_backgroun
     domain is dropped and recorded; below it the pools take every distinct
     passing site except duplicates of a monitored one and `pool_excluded` (the
     other site set's monitored domains, so either set's model can be tested on
-    these pools).
+    these pools). with_rest=True also returns the pool sites left over after
+    unmonitored and background, for an extra test-only open-world pool.
     """
     seen, dropped, chosen, pool = set(), [], [], []
     n_chosen = n_monitored + n_reserves
@@ -153,8 +154,9 @@ def select_site_set(results, n_monitored, n_reserves, n_unmonitored, n_backgroun
     if len(chosen) < n_chosen or len(pool) < need:
         sys.exit(f"only {len(chosen)} monitored candidates and {len(pool)} pool sites; "
                  f"need {n_chosen} and {need}: screen further down the ranking")
-    return (chosen[:n_monitored], chosen[n_monitored:], pool[:n_unmonitored],
-            pool[n_unmonitored:need], dropped)
+    out = (chosen[:n_monitored], chosen[n_monitored:], pool[:n_unmonitored],
+           pool[n_unmonitored:need], dropped)
+    return out + (pool[need:],) if with_rest else out
 
 
 def read_screening(path):
@@ -200,6 +202,9 @@ def main():
                    help="build a whole site set, monitored list included, into sites/<set>/")
     p.add_argument("--monitored", type=int, default=50)
     p.add_argument("--reserves", type=int, default=15)
+    p.add_argument("--extra-set", default="",
+                   help="with --site-set: write the pool sites it leaves over to "
+                        "sites/<extra>/unmonitored.txt, a test-only open-world pool")
     p.add_argument("--pilot-failed", default="",
                    help="comma separated domains that failed the Tor Browser pilot (--site-set)")
     args = p.parse_args()
@@ -262,9 +267,9 @@ def build_site_set(args, results, header):
     excluded = read_excluded(os.path.join(sites.SITES_DIR, "excluded.csv"))
     for dom in filter(None, (d.strip() for d in args.pilot_failed.split(","))):
         excluded[sites.registrable(dom)] = ("pilot", "failed in Tor Browser")
-    mon, res, unmon, bg, dropped = select_site_set(
+    mon, res, unmon, bg, dropped, rest = select_site_set(
         results, args.monitored, args.reserves, args.unmonitored, args.background,
-        excluded, pool_excluded=sites.monitored_domains())
+        excluded, pool_excluded=sites.monitored_domains(), with_rest=True)
     out = os.path.join(sites.SITES_DIR, args.site_set)
     os.makedirs(out, exist_ok=True)
     for name, chunk in (("monitored", mon), ("reserves", res), ("unmonitored", unmon),
@@ -280,6 +285,17 @@ def build_site_set(args, results, header):
     print(f"wrote {args.site_set}: {len(mon)} monitored (ranks to {mon[-1][0]}), "
           f"{len(res)} reserves, {len(unmon)} unmonitored and {len(bg)} background "
           f"(ranks {unmon[0][0]}-{bg[-1][0] if bg else unmon[-1][0]}), {len(dropped)} dropped")
+    if args.extra_set:
+        # Never trained on: collected later with --repeats 0, it only widens the
+        # open-world test pool, so the FPR can be measured below ~1%.
+        out = os.path.join(sites.SITES_DIR, args.extra_set)
+        os.makedirs(out, exist_ok=True)
+        with open(os.path.join(out, "unmonitored.txt"), "w", encoding="utf-8") as fh:
+            fh.write(header.replace("\n#", f" Extra open-world test pool of {args.site_set}: every "
+                                    "pool site after its unmonitored and background.\n#", 1))
+            for rank, dom, url in rest:
+                fh.write(f"{label_for(dom)} {url}  # {rank}\n")
+        print(f"wrote {args.extra_set}: {len(rest)} unmonitored (ranks {rest[0][0]}-{rest[-1][0]})")
 
 
 if __name__ == "__main__":

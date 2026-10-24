@@ -93,7 +93,9 @@ def build_schedule(monitored, unmonitored, background, arms, repeats, bg_repeats
     arm_names = [a for a in arms]
     unmon_items = list(unmonitored.items())
     bg_items = list(background.items())
-    batches = [[] for _ in range(repeats)]
+    # --repeats 0 (an extra open-world pool only) still needs one batch.
+    n_batches = max(repeats, 1)
+    batches = [[] for _ in range(n_batches)]
 
     for k in range(repeats):
         for site, url in monitored.items():
@@ -102,7 +104,7 @@ def build_schedule(monitored, unmonitored, background, arms, repeats, bg_repeats
 
     # Unmonitored sites are visited once each, spread evenly over the batches.
     for i, (site, url) in enumerate(unmon_items):
-        batches[i * repeats // max(len(unmon_items), 1)].append(
+        batches[i * n_batches // max(len(unmon_items), 1)].append(
             {"kind": "unmonitored", "site": site, "url": url, "repeat": 1,
              "arms": list(arm_names)})
 
@@ -407,7 +409,8 @@ def main():
     p.add_argument("--dry-run", action="store_true")
     args = p.parse_args()
 
-    monitored = sites.load_monitored(args.site_set)
+    # An extra open-world pool (--repeats 0 --bg-repeats 0) has no monitored list.
+    monitored = sites.load_monitored(args.site_set) if args.repeats or args.bg_repeats else {}
     if args.only:
         wanted = [s.strip() for s in args.only.split(",") if s.strip()]
         unknown = [s for s in wanted if s not in monitored]

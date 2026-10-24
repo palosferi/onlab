@@ -97,6 +97,15 @@ def check_no_background_without_baseline():
     return bg == []
 
 
+def check_unmonitored_only():
+    # An extra open-world pool: no monitored or background visits, every
+    # unmonitored site once per arm.
+    batches = schedule(monitored={}, background={}, arms=["baseline"], repeats=0, bg_repeats=0)
+    got = slots(batches)
+    return (len(batches) == 1 and {s["kind"] for s in got} == {"unmonitored"}
+            and sorted(s["site"] for s in got) == sorted(UNMON))
+
+
 def check_resume_from_manifest():
     with tempfile.TemporaryDirectory() as d:
         path = os.path.join(d, "manifest.csv")
@@ -129,6 +138,7 @@ CASES = [
     ("background visits spread over batches", check_background_spread_over_time),
     ("arm order within a slot varies", check_arm_order_varies),
     ("no background visits without a baseline arm", check_no_background_without_baseline),
+    ("repeats 0: unmonitored visits only", check_unmonitored_only),
     ("resume: ok done, failures retried up to the cap", check_resume_from_manifest),
 ]
 
