@@ -7,9 +7,11 @@ there is one), and writes vector PDFs to figures/thesis/:
   <c>_cross_matrix.pdf   train transport (rows) x test transport (columns), accuracy
   <c>_budget.pdf         R1: baseline plus k target traces per site, per target
   <c>_curve.pdf          R4: baseline closed world on n training traces per site
-  <c>_precision.pdf      R3: best precision (TPR >= 50%) against the base rate, per arm
+  <c>_precision.pdf      R3: best precision (TPR >= 50%) against the base rate, per arm,
+                         with the 95% range its false-positive count allows
 
-Every point is the mean over seeds with its sd as an error bar. Labels are in
+Every point is the mean over seeds with its sd as an error bar, except in
+the precision figure (see precision_interval). Labels are in
 Hungarian, as the thesis is. A figure whose input file is missing is skipped.
 
     python src/thesis_figures.py --collection tb-main
@@ -143,25 +145,69 @@ def curve(scen, collection):
     save(fig, collection, "curve")
 
 
+def precision_interval(entry, b):
+    """Precision at base rate b over the seeds pooled, and its 95% interval.
+
+    How many false positives a pool of unmonitored traces can show bounds the
+    precision far more than the spread between seeds: 0 of 96 is an FPR
+    anywhere under ~3%, not 0%. So the seeds' false positives (each at its own
+    best threshold) are pooled, FPR gets a Clopper-Pearson interval, and the
+    interval's ends give precision's. Returns (point, low, high, false positives).
+    """
+    from scipy.stats import beta
+
+    n = np.array(entry["best_n_unseen"], dtype=float)
+    fp = int(round(float(np.sum(np.array(entry["best_fprs"]) * n))))
+    total = int(n.sum())
+    tpr, wpr = np.mean(entry["best_tprs"]), np.mean(entry["best_wprs"])
+    fpr_lo = beta.ppf(0.025, fp, total - fp + 1) if fp else 0.0
+    fpr_hi = beta.ppf(0.975, fp + 1, total - fp) if fp < total else 1.0
+
+    def prec(fpr):
+        return 100 * b * tpr / (b * (tpr + wpr) + (1 - b) * fpr)
+
+    return prec(fp / total), prec(fpr_hi), prec(fpr_lo), fp
+
+
 def precision(prec, collection):
     rates = [b for b in prec["base_rates"] if b <= 0.2]
     fig, ax = plt.subplots(figsize=(4.0, 2.9))
+    first = next(iter(prec["scenarios"].values()))["base_rates"][str(rates[0])]
+    if "best_n_unseen" not in first:
+        print("  skip precision: rerun evaluate_budget.py --precision-from for the counts")
+        plt.close(fig)
+        return
+    # Nudge the arms apart on the log axis so their intervals do not cover each other.
+    nudge = {"baseline": 0.92, "obfs4": 1.0, "snowflake": 1.087}
     for arm in ARMS:
         e = prec["scenarios"].get(f"open_world_{arm}")
         if not e:
             continue
-        mean = [100 * e["base_rates"][str(b)]["best_precision_mean"] for b in rates]
-        sd = [100 * e["base_rates"][str(b)]["best_precision_sd"] for b in rates]
-        ax.errorbar(rates, mean, yerr=sd, color=ARM_COLOR[arm], marker=ARM_MARKER[arm],
-                    markersize=5, linewidth=2, capsize=3, elinewidth=1, label=ARM_LABEL[arm])
+        pts = [precision_interval(e["base_rates"][str(b)], b) for b in rates]
+        xs = [b * nudge[arm] for b in rates]
+        mid = np.array([p[0] for p in pts])
+        err = np.array([[p[0] - p[1] for p in pts], [p[2] - p[0] for p in pts]])
+        ax.errorbar(xs, mid, yerr=err, color=ARM_COLOR[arm], linewidth=2, capsize=3,
+                    elinewidth=1, fmt="none")
+        ax.plot(xs, mid, color=ARM_COLOR[arm], linewidth=2)
+        # Hollow: not one false positive, so the point is only the top of its range.
+        for x, (p, _, _, fp) in zip(xs, pts):
+            ax.plot(x, p, marker=ARM_MARKER[arm], markersize=5.5, color=ARM_COLOR[arm],
+                    markerfacecolor="white" if fp == 0 else ARM_COLOR[arm], markeredgewidth=1.4)
     ax.set_xscale("log")
     ax.set_xticks(rates, [f"{100 * b:g}%" for b in rates])
     ax.minorticks_off()
     ax.invert_xaxis()
     ax.set_xlabel("alapráta: a monitorozott oldalakra eső oldalbetöltések aránya")
     ax.set_ylabel("legjobb precizitás, TPR ≥ 50% (%)")
-    ax.set_ylim(0, 100)
-    ax.legend(loc="upper right")
+    ax.set_ylim(0, 102)
+    Line2D = matplotlib.lines.Line2D
+    handles = [Line2D([], [], color=ARM_COLOR[a], lw=2, marker=ARM_MARKER[a], ms=5.5,
+                      label=ARM_LABEL[a]) for a in ARMS if f"open_world_{a}" in prec["scenarios"]]
+    handles.append(Line2D([], [], ls="", marker="o", mfc="white", mec=MUTED, mew=1.4, ms=5.5,
+                          label="0 hamis pozitív: csak felső korlát"))
+    ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, -0.22), ncol=2,
+              columnspacing=1.2)
     save(fig, collection, "precision")
 
 

@@ -294,8 +294,28 @@ Snowflake have no extra pool (baseline-only collection), so they keep the
 96-trace limits (obfs4 100%: 0 false positives, i.e. FPR < ~1%; Snowflake 43.6
 ± 49.0%). R2 precision column at b = 1%, baseline, k = 5 / 10 / 20 / 50 sites:
 90.8 ± 9.7 / 53.6 ± 23.0 / 66.0 ± 25.5 / 32.6 ± 11.2%. `figures/thesis/s2_precision.pdf`
-redrawn from the `_extra` file; it still draws obfs4's bound as a flat 100%
-line like a measured value.
+redrawn from the `_extra` file.
+
+**Precision figures redrawn 2026-10-30 with count-based ranges.** The seed sd
+misstated R3: obfs4's 0 false positives in 96 drew as a certain 100%. Now
+`thesis_figures.py` pools the seeds' false positives (each at its own best
+threshold), takes a 95% Clopper-Pearson interval on the FPR and maps its ends to
+precision; a hollow marker means 0 false positives (the point is only the top
+of the range). `evaluate_budget.py --precision-from` now records per seed the
+TPR, WPR and the number of unseen unmonitored traces (`best_tprs`,
+`best_wprs`, `best_n_unseen`); all six precision files regenerated, old fields
+unchanged. WPR is 0 at every best point. Pooled precision [95% range], false
+positives over 3 seeds:
+
+| b = 1% | S2 | tb-main |
+|---|---|---|
+| baseline | 30.2 [24.6, 37.0], 47 of 3834 | 21.4 [10.5, 45.4], 5 of 255 |
+| obfs4 | 100 [33.3, 100], 0 of 288 | 23.5 [11.8, 48.5], 5 of 255 |
+| Snowflake | 20.0 [10.4, 40.4], 6 of 288 | 9.8 [6.1, 16.9], 13 of 255 |
+
+At b = 0.1%: S2 baseline 4.1 [3.1, 5.5], i.e. about 1 alarm in 25 is real.
+These pooled values are what the thesis quotes for R3; the per-seed mean ± sd
+stays in the JSON.
 
 **Traffic characteristics (kiírás bullet 6): done 2026-10-30**,
 `src/transport_traffic.py --collection <c>` on the laptop (CPU, ~15 s), output

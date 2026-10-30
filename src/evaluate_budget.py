@@ -133,6 +133,16 @@ def set_size_run(mon, unmon, k, args, seed, extra_unmon=None):
     }
 
 
+def unseen_count(run, row):
+    """How many unmonitored test traces the FPR that precision uses was taken over."""
+    if "scores" in run:
+        group = np.asarray(run["scores"]["group"])
+        names = ("pool", "extra") if "fpr_unseen" in row else ("pool",) if "fpr_pool" in row else None
+        if names:
+            return int(np.isin(group, names).sum())
+    return run.get("n_unmonitored_test")
+
+
 def precision_table(path, rates=BASE_RATES):
     """R3: precision at base rates from every open-world sweep in a results file."""
     with open(path, encoding="utf-8") as f:
@@ -151,6 +161,7 @@ def precision_table(path, rates=BASE_RATES):
                 rows = r["sweep"]
                 if "scores" in r:
                     rows = sweep_from_scores(r["scores"], np.union1d(THRESHOLDS, r["scores"]["conf"]))
+                n_unseen = unseen_count(r, rows[0])
                 prec = []
                 for row in rows:
                     # Out in the world, unmonitored visits go to sites the attacker never
@@ -160,7 +171,7 @@ def precision_table(path, rates=BASE_RATES):
                     fpr = row.get("fpr_unseen", row.get("fpr_pool", row["fpr"]))
                     denom = b * (row["tpr"] + row.get("wpr", 0.0)) + (1 - b) * fpr
                     prec.append((b * row["tpr"] / denom if denom else 0.0, row["tpr"], row["threshold"], fpr,
-                                 row.get("tpr_control")))
+                                 row.get("tpr_control"), row.get("wpr", 0.0), n_unseen))
                 at_zero.append(prec[0][0])
                 # The best threshold that still finds at least half the monitored visits.
                 usable = [p for p in prec if p[1] >= 0.5] or prec[:1]
@@ -176,6 +187,11 @@ def precision_table(path, rates=BASE_RATES):
                 # 0 here means no false positive among the test's unmonitored traces:
                 # the precision is then as high as that pool's size can show.
                 "best_fprs": [x[3] for x in best],
+                # With the counts, a figure can bound precision by how many false
+                # positives that many unmonitored traces can show (0 of 96 is not 0%).
+                "best_tprs": [x[1] for x in best],
+                "best_wprs": [x[5] for x in best],
+                "best_n_unseen": [x[6] for x in best],
                 # TPR on the extra collection's control visits at the same threshold:
                 # close to best_tpr_mean means its pool is scored like this one.
                 **({"best_tpr_control": controls} if controls else {}),
