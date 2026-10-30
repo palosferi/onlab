@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-24. Update this file whenever a run starts or finishes, a
+Last updated 2026-10-30. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -265,6 +265,37 @@ same as before, so threshold-0 TPR/FPR must again equal the old runs;
 `fpr_unseen` (pool + extra) feeds precision, `tpr_control` is the check.
 R3 is then reported as a range from the false-positive counts, the S2 baseline
 one narrow enough to quote; obfs4, Snowflake and tb-main keep the wide one.
+Dataset `ferencpalos/wf-tb-s2-extra` uploaded 2026-10-24 21:33 UTC; kernel
+`wf-s2-extra` (at 194e746) pushed two minutes later **ended in ERROR with an
+empty log** (checked 2026-10-29): it never reached its first print, so Kaggle
+did not start the session, most likely because the new dataset was still
+processing. Pushed again by the user 2026-10-29.
+
+**s2-extra on Kaggle: done 2026-10-30** (`wf-s2-extra` at 194e746, T4;
+evaluate_transport 4050 s, evaluate_budget 2942 s). Files
+`figures/metrics_{openworld,setsize}_s2_cells_gpu_extra.json` and their
+`_precision.json`. Check passed: all 21 runs (9 open world, 12 set size) repeat
+the 10-24 runs exactly (best epoch, history, threshold-0 TPR/FPR, every old
+test trace's confidence). The extra pool scores like S2's own: threshold-0 FPR
+35-42% vs 33-35%. Control visits (145, other guard, 1-2 weeks later) pass the
+best threshold at 53.1 / 46.9 / 52.4% against a test TPR of 52.4% mean, so the
+guard and the gap do not change how the models score traffic.
+
+R3 on S2, best precision with TPR >= 50%, now over 96 + 1182 = 1278 unseen
+unmonitored traces on baseline:
+
+| S2 baseline | b = 5% | b = 1% | b = 0.1% |
+|---|---|---|---|
+| best precision | 70.1% | 32.6 ± 11.2% | 4.8% |
+| false positives at the b = 1% point, per seed | | 9, 24, 14 of 1278 (0.7, 1.9, 1.1%) | |
+
+This is a measurement, not a bound: every seed has false positives. obfs4 and
+Snowflake have no extra pool (baseline-only collection), so they keep the
+96-trace limits (obfs4 100%: 0 false positives, i.e. FPR < ~1%; Snowflake 43.6
+± 49.0%). R2 precision column at b = 1%, baseline, k = 5 / 10 / 20 / 50 sites:
+90.8 ± 9.7 / 53.6 ± 23.0 / 66.0 ± 25.5 / 32.6 ± 11.2%. `figures/thesis/s2_precision.pdf`
+redrawn from the `_extra` file; it still draws obfs4's bound as a flat 100%
+line like a measured value.
 
 Thesis figures for S2 written 2026-10-21 by `src/thesis_figures.py --collection
 s2`: `figures/thesis/s2_{cross_matrix,budget,curve,precision}.pdf`.
@@ -409,22 +440,12 @@ adatlap; the 10-19 hitelesítés needed nothing from the student).
 
 1. Push `szakdolgozat` after each commit (user: Claude's `git push` has no
    GitHub credentials).
-2. **Finish R3 with the extra pool** (collection `s2-extra` done and on the
-   laptop). The user uploads its features as a dataset and pushes the job
-   (Claude may do neither):
-
-       mkdir -p ~/wf-kaggle-s2extra && (cd tor_dataset/tb && zip -qr ~/wf-kaggle-s2extra/s2-extra-features.zip s2-extra/features)
-       printf '{"title": "wf-tb-s2-extra", "id": "ferencpalos/wf-tb-s2-extra", "licenses": [{"name": "CC0-1.0"}]}' > ~/wf-kaggle-s2extra/dataset-metadata.json
-       kaggle datasets create -p ~/wf-kaggle-s2extra
-       python scripts/kaggle/push_job.py --dataset ferencpalos/wf-tb-s2 --dataset ferencpalos/wf-tb-s2-extra \
-         --collection s2 --collection s2-extra --slug wf-s2-extra \
-         --cmd "src/evaluate_transport.py --collection s2 --mode cells --length 10000 --min-visits 30 --scenarios open_world --extra-unmonitored s2-extra --out figures/metrics_openworld_s2_cells_gpu_extra.json" \
-         --cmd "src/evaluate_budget.py --collection s2 --min-visits 30 --scenarios set_size --extra-unmonitored s2-extra --out figures/metrics_setsize_s2_cells_gpu_extra.json"
-
-   Then: check threshold-0 TPR/FPR against the old runs and the control TPR
-   against the test TPR, report R3 (and the R2 precision column) as ranges
-   from the false-positive counts, redraw the precision figures
-   (`thesis_figures.py` prefers the `_extra` file), commit.
+2. **Traffic-characteristics analysis** (kiírás bullet 6: the causes of the
+   cross-transport drop "a forgalom jellemzői alapján"). Not done: only
+   `sequence_budget_cells.json` (tb-main: median cells, duration, outgoing
+   share per arm) exists. CPU-only, on the laptop, both collections:
+   per-transport distributions of trace length in cells, duration, outgoing
+   share and burst structure, and which sites fail to transfer.
 3. **Write the thesis** (submission 2026-12-11 12:00). Nothing written yet;
    `docs/SZAKDOLGOZAT_temavazlat.md` still describes the drift plan, and its
    schedule had a zeroth draft to the konzulens by the end of November. Points
