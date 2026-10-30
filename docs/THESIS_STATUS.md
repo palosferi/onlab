@@ -297,6 +297,61 @@ Snowflake have no extra pool (baseline-only collection), so they keep the
 redrawn from the `_extra` file; it still draws obfs4's bound as a flat 100%
 line like a measured value.
 
+**Traffic characteristics (kiírás bullet 6): done 2026-10-30**,
+`src/transport_traffic.py --collection <c>` on the laptop (CPU, ~15 s), output
+`figures/traffic_{s2,tb-main}.json` and `figures/thesis/<c>_traffic_{shift,transfer}.pdf`.
+Everything in DF's view (cells, first 10000), monitored sites kept by
+`--min-visits 30`. Per site, median over baseline median, S2 (tb-main):
+
+| | obfs4 / baseline | Snowflake / baseline |
+|---|---|---|
+| incoming cells | ×1.04 (1.04) | ×1.29 (1.14) |
+| outgoing cells | ×1.75 (1.83) | ×1.19 (1.16) |
+| outgoing bytes | ×1.47 (1.54) | ×1.75 (1.69) |
+| outgoing share of cells | ×1.60 (1.56) | ×0.95 (1.02) |
+| direction runs (bursts) | ×1.10 (1.11) | ×1.27 (1.17) |
+| incoming burst, median length | ×0.70 (0.67) | ×1.09 (0.97) |
+| duration | ×0.72 (0.72) | ×1.22 (0.98) |
+
+- **The sites keep their order on every transport**: Spearman over site
+  medians 0.95-1.00 for cells, bytes, duration and bursts. The information is
+  there; each transport shifts it its own way.
+- **obfs4 inflates upstream.** S2's outgoing packets: 49% bare ACKs vs 77% on
+  baseline, 37% of 2-3 cells' size vs 16% (tb-main 46 vs 74%, 39 vs 18%):
+  obfs4's length obfuscation (framing, padding to lengths drawn from a
+  per-bridge distribution) makes the client's small writes bigger, so the
+  reconstruction finds 0.97 cells per 514 outgoing bytes vs 0.83 and outgoing
+  bytes grow x1.5. ~1.75x outgoing cells cut the incoming
+  bursts ~30% shorter, which is the pattern DF's convolutions learn. Incoming
+  is unchanged (x1.04). The shorter duration (x0.72) is the bridge being a
+  faster first hop; cells mode carries no timing.
+- **Snowflake is noisy, not reshaped.** 84% of its outgoing datagrams are
+  100-256 B and round to 0 cells (0.53 cells found per 514 outgoing bytes vs
+  0.83 baseline); incoming datagrams are small, so rounding adds cells (x1.14-1.29).
+  Outgoing share and burst length stay like baseline's, but within-site
+  spread is higher on S2 (CV of length 0.17 vs 0.10). This fits the matrix:
+  Snowflake -> baseline transfers best (a model trained on the noisy
+  transport copes with the clean one), baseline -> Snowflake less.
+- **Random forest on 8 coarse features** (cells in/out, outgoing share,
+  duration, bursts, burst medians, longest incoming burst; 3 seeds,
+  chronological split), accuracy %, raw / rescaled per transport by that
+  transport's own median and sd (no target labels):
+
+  | S2 (tb-main) | -> baseline | -> obfs4 | -> Snowflake |
+  |---|---|---|---|
+  | baseline | 80.3 | 14.5 / 64.2 (18.2 / 65.6) | 30.7 / 49.1 (49.6 / 62.2) |
+  | obfs4 | 14.3 / 69.1 (21.0 / 71.4) | 77.3 | 15.0 / 43.6 (21.1 / 60.2) |
+  | Snowflake | 32.5 / 60.4 (59.4 / 73.9) | 14.0 / 47.9 (22.9 / 61.5) | 65.0 |
+
+  Raw, it repeats DF's pattern (obfs4 the outlier, Snowflake <-> baseline
+  closest). Rescaling without a single target label recovers most of the
+  obfs4 gap, less of Snowflake's (its noise does not rescale away). So the
+  drop is mostly a systematic, learnable shift, which is also why R1 needs
+  only one obfs4 trace per site (39 -> 80%) and pooled training loses nothing.
+- Limit for the text: the cells are reconstructed from wire bytes, the view an
+  on-path attacker has; obfs4's padding and Snowflake's rounding live in that
+  reconstruction, so a DF fed with real Tor cells would see less difference.
+
 Thesis figures for S2 written 2026-10-21 by `src/thesis_figures.py --collection
 s2`: `figures/thesis/s2_{cross_matrix,budget,curve,precision}.pdf`.
 
@@ -440,13 +495,7 @@ adatlap; the 10-19 hitelesítés needed nothing from the student).
 
 1. Push `szakdolgozat` after each commit (user: Claude's `git push` has no
    GitHub credentials).
-2. **Traffic-characteristics analysis** (kiírás bullet 6: the causes of the
-   cross-transport drop "a forgalom jellemzői alapján"). Not done: only
-   `sequence_budget_cells.json` (tb-main: median cells, duration, outgoing
-   share per arm) exists. CPU-only, on the laptop, both collections:
-   per-transport distributions of trace length in cells, duration, outgoing
-   share and burst structure, and which sites fail to transfer.
-3. **Write the thesis** (submission 2026-12-11 12:00). Nothing written yet;
+2. **Write the thesis** (submission 2026-12-11 12:00). Nothing written yet;
    `docs/SZAKDOLGOZAT_temavazlat.md` still describes the drift plan, and its
    schedule had a zeroth draft to the konzulens by the end of November. Points
    the text must carry:
@@ -458,9 +507,9 @@ adatlap; the 10-19 hitelesítés needed nothing from the student).
      point), and the ~96-trace unmonitored pool cannot show an FPR below ~1%.
    - Guard, tor version and bridge are per capture in the manifest; the bridge
      address never goes into the thesis or the repository.
-4. **Status email to the konzulens** with the final results (user's call;
+3. **Status email to the konzulens** with the final results (user's call;
    the 2026-10-14 draft predates S2, so it needs the S2 tables).
-5. **Delete the Azure resource group `wf-thesis`** once no site needs
+4. **Delete the Azure resource group `wf-thesis`** once no site needs
    recollecting (the obfs4 arm depends on that bridge; the renewed
    subscription runs to 2027-10). `az` is not installed on the laptop.
 

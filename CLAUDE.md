@@ -34,7 +34,8 @@ training belongs on a laptop: the server has four slow cores.
   track on the spring dataset; `evaluate_transport.py` is the thesis evaluation
   on a Tor Browser collection (3x3 cross-transport matrix, leave-one-out,
   pooled, background tab, open world); `extract_tb_features.py` turns its pcaps
-  into per-packet CSVs. `feature_pool.py` and `evaluate_all_*.py` are the older
+  into per-packet CSVs; `transport_traffic.py` explains the cross-transport
+  drop from trace characteristics. `feature_pool.py` and `evaluate_all_*.py` are the older
   21-feature track; `drift_*.py` the paused longitudinal comparison;
   `sequence_budget.py` the window-length analysis.
 - `scripts/collection/` — runs on the collection host only. The thesis dataset
