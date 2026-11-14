@@ -552,9 +552,14 @@ adatlap; the 10-19 hitelesítés needed nothing from the student).
 3. **Meeting with the konzulens**: asking for Thursday 2026-11-19 (12-14 or
    after 16) to go through the results; bring a one-page summary and the main
    figures. Also agree on the bírálat's timing.
-4. **Admin from the 2026-11-14 circular** (see the deadlines above): answer
-   the organiser about the záróvizsga and MSc, register in Neptun by 12-07,
-   collect the signed feladatkiírás from IB219.
+4. **Admin from the 2026-11-14 circular** (see the deadlines above). Done
+   2026-11-14: the organiser has the answer (záróvizsga this semester, MSc
+   application, defence asked for 2027-01-05, else 01-06, because of an
+   Erasmus semester starting 01-11) and the Neptun registration is in. Left:
+   collect the signed feladatkiírás from IB219. Going on to MSc means
+   **12-11 is final** (no late submission), the defence is 2027-01-05 – 01-08,
+   and the bound copy is due around 2026-12-29, so have it bound right after
+   submitting, before the holidays.
 5. **Delete the Azure resource group `wf-thesis`** once no site needs
    recollecting (the obfs4 arm depends on that bridge; the renewed
    subscription runs to 2027-10). `az` is not installed on the laptop.
