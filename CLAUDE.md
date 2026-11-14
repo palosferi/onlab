@@ -47,6 +47,9 @@ training belongs on a laptop: the server has four slow cores.
   weekly timer is disabled.
 - `docs/THESIS_STATUS.md` — where the work stands: what is running, results so
   far, open tasks. Read it first and update it when that changes.
+- `szakdolgozat/` — the thesis text (BME LaTeX template, Hungarian). Build with
+  `latexmk -xelatex thesis.tex` in that directory.
+- `onlab/` — the finished önlab's report, slides and documents. Reference only.
 - `tests/` — plain scripts, no pytest. Run a file directly; it prints `n/n
   passed` and exits non-zero on failure. Cases needing `tcpdump` skip when it is
   absent, so the suite is clean on a workstation.

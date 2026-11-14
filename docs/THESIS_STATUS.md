@@ -1,6 +1,6 @@
 # Thesis status
 
-Last updated 2026-10-30. Update this file whenever a run starts or finishes, a
+Last updated 2026-11-14. Update this file whenever a run starts or finishes, a
 result comes in, or a task is done.
 
 ## Topic and deadlines
@@ -14,7 +14,26 @@ Topic posted on the BME portal by the konzulens (Dr. Sonkoly Balázs, TMIT):
 | 2026-10-05 – 10-16 | adatlap on the portal (done 2026-10-13; no konzulens approval needed, no nyilatkozat or melléklet) | student |
 | 2026-10-09 24:00 | feladatkiírás upload (done in time) | konzulens |
 | 2026-10-19 | feladatkiírás hitelesítés | |
-| 2026-12-11 12:00 | thesis submission | student |
+| mid-November on | signed feladatkiírás can be collected from IB219; it is bound into the printed copy | student |
+| 2026-11-02 – 12-07 | záróvizsga registration in Neptun (the official one) | student |
+| 2026-12-11 12:00 | thesis submission on the portal; press *beadás* after the upload | student |
+| 2026-12-18 24:00 | late submission with the konzulens's permission, only for BSc students not going on to MSc | student |
+| 2027-01-04 | BSc written exam / MSc entrance (vill/info) | |
+| 2027-01-11 – 02-05 | oral záróvizsga and defence (2027-01-05 – 01-08 for MSc applicants) | |
+| one week before the defence | one bound copy to the department | student |
+
+From the TMIT organiser's (Szekrényes Emese) circular, received 2026-11-14:
+
+- Tell her in advance whether the záróvizsga is planned for this semester and
+  whether an MSc application follows; the schedule is built from that.
+- The absolutórium and the szakmai gyakorlat signature are conditions of the
+  oral exam; the *abszolvált* status must be there 3 days before it.
+- One bound copy is enough (black leather cover, SZAKDOLGOZAT in the middle,
+  name and year bottom right). Binding order: blank page, signed
+  feladatkiírás, title page, table of contents, hallgatói nyilatkozat,
+  Hungarian summary, English abstract, the rest. Two loose copies of the
+  short Hungarian summary go with it, unbound.
+- Arrange the bírálat's timing with the konzulens.
 
 No *elbocsátó-befogadó nyilatkozat* is needed (confirmed 2026-10-14).
 
@@ -515,7 +534,10 @@ adatlap; the 10-19 hitelesítés needed nothing from the student).
 
 1. Push `szakdolgozat` after each commit (user: Claude's `git push` has no
    GitHub credentials).
-2. **Write the thesis** (submission 2026-12-11 12:00). Nothing written yet;
+2. **Write the thesis** (submission 2026-12-11 12:00). The skeleton is in
+   `szakdolgozat/` since 2026-11-14 (BME LaTeX template v1.1.2, Hungarian,
+   builds with `latexmk -xelatex thesis.tex`); no text yet. The önlab report
+   and its documents moved under `onlab/`.
    `docs/SZAKDOLGOZAT_temavazlat.md` still describes the drift plan, and its
    schedule had a zeroth draft to the konzulens by the end of November. Points
    the text must carry:
@@ -527,9 +549,13 @@ adatlap; the 10-19 hitelesítés needed nothing from the student).
      point), and the ~96-trace unmonitored pool cannot show an FPR below ~1%.
    - Guard, tor version and bridge are per capture in the manifest; the bridge
      address never goes into the thesis or the repository.
-3. **Status email to the konzulens** with the final results (user's call;
-   the 2026-10-14 draft predates S2, so it needs the S2 tables).
-4. **Delete the Azure resource group `wf-thesis`** once no site needs
+3. **Meeting with the konzulens**: asking for Thursday 2026-11-19 (12-14 or
+   after 16) to go through the results; bring a one-page summary and the main
+   figures. Also agree on the bírálat's timing.
+4. **Admin from the 2026-11-14 circular** (see the deadlines above): answer
+   the organiser about the záróvizsga and MSc, register in Neptun by 12-07,
+   collect the signed feladatkiírás from IB219.
+5. **Delete the Azure resource group `wf-thesis`** once no site needs
    recollecting (the obfs4 arm depends on that bridge; the renewed
    subscription runs to 2027-10). `az` is not installed on the laptop.
 

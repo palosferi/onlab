@@ -58,6 +58,8 @@ logs/
 *.synctex.gz
 *.synctex(busy)
 *.toc
+*.thm
+*.xdv
 
 # LaTeX editor backups
 *~
